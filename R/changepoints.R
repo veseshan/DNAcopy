@@ -1,21 +1,18 @@
 changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
                          nperm=10000, window.size=NULL, overlap=0.25,
-                         trim = 0.025, smooth.outliers=TRUE, smooth.region=2,
-                         outlier.SD=4, smooth.SD=2, smooth.output=FALSE,
-                         undo.splits="none", undo.prune=0.05, undo.SD=3,
-                         verbose=TRUE)
+                         trimmed.SD = NULL, undo.splits="none", 
+                         undo.prune=0.05, undo.SD=3, verbose=0)
   {
     n <- length(genomdat)
-    genomdat.orig <- genomdat
-    if(smooth.outliers) genomdat <- smooth.data(genomdat.orig, smooth.region, outlier.SD, smooth.SD, trim)
-    if(is.null(window.size)) window.size <- n
+    if (missing(trimmed.SD)) trimmed.SD <- mad(diff(genomdat))/sqrt(2)
+    if (is.null(window.size)) window.size <- n
     seg.end <- c(0,n)
     k <- length(seg.end)
     change.loc <- NULL
     while (k > 1)
       {
         current.n <- seg.end[k]-seg.end[k-1]
-        if(verbose) cat("Current segment:",seg.end[k-1]+1,"-",seg.end[k],"\n")
+        if (verbose>=3) cat(".... current segment:",seg.end[k-1]+1,"-",seg.end[k],"\n")
         if(current.n >= 4)
           {
             current.genomdat <- genomdat[(seg.end[k-1]+1):seg.end[k]]
@@ -48,7 +45,7 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
                           c(seg.end[1:(k-1)],seg.end[k-1]+zzz$icpt[1],seg.end[k]),
                           c(seg.end[1:(k-1)],seg.end[k-1]+zzz$icpt,seg.end[k]))
         k <- length(seg.end)
-        if(verbose) cat("Segments to go:",seg.end,"\n")
+        if(verbose>=3) cat(".... segments to go:",seg.end,"\n")
       }
     seg.ends <- rev(change.loc)
     nseg <- length(seg.ends)
@@ -58,22 +55,17 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
             lseg <- changepoints.prune(genomdat, lseg, undo.prune)
         }
         if (undo.splits == "sdundo") {
-            lseg <- changepoints.sdundo(genomdat, lseg, undo.SD, trim)
+            lseg <- changepoints.sdundo(genomdat, lseg, trimmed.SD, undo.SD)
         }
     }
     segmeans <- 0*lseg
-    if (!smooth.output) genomdat <- genomdat.orig
     ll <- uu <- 0
     for(i in 1:length(lseg)) {
       uu <- uu + lseg[i]
       segmeans[i] <- mean(genomdat[(ll+1):uu])
       ll <- uu
     }
-    if (smooth.output) {
-      list("smoothed.data"=genomdat, "lseg" = lseg, "segmeans" = segmeans)
-    } else {
-      list("lseg" = lseg, "segmeans" = segmeans)
-    }
+    list("lseg" = lseg, "segmeans" = segmeans)
   }
 
 changepoints.prune <- function(genomdat, lseg, change.cutoff=0.05) {
@@ -97,8 +89,7 @@ changepoints.prune <- function(genomdat, lseg, change.cutoff=0.05) {
   pruned.lseg
 }
 
-changepoints.sdundo <- function(genomdat, lseg, change.SD=3, trim=0.025) {
-  trimmed.SD <- sqrt(trimmed.variance(genomdat, trim))
+changepoints.sdundo <- function(genomdat, lseg, trimmed.SD, change.SD=3) {
   change.SD <- trimmed.SD*change.SD
   cpt.loc <- cumsum(lseg)
   sdundo <- TRUE
@@ -136,22 +127,3 @@ inflfact <- function(trim)
     x1 <- (x[-10001] + x[-1])/2
     1/(sum(x1^2*dnorm(x1)/(1-2*trim))*(2*a/10000))
   }
-smooth.data <- function(genomdat, smooth.region=2, outlier.SD=4, smooth.SD=2,
-                        trim=0.025)
-  {
-    trimmed.SD <- sqrt(trimmed.variance(genomdat, trim))
-    outlier.SD <- outlier.SD*trimmed.SD
-    smooth.SD <- smooth.SD*trimmed.SD
-    k <- smooth.region
-    n <- length(genomdat)
-    smoothed.data <- sapply(1:n, function(i, x, n, nbhd, oSD, sSD) {
-      xi <- x[i]
-      nbhd <- i+nbhd
-      xnbhd <- x[nbhd[nbhd>0 & nbhd <=n]]
-      if (xi > max(xnbhd) + oSD) xi <- median(c(xi,xnbhd)) + sSD
-      if (xi < min(xnbhd) - oSD) xi <- median(c(xi,xnbhd)) - sSD
-      xi
-    }, genomdat, n, c(-k:-1, 1:k), outlier.SD, smooth.SD)
-    smoothed.data
-  }
-

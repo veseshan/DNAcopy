@@ -1,1 +1,9 @@
+CNA                     Create 'Copy Number Array' data object
+DNAcopy                 Results of segmenting a CNA data object
+coriell                 Array CGH data set of Coriell cell lines
+plot.DNAcopy            Plot the data and results from segment of a
+                        CNA object
 segment                 Genome Segmentation Program
+smooth.CNA              Smooth a 'Copy Number Array' data object
+subset.CNA              Subset a 'Copy Number Array' data object
+subset.DNAcopy          Subset a DNAcopy data object
