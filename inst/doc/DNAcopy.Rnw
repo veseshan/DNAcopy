@@ -1,0 +1,200 @@
+%\VignetteIndexEntry{DNAcopy}
+%\VignetteDepends{}
+%\VignetteKeywords{DNA Copy Number Analysis}
+%\VignettePackage{DNAcopy}
+
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage[authoryear,round]{natbib}
+\usepackage{hyperref}
+\SweaveOpts{echo=FALSE}
+
+\begin{document}
+
+\setkeys{Gin}{width=0.99\textwidth}
+
+\title{\bf DNAcopy: A Package for Analyzing DNA Copy Data}
+
+\author{E. S. Venkatraman and Adam B. Olshen}
+
+\maketitle
+
+\begin{center}
+Department of Epidemiology and Biostatistics\\
+Memorial Sloan-Kettering Cancer Center
+\end{center}
+
+\begin{center}
+
+{\tt olshena@mskcc.org}
+\end{center}
+
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview}
+
+This document presents an overview of the {\tt DNAcopy} package. This
+package is for analyzing array DNA copy number data, which is usually
+(but not always) called array Comparative Genomic Hybridization (array
+CGH) data \citep{pinkel98, snijders01, wigler03}.  It implements our
+methodology for finding change-points in these data \citep{olshen04},
+which are points after which the (log) test over reference ratios have
+changed location.  Our model is that the change-points
+correspond to positions where the underlying DNA copy number has
+changed.  Therefore, change-points can be used to identify regions of
+gained and lost copy number.  We also provide a function for making
+relevant plots of these data.
+
+\section{Data}
+
+We selected a subset of the data set presented in \cite{snijders01}.
+We are calling this data set {\tt coriell}.  The data correspond to
+two array CGH studies of fibroblast cell strains.  In particular, we
+chose the studies {\bf GM05296} and {\bf GM13330}.  After selecting
+only the mapped data from chromosomes 1-22 and X, there are 2271 data
+points.  There is accompanying spectral karyotype data (not included),
+which can serve
+as a gold standard.  The data can be found at \\
+\url{http://www.nature.com/ng/journal/v29/n3/suppinfo/ng754_S1.html}
+
+\section{An Example}
+
+Here we perform an analysis on the {\bf GM05296} array CGH study
+described above.
+
+
+<<echo=TRUE,print=FALSE>>=
+library(DNAcopy)
+@ 
+
+<<echo=TRUE,print=FALSE>>=
+data(coriell)
+@ 
+
+\noindent
+Before segmentation the data needs to be made into a CNA object.
+
+<<echo=TRUE,print=FALSE>>=
+CNA.object <- CNA(cbind(coriell$Coriell.05296),
+                  coriell$Chromosome,coriell$Position,
+                  data.type="logratio",sampleid="c05296")
+@ 
+
+\noindent
+We generally recommend smoothing single point outliers before
+analysis.  It is a good idea to check that the smoothing is proper for
+a particular data set.
+
+<<echo=TRUE,print=FALSE>>=
+smoothed.CNA.object <- smooth.CNA(CNA.object)
+@ 
+
+\noindent
+After smoothing, if necessary, the segmentation is run.  Here the
+default parameters are used.  A brief discussion of parameters that
+can be adjusted is in the Tips section.
+
+<<echo=TRUE,print=FALSE>>=
+segment.smoothed.CNA.object <- segment(smoothed.CNA.object, verbose=1)
+@
+
+%Plot whole studies
+
+\noindent
+There are a number of plots that can be made.  The first is ordering
+the data by chromosome and map positons.  The red lines correspond to
+mean values in segments.
+
+\pagebreak
+
+\begin{center}
+<<fig=TRUE,echo=TRUE>>=
+plot(segment.smoothed.CNA.object, plot.type="w")
+@
+\end{center}
+
+\noindent
+Another possibility is to plot by chromosome within a study.
+
+\begin{center}
+<<fig=TRUE,echo=TRUE,width=11,height=9>>=
+plot(segment.smoothed.CNA.object, plot.type="s") 
+@
+\end{center}
+
+%Plot each chromosome across studies (6 per page)
+
+%\begin{center}
+%<<fig=FALSE,echo=TRUE>>=
+%plot(segment.smoothed.CNA.object, plot.type="c", 
+%     cbys.layout=c(2,1), 
+%     cbys.nchrom=6)
+%@
+%\end{center}
+
+%Plot by plateaus
+
+\noindent
+If there are multiple studies, one could plot by chromosome across
+studies using the option plot.type=''c''.  A final plot orders the
+segment by their chromosome means.  One can take the plateaus in this
+plot to determine what the mean values should be for calling segments
+gains or losses.  In this case, maybe $0.4$ for gains and $-0.6$ for
+losses.  For most data, these plateaus are much closer to zero.  The
+next generation of this software will have automatic methods for
+calling gains and losses.
+
+\begin{center}
+<<fig=TRUE,echo=TRUE>>=
+plot(segment.smoothed.CNA.object, plot.type="p")
+@
+\end{center}
+
+\noindent
+Change-points are often found due to local trends in the data.  An
+undo method is needed to get rid of unnecessary change-points.  Below all
+splits that are not at least three SDs apart are removed.  The
+following plot shows that all splits not corresponding to the gold
+standard results have been removed.
+
+<<echo=TRUE,print=FALSE,width=6,height=5>>=
+sdundo.CNA.object <- segment(smoothed.CNA.object, 
+                             undo.splits="sdundo", 
+                             undo.SD=3,verbose=1)
+@ 
+
+
+\begin{center}
+<<fig=TRUE,echo=TRUE,width=11,height=9>>=
+plot(sdundo.CNA.object,plot.type="s")
+@
+\end{center}
+
+\section{Tips}
+
+\noindent
+A functions that may be of interest that has not been mentioned is
+{\tt subset.CNA}.  It allows for subsetting of a CNA object by chromosome
+and sample so that segmentation does not have to be run on a whole
+data set.  Similarly, {\tt subset.DNAcopy} allows subsetting of DNAcopy
+objects, which contain the output of segmentation.
+
+The parameter {\tt alpha} controls the sensitivity of the
+segmentation.  The default value is 0.01.  Increasing it will lead to
+more change-points, and, possibly, more false positive change-points.
+Decreasing it will lead to fewer change-points.  The parameter {\tt
+  nperm} controls the number of permutations.  Decreasing it will
+cause the algorithm to go faster (default is 10000).  However, the
+lower {\tt alpha} is, the more permutations that are needed.  Another
+way of speeding up computations is using the {\tt window.size}
+parameter.  In this case, maximization is performed on overlapping
+windows of a particular size rather than over the whole chromosome.
+
+\newpage
+\bibliographystyle{apalike}
+\bibliography{DNAcopy}
+
+\end{document}
