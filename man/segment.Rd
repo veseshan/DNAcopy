@@ -20,7 +20,7 @@
     to the markers and the columns to the samples.}
   \item{chrom}{the chromosomes (or other group identifier) from which
     the markers came.  Vector of length same as the number of rows of
-    genomdat.  If one wants the chromosomes to be oredered in the
+    genomdat.  If one wants the chromosomes to be ordered in the
     natural order, this variable should be numeric or ordered category.} 
   \item{maploc}{the locations of marker on the genome.  Vector of length
     same as the number of rows of genomdat. This has to be numeric.}

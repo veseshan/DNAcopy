@@ -58,7 +58,7 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
             lseg <- changepoints.prune(genomdat, lseg, undo.prune)
         }
         if (undo.splits == "sdundo") {
-            lseg <- changepoints.sdundo(genomdat, lseg, change.SD, trim)
+            lseg <- changepoints.sdundo(genomdat, lseg, undo.SD, trim)
         }
     }
     segmeans <- 0*lseg

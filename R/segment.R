@@ -5,6 +5,9 @@ segment <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
                     undo.splits= c("none","prune","sdundo"), undo.prune=0.05,
                     undo.SD=3, verbose=TRUE)
   {
+    if(!is.numeric(genomdat)) stop("genomdat must be numeric")
+    if(is.factor(chrom)) chrom <- as.character(chrom)
+    if(!is.numeric(maploc)) stop("maploc must be numeric")
     sortindex <- order(chrom, maploc)
     if (is.matrix(genomdat)) {
         genomdat <- genomdat[sortindex, ]

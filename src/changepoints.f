@@ -73,7 +73,7 @@ c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
       double precision sumx,ssqx,xbar,rw,rj,absx,sxmx,bssmx,wtmax,tss
 
       rw = dfloat(w)
-      tmax = 0.0d0
+      tmax = 0.0
       do 100 k = 1,wn
          l = wloc(k)
          sumx = 0.0
@@ -121,8 +121,10 @@ c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
             if (wtmax.lt.bssmx) wtmax = bssmx
          endif
          if (ibin) then
+            if (tss.le.0.0001) tss = 1.0
             wtmax = wtmax/(tss/rw)
          else
+            if (tss.le.wtmax+0.0001) tss = wtmax + 1.0
             wtmax = wtmax/((tss-wtmax)/(rw-2.0))
          endif
          if (tmax.lt.wtmax) tmax = wtmax
@@ -141,7 +143,7 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
       double precision sumx,ssqx,xbar,rw,rj,absx,sxmx,bssmx,wtmax,tss
 
       rw = dfloat(w)
-      ostat = 0.0d0
+      ostat = -0.5
       do 100 k = 1,wn
          l = wloc(k)
          sumx = 0.0
@@ -156,10 +158,10 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
             tx(i) = x(l+i) - xbar
             sx(i) = tx(i)
  20      continue
-         wtmax = 0.0
+         wtmax = -0.5
          do 40 j = 2,(w-1)/2
             rj = dfloat(j)
-            sxmx = 0.0
+            sxmx = -0.5
             do 30 i = 1,w
                sx(i) = sx(i) + tx(1+mod(i+j-2,w))
                absx = abs(sx(i))
@@ -182,7 +184,7 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
          if (w.eq.2*(w/2)) then
             j = w/2
             rj = dfloat(j)
-            sxmx = 0.0
+            sxmx = -0.5
             do 50 i = 1,w/2
                sx(i) = sx(i) + tx(1+mod(i+j-2,w))
                absx = abs(sx(i))
@@ -258,11 +260,11 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
          nrej = nperm
          go to 110
       endif
-      xsum1 = 0.0d0
+      xsum1 = 0.0
       do 10 i=1,n1
          xsum1 = xsum1 + x(i)
  10   continue
-      xsum2 = 0.0d0
+      xsum2 = 0.0
       do 20 i=n1+1,n
          xsum2 = xsum2 + x(i)
  20   continue
@@ -280,7 +282,7 @@ c      call dblepr("O-Stat",6,ostat,1)
       nrej = 0
       do 100 np = 1,nperm
          call xperm(n,x,px)
-         xsum1 = 0.0d0
+         xsum1 = 0.0
          do 30 i=1,m1
             xsum1 = xsum1 + px(i)
  30      continue
