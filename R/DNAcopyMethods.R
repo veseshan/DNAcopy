@@ -6,12 +6,12 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
     if (!is.numeric(maploc)) stop("maploc must be numeric")
     data.type <- match.arg(data.type)
     if (sum(is.na(chrom)|is.na(maploc))>0)
-      warning("markers with missing chrom and/or maploc removed")
+      warning("markers with missing chrom and/or maploc removed\n")
     sortindex <- order(chrom, maploc, na.last=NA)
     if (is.vector(genomdat)) genomdat <- as.matrix(genomdat)
     if (!missing(sampleid)) {
       if (length(sampleid) != ncol(genomdat)) {
-        warning("length(sampleid) and ncol(genomdat) differ, names ignored")
+        warning("length(sampleid) and ncol(genomdat) differ, names ignored\n")
         sampleid <- paste("Sample", 1:ncol(genomdat))
       } 
     } else {
@@ -20,7 +20,14 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
     colnames(genomdat) <- sampleid
     zzz <- data.frame(chrom=I(chrom), maploc=maploc, genomdat)
     zzz <- zzz[sortindex,]
-    rownames(zzz) <- paste(zzz$chrom,zzz$maploc,sep="-")
+
+    if(!all(sapply(unique(chrom),function(ichrom,chrom,maploc){
+      length(maploc[chrom==ichrom])-length(unique(maploc[chrom==ichrom]))
+    },chrom,maploc)==0)) {
+      warning("array has repeated maploc positions\n")
+    } else {
+      rownames(zzz) <- paste(zzz$chrom,zzz$maploc,sep="-")
+    }      
     attr(zzz, "data.type") <- data.type
     class(zzz) <- c("CNA","data.frame")
     zzz
