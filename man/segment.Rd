@@ -9,7 +9,7 @@
   segment(x, alpha = 0.01, nperm = 10000, window.size = NULL, 
                  overlap = 0.25, trim = 0.025, undo.splits = c("none",
                  "prune", "sdundo"), undo.prune = 0.05, undo.SD = 3,
-                 verbose = 0)
+                 verbose = 1)
 }
 \arguments{
   \item{x}{an object of class CNA}
@@ -30,7 +30,8 @@
     undo.splits="sdundo".}  
   \item{verbose}{level of verbosity for monitoring the program's
     progress where 0 produces no printout, 1 prints the current sample,
-    2 the current chromosome and 3 the current segment.}  
+    2 the current chromosome and 3 the current segment.  The default
+    level is 1.}  
 }
 
 \value{
@@ -81,6 +82,41 @@ chrom <- rep(1:2,c(290,210))
 maploc <- c(1:290,1:210)
 test2 <- segment(CNA(genomdat, chrom, maploc))
 
+#A real analyis
+
+data(coriell)
+
+#Combine into one CNA object to prepare for analysis on Chromosomes 1-23
+
+CNA.object <- CNA(cbind(coriell$Coriell.05296,coriell$Coriell.13330),
+                  coriell$Chromosome,coriell$Position,
+                  data.type="logratio",sampleid=c("c05296","c13330"))
+
+#We generally recommend smoothing single point outliers before analysis
+#Make sure to check that the smoothing is proper
+
+smoothed.CNA.object <- smooth.CNA(CNA.object)
+
+#Segmentation at default parameters
+
+segment.smoothed.CNA.object <- segment(smoothed.CNA.object, verbose=1)
+data(coriell)
+
+#Combine into one CNA object to prepare for analysis on Chromosomes 1-23
+
+CNA.object <- CNA(cbind(coriell$Coriell.05296,coriell$Coriell.13330),
+                  coriell$Chromosome,coriell$Position,
+                  data.type="logratio",sampleid=c("c05296","c13330"))
+
+#We generally recommend smoothing single point outliers before analysis
+#Make sure to check that the smoothing is proper
+
+smoothed.CNA.object <- smooth.CNA(CNA.object)
+
+#Segmentation at default parameters
+
+segment.smoothed.CNA.object <- segment(smoothed.CNA.object, verbose=1)
+
 }
 
 \author{ E. S. Venkatraman and Adam Olshen \email{olshena@mskcc.org} }
@@ -88,7 +124,7 @@ test2 <- segment(CNA(genomdat, chrom, maploc))
 \references{
   Olshen, A. B., Venkatraman, E. S., Lucito, R., Wigler, M. (2004).
   Circular binary segmentation for the analysis of array-based DNA copy
-  number data.  To appear in \emph{Biostatistics}.
+  number data.  \emph{Biostatistics} 5: 557-572.
   \url{http://www.mskcc.org/biostat/~olshena/research.}  
 }
 

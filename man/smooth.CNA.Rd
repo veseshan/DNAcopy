@@ -23,4 +23,21 @@
 \value{
   An object of class \code{CNA} with outliers smoothed
 }
+\examples{
+
+data(coriell)
+
+#Combine into one CNA object to prepare for analysis on Chromosomes 1-23
+
+CNA.object <- CNA(cbind(coriell$Coriell.05296,coriell$Coriell.13330),
+                  coriell$Chromosome,coriell$Position,
+                  data.type="logratio",sampleid=c("c05296","c13330"))
+
+#We generally recommend smoothing single point outliers before analysis
+#Make sure to check that the smoothing is proper
+
+smoothed.CNA.object <- smooth.CNA(CNA.object)
+
+}
+
 \keyword{nonparametric}

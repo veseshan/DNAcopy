@@ -28,4 +28,20 @@
   An object of class \code{CNA}.  There is a \code{print} method that
   gives the number of samples and probes and the type of data.
 }
+
+\examples{
+
+data(coriell)
+
+#Combine into one CNA object to prepare for analysis on Chromosomes 1-23
+
+CNA.object <- CNA(cbind(coriell$Coriell.05296,coriell$Coriell.13330),
+                  coriell$Chromosome,coriell$Position,
+                  data.type="logratio",sampleid=c("c05296","c13330"))
+
+}
+
 \keyword{nonparametric}
+
+
+

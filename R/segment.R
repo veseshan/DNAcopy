@@ -1,6 +1,6 @@
 segment <- function(x, alpha=0.01, nperm=10000, window.size=NULL, overlap=0.25,
                     trim = 0.025, undo.splits= c("none","prune","sdundo"),
-                    undo.prune=0.05, undo.SD=3, verbose=3)
+                    undo.prune=0.05, undo.SD=3, verbose=1)
   {
     if (!inherits(x, 'CNA')) stop("First arg must be a copy number array object")
     call <- match.call()
@@ -25,6 +25,7 @@ segment <- function(x, alpha=0.01, nperm=10000, window.size=NULL, overlap=0.25,
       genomdati <- genomdati[ina]
       trimmed.SD <- sqrt(trimmed.variance(genomdati, trim))
       chromi <- x$chrom[ina]
+#      maploci <- x$maploc[ina]
       sample.lsegs <- NULL
       sample.segmeans <- NULL
       for (ic in uchrom) {

@@ -1,11 +1,13 @@
 CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
                    sampleid=NULL)
   {
-    if(!is.numeric(genomdat)) stop("genomdat must be numeric")
-    if(is.factor(chrom)) chrom <- as.character(chrom)
-    if(!is.numeric(maploc)) stop("maploc must be numeric")
+    if (!is.numeric(genomdat)) stop("genomdat must be numeric")
+    if (is.factor(chrom)) chrom <- as.character(chrom)
+    if (!is.numeric(maploc)) stop("maploc must be numeric")
     data.type <- match.arg(data.type)
-    sortindex <- order(chrom, maploc)
+    if (sum(is.na(chrom)|is.na(maploc))>0)
+      warning("markers with missing chrom and/or maploc removed")
+    sortindex <- order(chrom, maploc, na.last=NA)
     if (is.vector(genomdat)) genomdat <- as.matrix(genomdat)
     if (!missing(sampleid)) {
       if (length(sampleid) != ncol(genomdat)) {
@@ -39,10 +41,13 @@ subset.CNA <- function(x, chromlist=NULL, samplelist=NULL, ...)
     nsample <- length(sampleid)
     if (length(setdiff(samplelist, 1:nsample)) > 0 & length(setdiff(samplelist, sampleid)) > 0)
       stop("samplelist should be a list of valid sample numbers or names")
-    if (!is.integer(samplelist)) samplelist0 <- which(samplelist %in% sampleid)
+    if (!is.integer(samplelist)) samplelist <- which(sampleid %in% samplelist)
     if (length(samplelist) > length(unique(samplelist)))
       warning("duplicate samples in samplelist removed")
-    x[chrom %in% chromlist,c(1:2,samplelist+2)]
+    samplelist <- unique(samplelist)
+    y <- x[chrom %in% chromlist,c(1:2,samplelist+2)]
+    attr(y, "data.type") <- attr(x, "data.type")
+    y
   }
 
 smooth.CNA <- function(x, smooth.region=2, outlier.SD.scale=4,
@@ -164,7 +169,7 @@ plot.DNAcopy <- function (x, plot.type = c("whole", "plateau", "samplebychrom",
             }
         }
       }
-      mtext(paste("Chromosome",ichrom), side = 3, line = 1, at = atchrom, outer=T)
+      mtext(paste("Chromosome",ichrom), side = 3, line = 1, at = atchrom, outer=TRUE, font=2)
       atchrom <- atchrom + 1/cbys.nchrom
       atchrom <- atchrom - floor(atchrom)
     }
@@ -206,7 +211,7 @@ plot.DNAcopy <- function (x, plot.type = c("whole", "plateau", "samplebychrom",
                     }
                 }
               }
-            mtext(sampleid[isamp], side = 3, line = 0, outer = TRUE)
+            mtext(sampleid[isamp], side = 3, line = 0, outer = TRUE, font=2)
           }
         if (plot.type=="plateau")
           {
@@ -255,12 +260,14 @@ subset.DNAcopy <- function(x, chromlist=NULL, samplelist=NULL, ...)
     nsample <- length(sampleid)
     if (length(setdiff(samplelist, 1:nsample)) > 0 & length(setdiff(samplelist, sampleid)) > 0)
       stop("samplelist should be a list of valid sample numbers or names")
-    if (!is.integer(samplelist)) samplelist0 <- which(samplelist %in% sampleid)
+    if (!is.integer(samplelist)) samplelist <- which(sampleid %in% samplelist)
     if (length(samplelist) > length(unique(samplelist)))
       warning("duplicate samples in samplelist removed")
-    x$data <- zdat[chrom %in% chromlist,c(1:2,samplelist+2)]
-    x$output <- zres[zres$chrom %in% chromlist & zres$ID %in% sampleid[samplelist],]
-    x
+    y <- list()
+    y$data <- zdat[chrom %in% chromlist,c(1:2,samplelist+2)]
+    attr(y$data, "data.type") <- attr(zdat, "data.type")
+    y$output <- zres[zres$chrom %in% chromlist & zres$ID %in% sampleid[samplelist],]
+    y
   }
 
 # Chromosome.Lengths <- c(263, 255, 214, 203, 194, 183, 171, 155, 145, 144, 144, 143, 114, 109, 106, 98, 92, 85, 67, 72, 50, 56, 164, 59)

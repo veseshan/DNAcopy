@@ -7,9 +7,9 @@
   numbers.
 } 
 \usage{
-  plot.DNAcopy(x, plot.type=c("whole", "samplebychrom", "chrombysample",
-            "plateau"),  sbyc.layout = NULL, cbys.nchrom=1, cbys.layout=NULL,
-             include.means = TRUE, ...)
+  plot.DNAcopy(x, plot.type=c("whole","plateau","samplebychrom",
+               "chrombysample"), sbyc.layout = NULL,cbys.nchrom=1,
+               cbys.layout=NULL,include.means = TRUE, ...)
 }
 \arguments{
   \item{x}{an object of class \code{DNAcopy} resulting from analyzing
@@ -44,4 +44,45 @@
   chromosome is drawn on a separate sheet.  When invoked interactively
   the user is prompted before advancing to the next sample. 
 }
+
+\examples{
+
+#Read in two examples from Snijders et al.
+
+data(coriell)
+
+#Combine into one CNA object to prepare for analysis on Chromosomes 1-23
+
+CNA.object <- CNA(cbind(coriell$Coriell.05296,coriell$Coriell.13330),
+                  coriell$Chromosome,coriell$Position,
+                  data.type="logratio",sampleid=c("c05296","c13330"))
+
+#We generally recommend smoothing single point outliers before analysis
+#Make sure to check that the smoothing is proper
+
+smoothed.CNA.object <- smooth.CNA(CNA.object)
+
+#Segmentation at default parameters
+
+segment.smoothed.CNA.object <- segment(smoothed.CNA.object, verbose=1)
+
+#Plot whole studies
+
+plot(segment.smoothed.CNA.object, plot.type="w")
+
+#Plot each study by chromosome
+
+plot(segment.smoothed.CNA.object, plot.type="s")
+
+#Plot each chromosome across studies (6 per page)
+
+plot(segment.smoothed.CNA.object, plot.type="c", cbys.layout=c(2,1), cbys.nchrom=6)
+
+#Plot by plateaus
+
+plot(segment.smoothed.CNA.object, plot.type="p")
+
+}
+
 \keyword{nonparametric}
+
