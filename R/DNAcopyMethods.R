@@ -98,7 +98,7 @@ print.CNA <- function(x, ...)
   }
 
 plot.DNAcopy <- function (x, plot.type = c("whole", "plateau", "samplebychrom",
-                             "chrombysample"), sbyc.layout = NULL,
+                             "chrombysample"), altcol=TRUE, sbyc.layout = NULL,
                           cbys.nchrom=1, cbys.layout=NULL,
                           include.means = TRUE, ...)
 {
@@ -115,6 +115,14 @@ plot.DNAcopy <- function (x, plot.type = c("whole", "plateau", "samplebychrom",
   sampleid <- colnames(xdat)[-(1:2)]
   chrom0 <- xdat$chrom
   uchrom <- unique(chrom0)
+  if (altcol) {
+    wcol0 <- rep(1, length(chrom0))
+    j <- 0
+    for (i in uchrom) {
+      j <- (j+1) %% 2
+      wcol0[chrom0==i] <- 1+2*j
+    }
+  }
   nchrom <- length(uchrom)
   if (plot.type == "chrombysample") {
     cat("Setting multi-figure configuration\n")
@@ -186,6 +194,7 @@ plot.DNAcopy <- function (x, plot.type = c("whole", "plateau", "samplebychrom",
         genomdat <- xdat[, isamp+2]
         ina <- which(!is.na(genomdat) & !(abs(genomdat) == Inf))
         genomdat <- genomdat[ina]
+        wcol <- wcol0[ina]
         chrom <- chrom0[ina]
         ii <- cumsum(c(0, xres$num.mark[xres$ID == sampleid[isamp]]))
         mm <- xres$seg.mean[xres$ID == sampleid[isamp]]
@@ -194,7 +203,11 @@ plot.DNAcopy <- function (x, plot.type = c("whole", "plateau", "samplebychrom",
         iylim <- range(c(genomdat, -genomdat))
         if (plot.type=="whole")
           {
-            plot(genomdat, pch = 18, main = sampleid[isamp], ylab = "", ylim = iylim)
+            if (altcol) {
+              plot(genomdat, pch = 18, col=wcol, main = sampleid[isamp], ylab = "", ylim = iylim)
+            } else {
+              plot(genomdat, pch = 18, main = sampleid[isamp], ylab = "", ylim = iylim)
+            }
             if (include.means) {
               for (i in 1:(kk - 1))
                 {

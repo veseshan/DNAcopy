@@ -8,13 +8,15 @@
 } 
 \usage{
   plot.DNAcopy(x, plot.type=c("whole","plateau","samplebychrom",
-               "chrombysample"), sbyc.layout = NULL,cbys.nchrom=1,
-               cbys.layout=NULL,include.means = TRUE, ...)
+               "chrombysample"), altcol=TRUE, sbyc.layout = NULL,
+               cbys.nchrom=1, cbys.layout=NULL,include.means = TRUE, ...)
 }
 \arguments{
   \item{x}{an object of class \code{DNAcopy} resulting from analyzing
-    data from copy number array experiments}
+    data from copy number array experiments.}
   \item{plot.type}{the type of plot.}
+  \item{altcol}{logical flag to indicate if chromosomes should be
+    plotted in alternating colors in the whole genome plot.}
   \item{sbyc.layout}{\code{layout} settings for the multifigure grid layout
     for the `samplebychrom' type.  It should be specified as a vector of
     two integers which are the number of rows and columns.  The default

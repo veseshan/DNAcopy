@@ -106,7 +106,8 @@ segment.smoothed.CNA.object <- segment(smoothed.CNA.object, verbose=1)
 \noindent
 There are a number of plots that can be made.  The first is ordering
 the data by chromosome and map positons.  The red lines correspond to
-mean values in segments.
+mean values in segments.  Note that the points are in alternate colors
+to indicate different chromosomes.
 
 \pagebreak
 
