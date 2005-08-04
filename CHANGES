@@ -1,0 +1,4 @@
+Changes to Version 1.2.1
+
+   o Added the hybrid method for computing p-values to determine splits.  This
+     speeds up the computations considerably and so has been made the default.

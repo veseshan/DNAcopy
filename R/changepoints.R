@@ -1,7 +1,8 @@
 changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
-                         nperm=10000, window.size=NULL, overlap=0.25,
-                         trimmed.SD = NULL, undo.splits="none", 
-                         undo.prune=0.05, undo.SD=3, verbose=1)
+                         nperm=10000, p.method="hybrid", window.size=NULL,
+                         overlap=0.25, kmax=25, nmin=200, trimmed.SD = NULL,
+                         undo.splits="none", undo.prune=0.05, undo.SD=3,
+                         verbose=1, ngrid=100, tol=1e-6)
   {
     n <- length(genomdat)
     if (missing(trimmed.SD)) trimmed.SD <- mad(diff(genomdat))/sqrt(2)
@@ -19,6 +20,12 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
             wsize <- min(current.n, window.size)
             winnum <- ceiling((current.n - wsize)/((1-overlap)*wsize)) + 1
             winloc <- round(seq(0,current.n - wsize,length=winnum))
+            hybrid <- FALSE
+            delta <- 0
+            if ((p.method=="hybrid") & (nmin < current.n)) {
+              hybrid <- TRUE
+              delta <- (kmax+1)/current.n
+            }
             zzz <- .Fortran("fndcpt",
                             n=as.integer(current.n),
                             w=as.integer(wsize),
@@ -33,6 +40,11 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
                             ncpt=integer(1),
                             icpt=integer(2),
                             ibin=as.logical(data.type=="binary"),
+                            hybrid=as.logical(hybrid),
+                            hk=as.integer(kmax),
+                            delta=as.double(delta),
+                            ngrid=as.integer(ngrid),
+                            tol= as.double(tol),
                             PACKAGE="DNAcopy")
           }
         else

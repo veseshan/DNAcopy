@@ -1,5 +1,6 @@
-segment <- function(x, alpha=0.01, nperm=10000, window.size=NULL, overlap=0.25,
-                    trim = 0.025, undo.splits= c("none","prune","sdundo"),
+segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
+                    kmax=25, nmin=200, window.size=NULL, overlap=0.25, 
+                    trim = 0.025, undo.splits=c("none","prune","sdundo"),
                     undo.prune=0.05, undo.SD=3, verbose=1)
   {
     if (!inherits(x, 'CNA')) stop("First arg must be a copy number array object")
@@ -8,6 +9,7 @@ segment <- function(x, alpha=0.01, nperm=10000, window.size=NULL, overlap=0.25,
     sampleid <- colnames(x)[-(1:2)]
     uchrom <- unique(x$chrom)
     data.type <- attr(x, "data.type")
+    p.method <- match.arg(p.method)
     undo.splits <- match.arg(undo.splits)
     segres <- list()
     segres$data <- x
@@ -31,8 +33,9 @@ segment <- function(x, alpha=0.01, nperm=10000, window.size=NULL, overlap=0.25,
       for (ic in uchrom) {
         if (verbose>=2) cat(paste("  current chromosome:", ic, "\n"))
         segci <- changepoints(genomdati[chromi==ic], data.type, alpha, 
-                              nperm,  window.size, overlap, trimmed.SD, 
-                              undo.splits, undo.prune, undo.SD, verbose)
+                              nperm, p.method, window.size, overlap, kmax,
+                              nmin, trimmed.SD, undo.splits, undo.prune,
+                              undo.SD, verbose)
         sample.lsegs <- c(sample.lsegs, segci$lseg)
         sample.segmeans <- c(sample.segmeans, segci$segmeans)
       }

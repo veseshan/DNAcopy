@@ -1,32 +1,47 @@
 c     Ternary segmentation with permutation reference distribution
       subroutine fndcpt(n,w,wn,wloc,x,px,sx,tx,nperm,cpval,ncpt,icpt,
-     1     ibin)
-      integer n,w,wn,wloc(wn),nperm,ncpt,icpt(2)
-      logical ibin
-      double precision x(n),px(n),sx(w),tx(w),cpval
+     1     ibin,hybrid,hk,delta,ngrid,tol)
+      integer n,w,wn,wloc(wn),nperm,ncpt,icpt(2),hk,ngrid
+      logical ibin,hybrid
+      double precision x(n),px(n),sx(w),tx(w),cpval,delta,tol
 
       integer np,nrej,nrejc,iseg(3),n1,n2,n12,l
-      double precision ostat,pstat,tpval
+      double precision ostat,ostat1,pstat,tpval,pval1,pval2
+
+      double precision tailp, tmax, htmax, tpermp
+      external tailp, tmax, htmax, tpermp
 
       call rndstart()
 
       nrejc = int(cpval*dfloat(nperm))
       nrej = 0
-      nw = max(n-w,0)
-      nn = min(n,w)
       call tmax1(n,w,wn,wloc,x,sx,tx,iseg,ostat,ibin)
+      ostat1 = sqrt(ostat)
       ostat = ostat * 0.99999
 c      call dblepr("Max Stat",8,ostat,1)
 c      call intpr("Location",8,iseg,3)
       ncpt = 0
-      do 100 np = 1,nperm
-         call xperm(n,x,px)
-         pstat = tmax(n,w,wn,wloc,px,sx,tx,ibin)
-c         call dblepr("Perm Max Stat",13,pstat,1)
-         if (ostat.le.pstat) nrej = nrej + 1
-c         call intpr("num rej",7,nrej,1)
-         if (nrej.gt.nrejc) go to 500
- 100  continue
+      if (hybrid) then
+         pval1 = tailp(ostat1, delta, n, ngrid, tol)
+         if (pval1 .gt. cpval) go to 500
+         pval2 = cpval - pval1
+         nrejc = int(pval2*dfloat(nperm))
+         do 50 np = 1,nperm
+            call xperm(n,x,px)
+            pstat = htmax(n,hk,px,sx,tx,ibin)
+            if (ostat.le.pstat) nrej = nrej + 1
+            if (nrej.gt.nrejc) go to 500
+ 50      continue
+      else
+         do 100 np = 1,nperm
+            call xperm(n,x,px)
+            pstat = tmax(n,w,wn,wloc,px,sx,tx,ibin)
+c     call dblepr("Perm Max Stat",13,pstat,1)
+            if (ostat.le.pstat) nrej = nrej + 1
+c     call intpr("num rej",7,nrej,1)
+            if (nrej.gt.nrejc) go to 500
+ 100     continue
+      endif
       if (iseg(2).eq.w) then
          ncpt = 1
          icpt(1) = iseg(1) + iseg(3)
@@ -63,9 +78,9 @@ c            call dblepr("binseg p-value",14,tpval,1)
       return
       end
 
-      function tmax(n,w,wn,wloc,px,sx,tx,ibin)
+      double precision function tmax(n,w,wn,wloc,px,sx,tx,ibin)
       integer n,w,wn,wloc(wn)
-      double precision tmax,px(n),sx(w),tx(w)
+      double precision px(n),sx(w),tx(w)
       logical ibin
 
       integer i,j,k,l
@@ -232,7 +247,10 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
       double precision x(n),px(n)
 
       integer i,j
-      double precision dunif,cc,tmpx
+      double precision cc,tmpx
+
+      double precision dunif
+      external dunif
 
       do 10 i = 1,n
          px(i) = x(i)
@@ -248,9 +266,9 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
       return
       end
 
-      function tpermp(n1,n2,n,x,px,nperm)
+      double precision function tpermp(n1,n2,n,x,px,nperm)
       integer n1,n2,n,nperm
-      double precision x(n),px(n),tpermp
+      double precision x(n),px(n)
       integer np,i,m1
       double precision xsum1,xsum2,xbar,ostat,pstat,rn1,rn2,rm1
 
