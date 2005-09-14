@@ -7,14 +7,19 @@
   numbers.
 } 
 \usage{
-  plot.DNAcopy(x, plot.type=c("whole","plateau","samplebychrom",
-               "chrombysample"), altcol=TRUE, sbyc.layout = NULL,
-               cbys.nchrom=1, cbys.layout=NULL,include.means = TRUE, ...)
+  plot.DNAcopy(x, plot.type=c("whole", "plateau", "samplebychrom",
+               "chrombysample"), xmaploc=FALSE, altcol=TRUE, sbyc.layout=
+                NULL, cbys.nchrom=1, cbys.layout=NULL, include.means=TRUE,
+                pt.pch=NULL, pt.cex=NULL, pt.cols=NULL, segcol= NULL,
+                ylim=NULL, ...) 
 }
 \arguments{
   \item{x}{an object of class \code{DNAcopy} resulting from analyzing
     data from copy number array experiments.}
   \item{plot.type}{the type of plot.}
+  \item{xmaploc}{logical flag to indicate that the X axis is the maploc
+    position rather than the index.  Since the segments are rearranged
+    the plateau plot does not use maploc position.}
   \item{altcol}{logical flag to indicate if chromosomes should be
     plotted in alternating colors in the whole genome plot.}
   \item{sbyc.layout}{\code{layout} settings for the multifigure grid layout
@@ -31,6 +36,16 @@
     The default is 1.}
   \item{include.means}{logical flag to indicate whether segment means
     are to be drawn.}
+  \item{pt.pch}{the plotting character used for plotting the log-ratio
+    values (default is ".").}
+  \item{pt.cex}{the size of plotting character used for the log-ratio
+    values (default is 3).}
+  \item{pt.cols}{the color list for the points. The colors alternate
+    between chromosomes. If missing the point colors are black and green.}
+  \item{segcol}{the color of the lines indicating the segment means. If
+    missing the line color is set to be red.} 
+  \item{ylim}{this argument is present to override the default limits
+    which is the range of symmetrized log-ratios.}
   \item{...}{other arguments which will be passed to \code{plot}
     commands.}
 }

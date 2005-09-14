@@ -1,4 +1,11 @@
-Changes to Version 1.2.1
+Changes in Version 1.2.1
 
    o Added the hybrid method for computing p-values to determine splits.  This
      speeds up the computations considerably and so has been made the default.
+
+Changes in Version 1.2.2
+
+   o Modified the plot function.  X-axis is either the index or (cumulative) 
+     map location. Incorporate col, pch, ylim etc. to provide better control
+     over plots.
+
