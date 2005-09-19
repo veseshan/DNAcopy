@@ -106,13 +106,14 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
   if (!inherits(x, "DNAcopy")) 
     stop("First arg must be the result of segment")
   xdat <- x$data
+  nsample <- ncol(xdat)-2
   xres <- x$output
   if(dev.cur() <= 1) get(getOption("device"))()
   int.dev <- dev.interactive()
   plot.type <- match.arg(plot.type)
   op <- par(no.readonly = TRUE)
-  if (int.dev) par(ask = TRUE)
-  nsample <- ncol(xdat)-2
+  parask <- par("ask")
+  if (int.dev & !parask & nsample>1) par(ask = TRUE)
   sampleid <- colnames(xdat)[-(1:2)]
   chrom0 <- xdat$chrom
   uchrom <- unique(chrom0)
@@ -270,7 +271,9 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
           }
       }
   }
-  on.exit(par(op))
+  on.exit( if (plot.type=="chrombysample" | plot.type=="samplebychrom") {
+    par(op)
+  } else { if(int.dev & !parask & nsample>1) par(ask=parask) })
 }
 
 print.DNAcopy <- function(x, ...)

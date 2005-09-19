@@ -9,3 +9,6 @@ Changes in Version 1.2.2
      map location. Incorporate col, pch, ylim etc. to provide better control
      over plots.
 
+Changes in Version 1.2.3
+
+   o Modifications to the plot function to make par("ask") behave better.
