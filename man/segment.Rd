@@ -25,7 +25,8 @@
   \item{nmin}{the minimum length of data for which the approximation of
     maximum statistic is used under the hybrid method.}
   \item{window.size}{size of window used to speed up computations when
-    segment size is too large.  Default is NULL (whole segment used).}
+    segment size is too large.  Default is NULL (whole segment used).
+    If p.method is hybrid then this is set to NULL.}
   \item{overlap}{proportion of data that overlap for adjacent windows.}
   \item{trim}{proportion of data to be trimmed for variance calculation
     for smoothing outliers and undoing splits based on SD.}

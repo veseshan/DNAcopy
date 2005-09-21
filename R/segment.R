@@ -10,6 +10,7 @@ segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
     uchrom <- unique(x$chrom)
     data.type <- attr(x, "data.type")
     p.method <- match.arg(p.method)
+    if (p.method=="hybrid") window.size <- NULL
     undo.splits <- match.arg(undo.splits)
     segres <- list()
     segres$data <- x

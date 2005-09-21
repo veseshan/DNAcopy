@@ -1,7 +1,11 @@
-Changes in Version 1.2.1
+Changes in Version 1.2.4
 
-   o Added the hybrid method for computing p-values to determine splits.  This
-     speeds up the computations considerably and so has been made the default.
+   o Seg fault occurs if window.size is set when hybrid method is used.
+     Fixed by setting window.size to be NULL in the function segment.
+
+Changes in Version 1.2.3
+
+   o Modifications to the plot function to make par("ask") behave better.
 
 Changes in Version 1.2.2
 
@@ -9,6 +13,8 @@ Changes in Version 1.2.2
      map location. Incorporate col, pch, ylim etc. to provide better control
      over plots.
 
-Changes in Version 1.2.3
+Changes in Version 1.2.1
 
-   o Modifications to the plot function to make par("ask") behave better.
+   o Added the hybrid method for computing p-values to determine splits.  This
+     speeds up the computations considerably and so has been made the default.
+
