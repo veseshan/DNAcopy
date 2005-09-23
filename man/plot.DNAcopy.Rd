@@ -10,8 +10,8 @@
   plot.DNAcopy(x, plot.type=c("whole", "plateau", "samplebychrom",
                "chrombysample"), xmaploc=FALSE, altcol=TRUE, sbyc.layout=
                 NULL, cbys.nchrom=1, cbys.layout=NULL, include.means=TRUE,
-                pt.pch=NULL, pt.cex=NULL, pt.cols=NULL, segcol= NULL,
-                ylim=NULL, ...) 
+                zeroline=TRUE, pt.pch=NULL, pt.cex=NULL, pt.cols=NULL,
+                segcol= NULL, zlcol=NULL, ylim=NULL, lwd=NULL, ...)
 }
 \arguments{
   \item{x}{an object of class \code{DNAcopy} resulting from analyzing
@@ -36,6 +36,8 @@
     The default is 1.}
   \item{include.means}{logical flag to indicate whether segment means
     are to be drawn.}
+  \item{zeroline}{logical flag to indicate whether a horizontal line at
+    y=0 is to be drawn.}
   \item{pt.pch}{the plotting character used for plotting the log-ratio
     values (default is ".").}
   \item{pt.cex}{the size of plotting character used for the log-ratio
@@ -44,8 +46,11 @@
     between chromosomes. If missing the point colors are black and green.}
   \item{segcol}{the color of the lines indicating the segment means. If
     missing the line color is set to be red.} 
+  \item{zlcol}{the color of the zeroline. If missing it is set to be grey.}
   \item{ylim}{this argument is present to override the default limits
     which is the range of symmetrized log-ratios.}
+  \item{lwd}{line weight of lines for segment mean and zeroline.  If
+    missing it is set to 3.}
   \item{...}{other arguments which will be passed to \code{plot}
     commands.}
 }

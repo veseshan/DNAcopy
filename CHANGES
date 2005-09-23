@@ -3,6 +3,12 @@ Changes in Version 1.2.4
    o Seg fault occurs if window.size is set when hybrid method is used.
      Fixed by setting window.size to be NULL in the function segment.
 
+   o Added options to plot command to draw line at y=0 and control its 
+     color and lwd of all lines.
+
+   o If ylim is missing it's calculated from all the data instead of just
+     the first sample.
+
 Changes in Version 1.2.3
 
    o Modifications to the plot function to make par("ask") behave better.

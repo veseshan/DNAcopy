@@ -100,12 +100,17 @@ print.CNA <- function(x, ...)
 plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
                                "chrombysample"), xmaploc=FALSE, altcol=TRUE,
                           sbyc.layout=NULL, cbys.nchrom=1, cbys.layout=NULL,
-                          include.means=TRUE, pt.pch=NULL, pt.cex=NULL,
-                          pt.cols=NULL, segcol= NULL, ylim=NULL, ...) 
+                          include.means=TRUE, zeroline=TRUE, pt.pch=NULL,
+                          pt.cex=NULL, pt.cols=NULL, segcol=NULL, zlcol=NULL,
+                          ylim=NULL, lwd=NULL, ...)
 {
   if (!inherits(x, "DNAcopy")) 
     stop("First arg must be the result of segment")
   xdat <- x$data
+  if(missing(ylim)) {
+    uylim <- max(abs(xdat), na.rm=TRUE)
+    ylim <- c(-uylim, uylim)
+  }
   nsample <- ncol(xdat)-2
   xres <- x$output
   if(dev.cur() <= 1) get(getOption("device"))()
@@ -143,6 +148,8 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
   }
   if (missing(pt.cols)) pt.cols <- c("black","green")
   if (missing(segcol)) segcol <- "red"
+  if (missing(zlcol)) zlcol <- "grey"
+  if (missing(lwd)) lwd <- 3
   if (plot.type == "chrombysample") {
     cat("Setting multi-figure configuration\n")
     par(mar = c(0, 4, 0, 2), oma = c(4, 0, 4, 0), mgp = c(2, 0.7, 0))
@@ -190,8 +197,8 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
         mm <- xres$seg.mean[xres$ID == sampleid[isamp] & xres$chrom==ichrom]
         kk <- length(ii)
         zz <- cbind(ii[-kk] + 1, ii[-1])
-        if(missing(ylim)) ylim <- range(c(genomdat, -genomdat))
         plot(genomdat, pch = pt.pch, cex=pt.cex, xaxt="n", ylim = ylim, ylab = sampleid[isamp])
+        if(zeroline) abline(h=0, col=zlcol, lwd=lwd)
         if (isamp%%cbys.layout[1] == 0) {
           axis(1, outer=TRUE)
           title(xlab="Index")
@@ -199,7 +206,7 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
         if (include.means) {
           for (i in 1:(kk - 1))
             {
-              lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=3)
+              lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=lwd)
             }
         }
       }
@@ -225,16 +232,18 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
           {
             if (xmaploc) {
               plot(maploc, genomdat, pch = pt.pch, cex=pt.cex, col=pt.cols[wcol], main = sampleid[isamp], ylab = "", ylim = ylim)
+              if(zeroline) abline(h=0, col=zlcol, lwd=lwd)
             } else {
               plot(genomdat, pch = pt.pch, cex=pt.cex, col=pt.cols[wcol], main = sampleid[isamp], ylab = "", ylim = ylim)
+              if(zeroline) abline(h=0, col=zlcol, lwd=lwd)
             }
             if (include.means) {
               for (i in 1:(kk - 1))
                 {
                   if (xmaploc) { 
-                    lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=3)
+                    lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
                   } else {
-                    lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=3)
+                    lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=lwd)
                   }
                 }
             }
@@ -245,12 +254,13 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
             for (ichrom in uchrom)
               {
                 plot(genomdat[chrom == ichrom], pch = pt.pch, cex=pt.cex, ylab = "", main = paste("Chromosome", ichrom), ylim = ylim)
+                if(zeroline) abline(h=0, col=zlcol, lwd=lwd)
                 if (include.means) {
                   jj <- which(cc==ichrom)
                   jj0 <- min(jj)
                   for (i in jj)
                     {
-                      lines(1+zz[i, ]-zz[jj0,1], rep(mm[i], 2), col = segcol, lwd=3)
+                      lines(1+zz[i, ]-zz[jj0,1], rep(mm[i], 2), col = segcol, lwd=lwd)
                     }
                 }
               }
@@ -262,11 +272,12 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
             ozz <- zz[omm,]
             ina <- unlist(apply(ozz, 1, function(ii) ii[1]:ii[2]))
             plot(genomdat[ina], pch = pt.pch, cex=pt.cex, main = sampleid[isamp], ylab = "", ylim = ylim)
+            if(zeroline) abline(h=0, col=zlcol, lwd=lwd)
             if (include.means) {
               ii <- cumsum(c(0, xres$num.mark[xres$ID == sampleid[isamp]][omm]))
               smm <- mm[omm]
               zz <- cbind(ii[-kk] + 1, ii[-1])
-              for (i in 1:(kk-1)) lines(zz[i, ], rep(smm[i], 2), col = segcol, lwd=3)
+              for (i in 1:(kk-1)) lines(zz[i, ], rep(smm[i], 2), col = segcol, lwd=lwd)
             }
           }
       }
