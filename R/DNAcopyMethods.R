@@ -107,11 +107,11 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
   if (!inherits(x, "DNAcopy")) 
     stop("First arg must be the result of segment")
   xdat <- x$data
+  nsample <- ncol(xdat)-2
   if(missing(ylim)) {
-    uylim <- max(abs(xdat), na.rm=TRUE)
+    uylim <- max(abs(xdat[,-(1:2)]), na.rm=TRUE)
     ylim <- c(-uylim, uylim)
   }
-  nsample <- ncol(xdat)-2
   xres <- x$output
   if(dev.cur() <= 1) get(getOption("device"))()
   int.dev <- dev.interactive()
