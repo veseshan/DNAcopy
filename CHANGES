@@ -1,3 +1,7 @@
+Changes in Version 1.2.5
+
+   o Updated the vignette to include references to additional features.
+
 Changes in Version 1.2.4
 
    o Seg fault occurs if window.size is set when hybrid method is used.

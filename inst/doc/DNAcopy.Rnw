@@ -140,7 +140,7 @@ plot(segment.smoothed.CNA.object, plot.type="s")
 
 \noindent
 If there are multiple studies, one could plot by chromosome across
-studies using the option plot.type=''c''.  A final plot orders the
+studies using the option {\tt plot.type='c'}.  A final plot orders the
 segment by their chromosome means.  One can take the plateaus in this
 plot to determine what the mean values should be for calling segments
 gains or losses.  In this case, maybe $0.4$ for gains and $-0.6$ for
@@ -177,24 +177,25 @@ plot(sdundo.CNA.object,plot.type="s")
 \section{Tips}
 
 \noindent
-A functions that may be of interest that has not been mentioned is
-{\tt subset.CNA}.  It allows for subsetting of a CNA object by chromosome
-and sample so that segmentation does not have to be run on a whole
-data set.  Similarly, {\tt subset.DNAcopy} allows subsetting of DNAcopy
-objects, which contain the output of segmentation.
+A function that may be of interest that has not been mentioned is {\tt
+  subset.CNA}.  It allows for subsetting of a CNA object by chromosome and
+sample so that segmentation does not have to be run on a whole data set.
+Similarly, {\tt subset.DNAcopy} allows subsetting of DNAcopy objects, which
+contain the output of segmentation.
 
-The parameter {\tt alpha} controls the sensitivity of the
-segmentation.  The default value is 0.01.  Increasing it will lead to
-more change-points, and, possibly, more false positive change-points.
-Decreasing it will lead to fewer change-points.  The parameter {\tt
-  nperm} controls the number of permutations.  Decreasing it will
-cause the algorithm to go faster (default is 10000).  However, the
-lower {\tt alpha} is, the more permutations that are needed.  Another
-way of speeding up computations is using the {\tt window.size}
-parameter.  In this case, maximization is performed on overlapping
-windows of a particular size rather than over the whole chromosome.
+The original default segmentation algorithm, because it was based on
+permutation, took $O(N^2)$ computations, where $N$ is the number of markers on
+a chromosome.  The new default algorithm (used in all versions after 1.2.0) is
+much faster.  It includes a hybrid approach based partly on permutation and
+partly on a Gaussian approximation \citep{venkat05}.  We no longer recommend
+using overlapping windows for larger data sets.  It is still possible to run
+the full permutations analysis using the option {\tt p.method='perm'}.  If
+the new algorithm is still too slow, one can reduce the number of permutations
+in the hybrid method using the parameter {\tt nperm} (default is 10,000).
+However, the lower {\tt alpha} (the significance level for the test to accept
+change-points) is, the more permutations that are needed. 
 
-\newpage
+%\newpage
 \bibliographystyle{apalike}
 \bibliography{DNAcopy}
 
