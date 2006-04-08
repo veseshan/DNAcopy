@@ -1,3 +1,20 @@
+Changes in Version 1.5.1
+
+   o Add a sequential stopping rule to declare change early 
+
+   o Bug fix - make the object from subset.DNAcopy of class DNAcopy
+
+   ###############################################################
+   ###                                                         ###
+   ##      E. S. Venkatraman is the new package maintainer      ##
+   ###                                                         ###
+   ###############################################################
+
+
+
+1.2.5 became 1.4.0 in Bioconductor 1.7 & =1.5.0 in the development branch
+-------------------------------------------------------------------------
+
 Changes in Version 1.2.5
 
    o Updated the vignette to include references to additional features.

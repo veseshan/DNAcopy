@@ -1,5 +1,5 @@
-changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
-                         nperm=10000, p.method="hybrid", window.size=NULL,
+changepoints <- function(genomdat, data.type="logratio", alpha=0.01, sbdry,
+                         sbn, nperm=10000, p.method="hybrid", window.size=NULL,
                          overlap=0.25, kmax=25, nmin=200, trimmed.SD = NULL,
                          undo.splits="none", undo.prune=0.05, undo.SD=3,
                          verbose=1, ngrid=100, tol=1e-6)
@@ -44,6 +44,8 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01,
                             hk=as.integer(kmax),
                             delta=as.double(delta),
                             ngrid=as.integer(ngrid),
+                            sbn=as.integer(sbn),
+                            sbdry=as.integer(sbdry),
                             tol= as.double(tol),
                             PACKAGE="DNAcopy")
           }

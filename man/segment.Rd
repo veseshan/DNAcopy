@@ -6,17 +6,17 @@
   equal copy number using circular binary segmentation (CBS).
 }
 \usage{
-  segment(x, alpha = 0.01, nperm = 10000, p.method = c("hybrid","perm"),
-                kmax=25, nmin=200, window.size = NULL, overlap = 0.25, 
-                trim = 0.025, undo.splits = c("none", "prune", "sdundo"),
-                undo.prune = 0.05, undo.SD = 3, verbose = 1)
+  segment(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
+                    kmax=25, nmin=200, eta=0.05, sbdry=NULL, window.size=NULL,
+                    overlap=0.25, trim = 0.025, undo.splits=c("none","prune",
+                      "sdundo"), undo.prune=0.05, undo.SD=3, verbose=1)
 }
 \arguments{
   \item{x}{an object of class CNA}
   \item{alpha}{significance levels for the test to accept change-points.}
   \item{nperm}{number of permutations used for p-value computation.}
   \item{p.method}{method used for p-value computation.  For the "perm"
-    method the p-value is based on full permutation.  For the "hybrid
+    method the p-value is based on full permutation.  For the "hybrid"
     method the maximum over the entire region is split into maximum of
     max over small segments and max over the rest.  Approximation is
     used for the larger segment max. Default is hybrid.}
@@ -24,6 +24,13 @@
     in the hybrid method.}
   \item{nmin}{the minimum length of data for which the approximation of
     maximum statistic is used under the hybrid method.}
+  \item{eta}{the probability to declare a change conditioned on the
+    permuted statistic exceeding the observed statistic exactly  
+    j (= 1,...,nperm*alpha) times.}
+  \item{sbdry}{the sequential boundary used to stop and declare a
+    change. This boundary is a function of nperm, alpha and eta.  It can
+    be obtained using the function "getbdry" and used instead of having
+    the "segment" function compute it every time it is called.}
   \item{window.size}{size of window used to speed up computations when
     segment size is too large.  Default is NULL (whole segment used).
     If p.method is hybrid then this is set to NULL.}

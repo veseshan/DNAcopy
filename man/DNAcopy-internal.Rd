@@ -10,8 +10,8 @@
   Internal functions of package DNAcopy.
 }
 \usage{
-changepoints(genomdat, data.type = "logratio", alpha = 0.01, nperm
-                 = 10000, p.method="hybrid", window.size = NULL,
+changepoints(genomdat, data.type = "logratio", alpha = 0.01, sbdry, sbn,
+                 nperm = 10000, p.method="hybrid", window.size = NULL,
                  overlap = 0.25, kmax=25, nmin=200, trimmed.SD = NULL,
                  undo.splits = "none", undo.prune = 0.05, undo.SD = 3,
                  verbose = 1, ngrid=100, tol=1e-6)
@@ -22,5 +22,3 @@ inflfact(trim)
 }
 \details{These are not to be called directly by the user}
 \keyword{internal}
-
-

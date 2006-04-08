@@ -1,11 +1,11 @@
 c     Ternary segmentation with permutation reference distribution
       subroutine fndcpt(n,w,wn,wloc,x,px,sx,tx,nperm,cpval,ncpt,icpt,
-     1     ibin,hybrid,hk,delta,ngrid,tol)
-      integer n,w,wn,wloc(wn),nperm,ncpt,icpt(2),hk,ngrid
+     1     ibin,hybrid,hk,delta,ngrid,sbn,sbdry,tol)
+      integer n,w,wn,wloc(wn),nperm,ncpt,icpt(2),hk,ngrid,sbn,sbdry(sbn)
       logical ibin,hybrid
       double precision x(n),px(n),sx(w),tx(w),cpval,delta,tol
 
-      integer np,nrej,nrejc,iseg(3),n1,n2,n12,l
+      integer np,nrej,nrejc,iseg(3),n1,n2,n12,l,k
       double precision ostat,ostat1,pstat,tpval,pval1,pval2
 
       double precision tailp, tmax, htmax, tpermp
@@ -13,7 +13,6 @@ c     Ternary segmentation with permutation reference distribution
 
       call rndstart()
 
-      nrejc = int(cpval*dfloat(nperm))
       nrej = 0
       call tmax1(n,w,wn,wloc,x,sx,tx,iseg,ostat,ibin)
       ostat1 = sqrt(ostat)
@@ -26,23 +25,34 @@ c      call intpr("Location",8,iseg,3)
          if (pval1 .gt. cpval) go to 500
          pval2 = cpval - pval1
          nrejc = int(pval2*dfloat(nperm))
+         k=nrejc*(nrejc+1)/2 + 1
          do 50 np = 1,nperm
             call xperm(n,x,px)
             pstat = htmax(n,hk,px,sx,tx,ibin)
-            if (ostat.le.pstat) nrej = nrej + 1
+            if (ostat.le.pstat) then
+               nrej = nrej + 1
+               k = k + 1
+            endif
             if (nrej.gt.nrejc) go to 500
+            if (np .ge. sbdry(k)) go to 200
  50      continue
       else
+         nrejc = int(cpval*dfloat(nperm))
+         k=nrejc*(nrejc+1)/2 + 1
          do 100 np = 1,nperm
             call xperm(n,x,px)
             pstat = tmax(n,w,wn,wloc,px,sx,tx,ibin)
 c     call dblepr("Perm Max Stat",13,pstat,1)
-            if (ostat.le.pstat) nrej = nrej + 1
+            if (ostat.le.pstat) then
+               nrej = nrej + 1
+               k = k + 1
+            endif
 c     call intpr("num rej",7,nrej,1)
             if (nrej.gt.nrejc) go to 500
+            if (np .ge. sbdry(k)) go to 200
  100     continue
       endif
-      if (iseg(2).eq.w) then
+ 200  if (iseg(2).eq.w) then
          ncpt = 1
          icpt(1) = iseg(1) + iseg(3)
       else

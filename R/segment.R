@@ -1,10 +1,19 @@
 segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
-                    kmax=25, nmin=200, window.size=NULL, overlap=0.25, 
-                    trim = 0.025, undo.splits=c("none","prune","sdundo"),
-                    undo.prune=0.05, undo.SD=3, verbose=1)
+                    kmax=25, nmin=200, eta=0.05, sbdry=NULL, window.size=NULL,
+                    overlap=0.25, trim = 0.025, undo.splits=c("none","prune",
+                      "sdundo"), undo.prune=0.05, undo.SD=3, verbose=1)
   {
     if (!inherits(x, 'CNA')) stop("First arg must be a copy number array object")
     call <- match.call()
+    if (missing(sbdry)) {
+      if (nperm==10000 & alpha==0.01 & eta==0.05) {
+        sbdry <- default.DNAcopy.bdry
+      } else {
+        max.ones <- floor(nperm*alpha) + 1
+        sbdry <- getbdry(eta, nperm, max.ones)
+      }
+    }
+    sbn <- length(sbdry)
     nsample <- ncol(x)-2
     sampleid <- colnames(x)[-(1:2)]
     uchrom <- unique(x$chrom)
@@ -33,8 +42,8 @@ segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
       sample.segmeans <- NULL
       for (ic in uchrom) {
         if (verbose>=2) cat(paste("  current chromosome:", ic, "\n"))
-        segci <- changepoints(genomdati[chromi==ic], data.type, alpha, 
-                              nperm, p.method, window.size, overlap, kmax,
+        segci <- changepoints(genomdati[chromi==ic], data.type, alpha, sbdry,
+                              sbn, nperm, p.method, window.size, overlap, kmax,
                               nmin, trimmed.SD, undo.splits, undo.prune,
                               undo.SD, verbose)
         sample.lsegs <- c(sample.lsegs, segci$lseg)

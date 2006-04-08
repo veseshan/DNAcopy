@@ -323,6 +323,7 @@ subset.DNAcopy <- function(x, chromlist=NULL, samplelist=NULL, ...)
     y$data <- zdat[chrom %in% chromlist,c(1:2,samplelist+2)]
     attr(y$data, "data.type") <- attr(zdat, "data.type")
     y$output <- zres[zres$chrom %in% chromlist & zres$ID %in% sampleid[samplelist],]
+    class(y) <- "DNAcopy"
     y
   }
 
