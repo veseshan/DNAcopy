@@ -11,7 +11,7 @@
   second is clone chromosome, third is clone position, fourth and fifth
   are log2ratio for two cell lines.}
 \source{
-htp://www.nature.com/ng/journal/v29/n3/suppinfo/ng754\_S1.html
+http://www.nature.com/ng/journal/v29/n3/suppinfo/ng754\_S1.html
 }
 \references{Snijders et al., Assembly of microarrays for genome-wide
   measurement of DNA copy number, \emph{Nature Genetics}, 2001}

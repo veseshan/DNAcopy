@@ -185,15 +185,21 @@ contain the output of segmentation.
 
 The original default segmentation algorithm, because it was based on
 permutation, took $O(N^2)$ computations, where $N$ is the number of markers on
-a chromosome.  The new default algorithm (used in all versions after 1.2.0) is
-much faster.  It includes a hybrid approach based partly on permutation and
-partly on a Gaussian approximation \citep{venkat05}.  We no longer recommend
-using overlapping windows for larger data sets.  It is still possible to run
-the full permutations analysis using the option {\tt p.method='perm'}.  If
-the new algorithm is still too slow, one can reduce the number of permutations
-in the hybrid method using the parameter {\tt nperm} (default is 10,000).
-However, the lower {\tt alpha} (the significance level for the test to accept
-change-points) is, the more permutations that are needed. 
+a chromosome.  The new default algorithm is much faster.  It includes a hybrid
+approach to compute the $p$-value for segmenting based partly on permutation
+and partly on a Gaussian approximation (available in all versions after 1.2.0) 
+and a stopping rule (available in all versions after 1.5.0) to declare change
+when there is a strong evidence for its presence \citep{venkat06}.  We no
+longer recommend using overlapping windows for larger data sets.  It is still
+possible to run the full permutations analysis using the option {\tt
+  p.method='perm'}.  If the new algorithm is still too slow, one can reduce the
+number of permutations in the hybrid method using the parameter {\tt nperm}
+(default is 10,000).  However, the lower {\tt alpha} (the significance level
+for the test to accept change-points) is, the more permutations that are
+needed.  The stopping boundary needs to be computed for any choice of {\tt
+  nperm} and {\tt alpha} which is not the default which is done automatically
+within teh function {\tt segment} or can be done externally using the {\tt
+  getbdry} and passed on to {\tt segment}. 
 
 %\newpage
 \bibliographystyle{apalike}

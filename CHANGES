@@ -1,3 +1,11 @@
+Changes in Version 1.5.2
+
+   o Bug fix in plot.DNAcopy (triggered only when #chrom=1)
+
+   o Added information about stopping rule in the Vignette
+
+   o Cytoband data from the goldenPath repository added for future plots
+
 Changes in Version 1.5.1
 
    o Add a sequential stopping rule to declare change early 

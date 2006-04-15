@@ -125,7 +125,7 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
   nchrom <- length(uchrom)
   if (xmaploc) {
     maploc0 <- as.numeric(xdat$maploc)
-    if(max(maploc0[chrom0==uchrom[1]]) > min(maploc0[chrom0==uchrom[2]])) {
+    if(length(uchrom)>1 & max(maploc0[chrom0==uchrom[1]]) > min(maploc0[chrom0==uchrom[2]])) {
       plen <- max(maploc0[chrom0==uchrom[1]])
       for(i in 2:nchrom) {
         maploc0[chrom0==uchrom[i]] <- plen + maploc0[chrom0==uchrom[i]]
