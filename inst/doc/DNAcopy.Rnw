@@ -198,8 +198,8 @@ number of permutations in the hybrid method using the parameter {\tt nperm}
 for the test to accept change-points) is, the more permutations that are
 needed.  The stopping boundary needs to be computed for any choice of {\tt
   nperm} and {\tt alpha} which is not the default which is done automatically
-within teh function {\tt segment} or can be done externally using the {\tt
-  getbdry} and passed on to {\tt segment}. 
+within the function {\tt segment} or can be done externally using the function
+{\tt getbdry} and passed on to {\tt segment}.
 
 %\newpage
 \bibliographystyle{apalike}

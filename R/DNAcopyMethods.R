@@ -48,7 +48,7 @@ subset.CNA <- function(x, chromlist=NULL, samplelist=NULL, ...)
     nsample <- length(sampleid)
     if (length(setdiff(samplelist, 1:nsample)) > 0 & length(setdiff(samplelist, sampleid)) > 0)
       stop("samplelist should be a list of valid sample numbers or names")
-    if (!is.integer(samplelist)) samplelist <- which(sampleid %in% samplelist)
+    if (!is.integer(samplelist)) samplelist <- match(samplelist, names(x)) - 2
     if (length(samplelist) > length(unique(samplelist)))
       warning("duplicate samples in samplelist removed")
     samplelist <- unique(samplelist)
@@ -316,13 +316,16 @@ subset.DNAcopy <- function(x, chromlist=NULL, samplelist=NULL, ...)
     nsample <- length(sampleid)
     if (length(setdiff(samplelist, 1:nsample)) > 0 & length(setdiff(samplelist, sampleid)) > 0)
       stop("samplelist should be a list of valid sample numbers or names")
-    if (!is.integer(samplelist)) samplelist <- which(sampleid %in% samplelist)
+    if (!is.integer(samplelist)) samplelist <- match(samplelist, names(zdat)) - 2
     if (length(samplelist) > length(unique(samplelist)))
       warning("duplicate samples in samplelist removed")
+    samplelist <- unique(samplelist)
+    jj <- unlist(sapply(sampleid[samplelist], function(i, id) {which(id==i)}, zres$ID ))
+    zres <- zres[jj,]
     y <- list()
     y$data <- zdat[chrom %in% chromlist,c(1:2,samplelist+2)]
     attr(y$data, "data.type") <- attr(zdat, "data.type")
-    y$output <- zres[zres$chrom %in% chromlist & zres$ID %in% sampleid[samplelist],]
+    y$output <- zres[zres$chrom %in% chromlist,]
     class(y) <- "DNAcopy"
     y
   }
