@@ -1,3 +1,12 @@
+Changes in Version 1.9.1
+
+   o The mod function in fortran inflicts serious time penalty --
+     code rewritten to fix it
+
+
+1.5.3 became 1.6(8).0 in Bioconductor 1.8(9) & =1.9.0 now
+---------------------------------------------------------
+
 Changes in Version 1.5.3
 
    o Fixed the subset functions to enable sample re-ordering

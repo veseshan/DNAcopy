@@ -1,9 +1,10 @@
 c     Ternary segmentation with permutation reference distribution
-      subroutine fndcpt(n,w,wn,wloc,x,px,sx,tx,nperm,cpval,ncpt,icpt,
-     1     ibin,hybrid,hk,delta,ngrid,sbn,sbdry,tol)
-      integer n,w,wn,wloc(wn),nperm,ncpt,icpt(2),hk,ngrid,sbn,sbdry(sbn)
+      subroutine fndcpt(n,w,w2,wn,wloc,x,px,sx,tx,nperm,cpval,ncpt,
+     1     icpt,ibin,hybrid,hk,delta,ngrid,sbn,sbdry,tol)
+      integer n,w,w2,wn,wloc(wn),nperm,ncpt,icpt(2),hk,ngrid,sbn,
+     1     sbdry(sbn)
       logical ibin,hybrid
-      double precision x(n),px(n),sx(w),tx(w),cpval,delta,tol
+      double precision x(n),px(n),sx(w),tx(w2),cpval,delta,tol
 
       integer np,nrej,nrejc,iseg(3),n1,n2,n12,l,k
       double precision ostat,ostat1,pstat,tpval,pval1,pval2
@@ -14,7 +15,7 @@ c     Ternary segmentation with permutation reference distribution
       call rndstart()
 
       nrej = 0
-      call tmax1(n,w,wn,wloc,x,sx,tx,iseg,ostat,ibin)
+      call tmax1(n,w,w2,wn,wloc,x,sx,tx,iseg,ostat,ibin)
       ostat1 = sqrt(ostat)
       ostat = ostat * 0.99999
 c      call dblepr("Max Stat",8,ostat,1)
@@ -28,7 +29,7 @@ c      call intpr("Location",8,iseg,3)
          k=nrejc*(nrejc+1)/2 + 1
          do 50 np = 1,nperm
             call xperm(n,x,px)
-            pstat = htmax(n,hk,px,sx,tx,ibin)
+            pstat = htmax(n,w2,hk,px,sx,tx,ibin)
             if (ostat.le.pstat) then
                nrej = nrej + 1
                k = k + 1
@@ -41,7 +42,7 @@ c      call intpr("Location",8,iseg,3)
          k=nrejc*(nrejc+1)/2 + 1
          do 100 np = 1,nperm
             call xperm(n,x,px)
-            pstat = tmax(n,w,wn,wloc,px,sx,tx,ibin)
+            pstat = tmax(n,w,w2,wn,wloc,px,sx,tx,ibin)
 c     call dblepr("Perm Max Stat",13,pstat,1)
             if (ostat.le.pstat) then
                nrej = nrej + 1
@@ -88,9 +89,9 @@ c            call dblepr("binseg p-value",14,tpval,1)
       return
       end
 
-      double precision function tmax(n,w,wn,wloc,px,sx,tx,ibin)
-      integer n,w,wn,wloc(wn)
-      double precision px(n),sx(w),tx(w)
+      double precision function tmax(n,w,w2,wn,wloc,px,sx,tx,ibin)
+      integer n,w,w2,wn,wloc(wn)
+      double precision px(n),sx(w),tx(w2)
       logical ibin
 
       integer i,j,k,l
@@ -111,6 +112,7 @@ c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
          tss = ssqx - sumx*xbar
          do 20 i = 1,w
             tx(i) = px(l+i) - xbar
+            tx(w+i) = tx(i)
             sx(i) = tx(i)
  20      continue
          wtmax = 0.0
@@ -118,7 +120,7 @@ c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
             rj = dfloat(j)
             sxmx = 0.0
             do 30 i = 1,w
-               sx(i) = sx(i) + tx(1+mod(i+j-2,w))
+               sx(i) = sx(i) + tx(i+j-1)
                absx = abs(sx(i))
                if (sxmx.lt.absx) sxmx = absx
  30         continue
@@ -134,7 +136,7 @@ c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
             rj = dfloat(j)
             sxmx = 0.0
             do 50 i = 1,w/2
-               sx(i) = sx(i) + tx(1+mod(i+j-2,w))
+               sx(i) = sx(i) + tx(i+j-1)
                absx = abs(sx(i))
                if (sxmx.lt.absx) sxmx = absx
  50         continue
@@ -158,9 +160,9 @@ c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
       return
       end
 
-      subroutine tmax1(n,w,wn,wloc,x,sx,tx,iseg,ostat,ibin)
-      integer n,w,wn,wloc(wn),iseg(3)
-      double precision x(n),sx(w),tx(w),ostat
+      subroutine tmax1(n,w,w2,wn,wloc,x,sx,tx,iseg,ostat,ibin)
+      integer n,w,w2,wn,wloc(wn),iseg(3)
+      double precision x(n),sx(w),tx(w2),ostat
       logical ibin
 
       integer i,j,k,l, sxmxi, wtmxi, wtmxj
@@ -181,6 +183,7 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
          tss = ssqx - sumx*xbar
          do 20 i = 1,w
             tx(i) = x(l+i) - xbar
+            tx(w+i) = tx(i)
             sx(i) = tx(i)
  20      continue
          wtmax = -0.5
@@ -188,7 +191,7 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
             rj = dfloat(j)
             sxmx = -0.5
             do 30 i = 1,w
-               sx(i) = sx(i) + tx(1+mod(i+j-2,w))
+               sx(i) = sx(i) + tx(i+j-1)
                absx = abs(sx(i))
                if (sxmx.lt.absx) then 
                   sxmx = absx
@@ -211,7 +214,7 @@ c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
             rj = dfloat(j)
             sxmx = -0.5
             do 50 i = 1,w/2
-               sx(i) = sx(i) + tx(1+mod(i+j-2,w))
+               sx(i) = sx(i) + tx(i+j-1)
                absx = abs(sx(i))
                if (sxmx.lt.absx) then 
                   sxmx = absx
