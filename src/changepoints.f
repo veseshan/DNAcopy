@@ -15,12 +15,19 @@ c     Ternary segmentation with permutation reference distribution
       call rndstart()
 
       nrej = 0
+      ncpt = 0
+
       call tmax1(n,w,w2,wn,wloc,x,sx,tx,iseg,ostat,ibin)
       ostat1 = sqrt(ostat)
       ostat = ostat * 0.99999
 c      call dblepr("Max Stat",8,ostat,1)
 c      call intpr("Location",8,iseg,3)
-      ncpt = 0
+
+c     if maximal t-statistic is too small (for now use 0.1) don't split
+      if (ostat1 .le. 0.1) go to 500
+c     if maximal t-statistic is too large (for now use 7.0) split
+      if (ostat1 .ge. 7.0) go to 200
+c     o.w calculate p-value and decide if & how data are segmented
       if (hybrid) then
          pval1 = tailp(ostat1, delta, n, ngrid, tol)
          if (pval1 .gt. cpval) go to 500
