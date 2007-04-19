@@ -19,6 +19,12 @@ segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
     uchrom <- unique(x$chrom)
     data.type <- attr(x, "data.type")
     p.method <- match.arg(p.method)
+    if (!is.null(window.size)) {
+      cat("\n******************************************************\n")
+      cat("*  windowing will be deprecated in DNAcopy >= v1.11  *\n")
+      cat("******************************************************\n\n")
+      warning("windowing will be deprecated in DNAcopy >= v1.11")
+    }
     if (p.method=="hybrid") window.size <- NULL
     undo.splits <- match.arg(undo.splits)
     segres <- list()
