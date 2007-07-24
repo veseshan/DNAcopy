@@ -1,3 +1,11 @@
+Changes in Version 1.11.1
+
+   o Changed Venkat's affiliation from MSKCC to Columbia University
+
+
+1.9.3 became 1.10.0 in Bioconductor 2.0 & =1.11.0 now
+-----------------------------------------------------
+
 Changes in Version 1.9.3
 
    o Added warning that windowing will be deprecated in the next version.
