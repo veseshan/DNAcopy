@@ -7,7 +7,7 @@
   numbers.
 } 
 \usage{
-  plot.DNAcopy(x, plot.type=c("whole", "plateau", "samplebychrom",
+  \method{plot}{DNAcopy}(x, plot.type=c("whole", "plateau", "samplebychrom",
                "chrombysample"), xmaploc=FALSE, altcol=TRUE, sbyc.layout=
                 NULL, cbys.nchrom=1, cbys.layout=NULL, include.means=TRUE,
                 zeroline=TRUE, pt.pch=NULL, pt.cex=NULL, pt.cols=NULL,

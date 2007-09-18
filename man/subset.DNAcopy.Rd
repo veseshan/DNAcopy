@@ -6,7 +6,7 @@
    list of chromosomes and sample.
 }
 \usage{
-  subset.DNAcopy(x, chromlist=NULL, samplelist=NULL, ...)
+  \method{subset}{DNAcopy}(x, chromlist=NULL, samplelist=NULL, ...)
 }                          
 \arguments{
   \item{x}{DNAcopy object}

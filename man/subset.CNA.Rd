@@ -6,7 +6,7 @@
    list of chromosomes and sample.
 }
 \usage{
-  subset.CNA(x, chromlist=NULL, samplelist=NULL, ...)
+  \method{subset}{CNA}(x, chromlist=NULL, samplelist=NULL, ...)
 }                          
 \arguments{
   \item{x}{Copy number array data object}

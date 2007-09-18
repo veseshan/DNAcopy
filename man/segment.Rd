@@ -56,7 +56,7 @@
   segment for which there are six variables: the sample id, the
   chromosome number, the map position of the start of the segment, the
   map position of the end of the segment, the number of markers in the
-  segment, and the average value in the segment.} 
+  segment, and the average value in the segment.
 }
 
 \details{
