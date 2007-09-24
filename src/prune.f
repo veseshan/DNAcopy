@@ -34,7 +34,7 @@
  20      continue
          wssqj = ssq - errssq(nseg,lseg,sx,j,loc)
          do 30 while(jleft) 
-            call combn(k, j, kmj, loc, jleft)
+            call combn(j, kmj, loc, jleft)
             wssq1 = ssq - errssq(nseg,lseg,sx,j,loc)
             if (wssq1 .le. wssqj) then
                wssqj = wssq1
@@ -97,8 +97,8 @@ c
 c     This program generates Choose(n,r) combinations one at a time
 c     Adapted from Algorithm AS 88  Appl. Statist. (1975) Vol.24, No. 3
 c     
-      subroutine combn(n, r, nmr, loc, rleft)
-      integer n, r, nmr, loc(r)
+      subroutine combn(r, nmr, loc, rleft)
+      integer r, nmr, loc(r)
       logical rleft
 
       integer i,j

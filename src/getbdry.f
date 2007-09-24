@@ -3,7 +3,7 @@
       double precision eta, etastr(m), tol
 
       double precision eta0, etalo, etahi, plo, phi, pexcd
-      integer i, j, k, l
+      integer j, l
 
       l = 1
       ibdry(1) = nperm-int(dfloat(nperm)*eta)
