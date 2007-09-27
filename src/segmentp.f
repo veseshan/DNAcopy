@@ -6,7 +6,7 @@
       external btmax, btailp
 
       ostat = btmax(n, gendat)
-      call dblepr("Max Stat",8,ostat,1)
+c      call dblepr("Max Stat",8,ostat,1)
       pval = btailp(ostat, n, ng, tol)
 
       return
@@ -18,11 +18,11 @@
 
       double precision sumxi, btmaxi, dn, di
 
-      sumxi = 0.0
+      sumxi = x(1)
       ostat = 0.0
       dn = dfloat(n)
-      di = 0.0
-      do 20 i = 1,n-1
+      di = 1.0
+      do 20 i = 2,n-2
          di = di + 1.0
          sumxi = sumxi + x(i)
          btmaxi = dn*(sumxi**2)/(di*(dn-di))
@@ -49,7 +49,7 @@ c     from page 387 of Siegmund (1986) paper
       external fpnorm, nu
 
       dm = dfloat(m)
-      k = 1
+      k = 2
       ll = b*sqrt(1.0/dfloat(m-k) - 1.0/dfloat(m))
       ul = b*sqrt(1.0/dfloat(k) - 1.0/dfloat(m))
       dincr = (ul - ll)/dfloat(ng)
