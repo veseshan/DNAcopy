@@ -189,7 +189,7 @@ a chromosome.  The new default algorithm is much faster.  It includes a hybrid
 approach to compute the $p$-value for segmenting based partly on permutation
 and partly on a Gaussian approximation (available in all versions after 1.2.0) 
 and a stopping rule (available in all versions after 1.5.0) to declare change
-when there is a strong evidence for its presence \citep{venkat06}.  We no
+when there is a strong evidence for its presence \citep{venkat07}.  We no
 longer recommend using overlapping windows for larger data sets.  It is still
 possible to run the full permutations analysis using the option {\tt
   p.method='perm'}.  If the new algorithm is still too slow, one can reduce the
