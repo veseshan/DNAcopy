@@ -1,3 +1,14 @@
+Changes in Version 1.13.1
+
+   o Modified the p-value function.  Added pseudo confidence intervals 
+     for the change-points.
+
+   o Windowing option has been removed (R & fortran code modified).
+
+
+1.11.2 became 1.12.0 in Bioconductor 2.1 & =1.13.0 now
+-----------------------------------------------------
+
 Changes in Version 1.11.2
 
    o Added a p-value function for the change-points.  This is based on 

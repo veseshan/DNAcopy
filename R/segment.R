@@ -1,7 +1,7 @@
 segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
-                    kmax=25, nmin=200, eta=0.05, sbdry=NULL, window.size=NULL,
-                    overlap=0.25, trim = 0.025, undo.splits=c("none","prune",
-                      "sdundo"), undo.prune=0.05, undo.SD=3, verbose=1)
+                    kmax=25, nmin=200, eta=0.05, sbdry=NULL, trim = 0.025,
+                    undo.splits=c("none","prune", "sdundo"), undo.prune=0.05,
+                    undo.SD=3, verbose=1)
   {
     if (!inherits(x, 'CNA')) stop("First arg must be a copy number array object")
     call <- match.call()
@@ -19,13 +19,6 @@ segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
     uchrom <- unique(x$chrom)
     data.type <- attr(x, "data.type")
     p.method <- match.arg(p.method)
-    if (!is.null(window.size)) {
-      cat("\n******************************************************\n")
-      cat("*  windowing will be deprecated in DNAcopy >= v1.11  *\n")
-      cat("******************************************************\n\n")
-      warning("windowing will be deprecated in DNAcopy >= v1.11")
-    }
-    if (p.method=="hybrid") window.size <- NULL
     undo.splits <- match.arg(undo.splits)
     segres <- list()
     segres$data <- x
@@ -49,9 +42,8 @@ segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
       for (ic in uchrom) {
         if (verbose>=2) cat(paste("  current chromosome:", ic, "\n"))
         segci <- changepoints(genomdati[chromi==ic], data.type, alpha, sbdry,
-                              sbn, nperm, p.method, window.size, overlap, kmax,
-                              nmin, trimmed.SD, undo.splits, undo.prune,
-                              undo.SD, verbose)
+                              sbn, nperm, p.method, kmax, nmin, trimmed.SD,
+                              undo.splits, undo.prune, undo.SD, verbose)
         sample.lsegs <- c(sample.lsegs, segci$lseg)
         sample.segmeans <- c(sample.segmeans, segci$segmeans)
       }

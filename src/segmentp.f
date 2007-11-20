@@ -71,3 +71,58 @@ c     from page 387 of Siegmund (1986) paper
 
       return
       end
+
+c     pseudo confidence interval based on permutations
+c
+      subroutine bsegci(n, k, sumxk, x, px, sr, vfact, nperm, bsloc)
+      integer n, k, sr(2), nperm, bsloc(nperm)
+      double precision sumxk, x(n), px(n), vfact(n)
+
+      integer k1, nk, np, ibseg
+
+      call rndstart()
+      k1 = k+1
+      nk = n-k
+      do 10 np = 1, nperm
+         call xperm(k,x,px)
+         call xperm(nk,x(k1),px(k1))
+         call btmxci(n,k,sr,px,vfact,ibseg,sumxk)
+         bsloc(np) = ibseg
+ 10   continue
+      call rndend()
+
+      return
+      end
+
+      subroutine btmxci(n,k,sr,x,vfact,ibseg,sumxk)
+      integer n,k,sr(2),ibseg
+      double precision x(n),vfact(n),sumxk
+
+      integer i, ksr
+      double precision sumxi, ostat
+
+      ostat = vfact(k)*(sumxk**2)
+      ibseg = k
+      sumxi = sumxk
+      do 10 i = k-1,sr(1),-1
+         sumxi = sumxi - x(i+1)
+         btmaxi = vfact(i)*(sumxi**2)
+         if (ostat .lt. btmaxi) then
+            ostat = btmaxi
+            ibseg = i
+         endif
+ 10   continue
+
+      sumxi = sumxk
+      do 20 i = k+1,sr(2)
+         sumxi = sumxi + x(i)
+         btmaxi = vfact(i)*(sumxi**2)
+         if (ostat .lt. btmaxi) then
+            ostat = btmaxi
+            ibseg = i
+         endif
+ 20   continue
+      ostat = sqrt(ostat)
+
+      return
+      end

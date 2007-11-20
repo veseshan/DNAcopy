@@ -7,9 +7,9 @@
 }
 \usage{
   segment(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
-                    kmax=25, nmin=200, eta=0.05, sbdry=NULL, window.size=NULL,
-                    overlap=0.25, trim = 0.025, undo.splits=c("none","prune",
-                      "sdundo"), undo.prune=0.05, undo.SD=3, verbose=1)
+                    kmax=25, nmin=200, eta=0.05, sbdry=NULL, trim = 0.025,
+                    undo.splits=c("none","prune", "sdundo"), 
+                    undo.prune=0.05, undo.SD=3, verbose=1)
 }
 \arguments{
   \item{x}{an object of class CNA}
@@ -31,10 +31,6 @@
     change. This boundary is a function of nperm, alpha and eta.  It can
     be obtained using the function "getbdry" and used instead of having
     the "segment" function compute it every time it is called.}
-  \item{window.size}{size of window used to speed up computations when
-    segment size is too large.  Default is NULL (whole segment used).
-    If p.method is hybrid then this is set to NULL.}
-  \item{overlap}{proportion of data that overlap for adjacent windows.}
   \item{trim}{proportion of data to be trimmed for variance calculation
     for smoothing outliers and undoing splits based on SD.}
   \item{undo.splits}{A character string specifying how change-points are

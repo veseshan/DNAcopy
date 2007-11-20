@@ -1,23 +1,15 @@
-      double precision function htmax(n,n2,k,px,sx,tx,ibin)
-      integer n,n2,k
-      double precision px(n),sx(n),tx(n2)
+      double precision function htmax(n,twon,k,tss,px,sx,tx,ibin)
+      integer n,twon,k
+      double precision tss,px(n),sx(n),tx(twon)
       logical ibin
 
       integer i,j
 c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
-      double precision sumx,ssqx,xbar,rn,rj,absx,sxmx,bssmx,tss
+      double precision rn,rj,absx,sxmx,bssmx
 
       rn = dfloat(n)
-      sumx = 0.0d0
-      ssqx = 0.0d0
-      do 10 i = 1,n
-         sumx = sumx + px(i)
-         ssqx = ssqx + px(i)**2
- 10   continue
-      xbar = sumx/rn
-      tss = ssqx - sumx*xbar
       do 20 i = 1,n
-         tx(i) = px(i) - xbar
+         tx(i) = px(i)
          tx(n+i) = tx(i)
          sx(i) = tx(i)
  20   continue

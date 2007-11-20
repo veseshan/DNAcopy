@@ -1,12 +1,12 @@
 changepoints <- function(genomdat, data.type="logratio", alpha=0.01, sbdry,
-                         sbn, nperm=10000, p.method="hybrid", window.size=NULL,
-                         overlap=0.25, kmax=25, nmin=200, trimmed.SD = NULL,
-                         undo.splits="none", undo.prune=0.05, undo.SD=3,
-                         verbose=1, ngrid=100, tol=1e-6)
+                         sbn, nperm=10000, p.method="hybrid", kmax=25,
+                         nmin=200, trimmed.SD = NULL, undo.splits="none",
+                         undo.prune=0.05, undo.SD=3, verbose=1, ngrid=100,
+                         tol=1e-6)
   {
     n <- length(genomdat)
     if (missing(trimmed.SD)) trimmed.SD <- mad(diff(genomdat))/sqrt(2)
-    if (is.null(window.size)) window.size <- n
+#   start with the whole 
     seg.end <- c(0,n)
     k <- length(seg.end)
     change.loc <- NULL
@@ -17,25 +17,26 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01, sbdry,
         if(current.n >= 4)
           {
             current.genomdat <- genomdat[(seg.end[k-1]+1):seg.end[k]]
-            wsize <- min(current.n, window.size)
-            winnum <- ceiling((current.n - wsize)/((1-overlap)*wsize)) + 1
-            winloc <- round(seq(0,current.n - wsize,length=winnum))
+#   centering the current data will save a lot of computations later
+            current.genomdat <- current.genomdat - mean(current.genomdat)
+#   need total sum of squares too
+            current.tss <- sum(current.genomdat^2)
+#   check whether hybrid method needs to be used
             hybrid <- FALSE
             delta <- 0
             if ((p.method=="hybrid") & (nmin < current.n)) {
               hybrid <- TRUE
               delta <- (kmax+1)/current.n
             }
+#   call the changepoint routine
             zzz <- .Fortran("fndcpt",
                             n=as.integer(current.n),
-                            w=as.integer(wsize),
-                            twon=as.integer(2*wsize),
-                            wn=as.integer(winnum),
-                            wloc=as.integer(winloc),
+                            twon=as.integer(2*n),
                             x=as.double(current.genomdat),
+                            tss=as.double(current.tss),
                             px=double(current.n),
-                            sx=double(wsize),
-                            tx=double(2*wsize),
+                            sx=double(n),
+                            tx=double(2*n),
                             nperm=as.integer(nperm),
                             cpval=as.double(alpha),
                             ncpt=integer(1),

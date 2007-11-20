@@ -2,27 +2,41 @@
 \alias{segments.p}
 \title{p-values for the change-points}
 \description{
-  This program computes a p-value for the change-points found by the 
-  circular binary segmentation (CBS) algorithm.
+  This program computes pseudo p-values and confidence intervals for the
+  change-points found by the circular binary segmentation (CBS) algorithm.
 }
 \usage{
-  segments.p(x, ngrid=100, tol=1e-6)
+  segments.p(x, ngrid=100, tol=1e-6, alpha=0.05, search.range=100, nperm=1000)
 }
 \arguments{
   \item{x}{an object of class DNAcopy}
   \item{ngrid}{number grid points for the integral}
   \item{tol}{tolerance level for calculating nu}
+  \item{alpha}{Confidence level is 1-alpha}
+  \item{search.range}{statistic is maximized over nu +/- search.range}
+  \item{nperm}{number of permutations for confidence interval} 
 }
 \value{
-  a data frame with eight columns.  The seventh column is the maximal
-  statistic from binary segmentation and eighth is the p-values added to
-  the six columns from the segment command.
+  a data frame with ten columns.  The maximal statistic from binary
+  segmentation, the p-values and lower and upper alpha/2 confidence
+  limits (as genomic positions) are added to the six columns from the
+  segment command.
 }
 \details{
   The p-values are obtained by applying Siegmund's approximation for the
   maximal statistic from binary segmenting consecutive segments within a
   chromosome.  This p-value is only to give the relative importance of
   the change-points as the CBS is different from the algorithm used here.
+
+  The confidence intervals are obtained by a permutation algorithm.  The
+  data are permuted to the left and right of the identified change-point
+  and the location of the maximal binary segmentation statistic computed.
+  The confidence interval is given by the quantiles of the permutation
+  distribution of the locations.
+
+  The statistical properties of this confidence interval is unknown.  It
+  is used to give an idea of the uncertainity on the location of the
+  change-points as the CBS is different from the algorithm used here.
 }
 \examples{
 
@@ -38,6 +52,6 @@ segments.p(test1)
 
 }
 
-\author{Venkatraman E. Seshan \email{olshena@mskcc.org} }
+\author{Venkatraman E. Seshan \email{ves2111@columbia.edu} }
 
 \keyword{nonparametric}
