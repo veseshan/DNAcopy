@@ -90,7 +90,7 @@ segments.p <- function(x, ngrid=100, tol=1e-6, alpha=0.05, search.range=100,
           }
           ibstat[kk] <- ipval[kk] <- ilcl[kk] <- iucl[kk] <- NA
         } else {
-          ibstat <- ipval <- ilcl <- iucl <- NA
+          seglen <- ibstat <- ipval <- ilcl <- iucl <- NA
         }
         bstat[ll + (1:kk)] <- ibstat
         pval[ll + (1:kk)] <- ipval
