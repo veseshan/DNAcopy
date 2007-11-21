@@ -98,7 +98,7 @@ c
       integer n,k,sr(2),ibseg
       double precision x(n),vfact(n),sumxk
 
-      integer i, ksr
+      integer i
       double precision sumxi, ostat
 
       ostat = vfact(k)*(sumxk**2)

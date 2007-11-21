@@ -100,9 +100,9 @@ c            call dblepr("binseg p-value",14,tpval,1)
       double precision tss,px(n),sx(n),tx(twon)
       logical ibin
 
-      integer i,j,k,l
+      integer i,j
 c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
-      double precision sumx,ssqx,xbar,rn,rj,absx,sxmx,bssmx,wtmax
+      double precision rn,rj,absx,sxmx,bssmx
 
       rn = dfloat(n)
       do 20 i = 1,n
@@ -160,7 +160,7 @@ c     compute the max statistic for segments of length n/2 (if integer)
       double precision x(n),tss,sx(n),tx(twon),ostat
       logical ibin
 
-      integer i,j,k,l, sxmxi, tmaxi, tmaxj
+      integer i,j, sxmxi, tmaxi, tmaxj
 c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
       double precision rn,rj,absx,sxmx,bssmx,tmax
 
