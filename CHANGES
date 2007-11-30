@@ -1,3 +1,7 @@
+Changes in Version 1.13.2
+
+   o Modified the p-value function to replace p > 1 with 1.
+
 Changes in Version 1.13.1
 
    o Modified the p-value function.  Added pseudo confidence intervals 

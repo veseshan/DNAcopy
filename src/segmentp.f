@@ -8,6 +8,7 @@
       ostat = btmax(n, gendat)
 c      call dblepr("Max Stat",8,ostat,1)
       pval = btailp(ostat, n, ng, tol)
+      if (pval .gt. 1) pval = 1.0d0
 
       return
       end

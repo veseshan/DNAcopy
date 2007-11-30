@@ -21,6 +21,9 @@
   segmentation, the p-values and lower and upper alpha/2 confidence
   limits (as genomic positions) are added to the six columns from the
   segment command.
+
+  NOTE:  THE p VALUES ARE APPROXIMATE TAIL PROBABILITIES.  ANY VALUE
+  GREATER THAN 0.1 CAN HAVE LARGE ERROR.  p > 1 ARE REPLACED WITH 1.
 }
 \details{
   The p-values are obtained by applying Siegmund's approximation for the
