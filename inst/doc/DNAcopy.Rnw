@@ -10,26 +10,31 @@
 \usepackage{hyperref}
 \SweaveOpts{echo=FALSE}
 
-\begin{document}
+\setlength{\textheight}{8.5in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\oddsidemargin}{0.25in}
+\setlength{\evensidemargin}{0.25in}
 
+\begin{document}
 \setkeys{Gin}{width=0.99\textwidth}
+
 
 \title{\bf DNAcopy: A Package for Analyzing DNA Copy Data}
 
-\author{E. S. Venkatraman and Adam B. Olshen}
+\author{Venkatraman E. Seshan$^1$ and Adam B. Olshen$^2$}
 
 \maketitle
 
 \begin{center}
-Department of Epidemiology and Biostatistics\\
-Memorial Sloan-Kettering Cancer Center
-\end{center}
-
-\begin{center}
-
+$^1$Department of Biostatistics\\
+Columbia University\\
+{\tt ves2111@columbia.edu}\\
+\ \\
+$^2$Department of Epidemiology and Biostatistics\\
+Memorial Sloan-Kettering Cancer Center\\
 {\tt olshena@mskcc.org}
 \end{center}
-
 
 \tableofcontents
 
