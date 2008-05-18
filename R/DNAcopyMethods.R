@@ -113,7 +113,7 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
     ylim <- c(-uylim, uylim)
   }
   xres <- x$output
-  if(dev.cur() <= 1) get(getOption("device"))()
+  if(dev.cur() <= 1) dev.new()
   int.dev <- dev.interactive()
   plot.type <- match.arg(plot.type)
   op <- par(no.readonly = TRUE)
