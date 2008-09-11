@@ -37,44 +37,7 @@ c            ibseg = i
       return
       end
 
-c     tail probability of binary segmentation statistic
-c     from page 387 of Siegmund (1986) paper
-      double precision function btailp(b, m, ng, tol)
-      integer m, ng
-      double precision b, tol
-
-      double precision ll, ul, dincr, nulo, nuhi, x, x1, dm
-      integer i, k
-
-      double precision fpnorm, nu
-      external fpnorm, nu
-
-      dm = dfloat(m)
-      k = 2
-      ll = b*sqrt(1.0/dfloat(m-k) - 1.0/dfloat(m))
-      ul = b*sqrt(1.0/dfloat(k) - 1.0/dfloat(m))
-      dincr = (ul - ll)/dfloat(ng)
-
-      btailp = 0.0
-      x = ll
-      x1 = x + (b**2)/(dm*x)
-      nulo = nu(x1, tol)/x
-      do 10 i = 1, ng
-         x = x + dincr
-         x1 = x + (b**2)/(dm*x)
-         nuhi = nu(x1, tol)/x
-         btailp = btailp + (nuhi + nulo)*dincr
-         nulo = nuhi
- 10   continue
-      btailp = b*exp(-b**2/2)*btailp/2.506628275
-
-      btailp =  btailp + 2*(1.0-fpnorm(b))
-
-      return
-      end
-
 c     pseudo confidence interval based on permutations
-c
       subroutine bsegci(n, k, sumxk, x, px, sr, vfact, nperm, bsloc)
       integer n, k, sr(2), nperm, bsloc(nperm)
       double precision sumxk, x(n), px(n), vfact(n)

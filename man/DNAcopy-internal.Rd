@@ -5,6 +5,7 @@
 \alias{smooth.data}
 \alias{trimmed.variance}
 \alias{inflfact}
+\alias{exon.changepoint}
 \title{Internal DNAcopy functions}
 \description{
   Internal functions of package DNAcopy.
@@ -18,6 +19,7 @@ changepoints.prune(genomdat, lseg, change.cutoff=0.05)
 changepoints.sdundo(genomdat, lseg, trimmed.SD, change.SD=3)
 trimmed.variance(genomdat, trim=0.025)
 inflfact(trim)
+exon.changepoint(exondat, ngrid=100, tol=1e-6)
 }
 \details{These are not to be called directly by the user}
 \keyword{internal}

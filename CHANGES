@@ -1,3 +1,23 @@
+Changes in Version 1.15.2
+
+   o changed to a faster algorithm for calculating the max t-statistic
+
+   o changed to a faster code for undoing edge effects (redundant perm)
+
+   o added basic functions exon.segment and exon.changepoint (workhorse)
+     These functions are used for finding a translocation using binary
+     segmentation.  The data for this should be properly normalized.
+
+   o fortran code re-arranged into different files
+
+Changes in Version 1.15.1
+
+   o updated the call to get(getOption("device")) to use dev.new
+
+
+1.13.3 became 1.14.0 in Bioconductor 2.2 & =1.15.0 now
+------------------------------------------------------
+
 Changes in Version 1.13.3
 
    o Added segments.summary to give the median, sd & mad for each segment.
@@ -15,7 +35,7 @@ Changes in Version 1.13.1
 
 
 1.11.2 became 1.12.0 in Bioconductor 2.1 & =1.13.0 now
------------------------------------------------------
+------------------------------------------------------
 
 Changes in Version 1.11.2
 

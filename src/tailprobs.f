@@ -1,45 +1,5 @@
-      double precision function htmax(n,twon,k,tss,px,sx,tx,ibin)
-      integer n,twon,k
-      double precision tss,px(n),sx(n),tx(twon)
-      logical ibin
-
-      integer i,j
-c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
-      double precision rn,rj,absx,sxmx,bssmx
-
-      rn = dfloat(n)
-      do 20 i = 1,n
-         tx(i) = px(i)
-         tx(n+i) = tx(i)
-         sx(i) = tx(i)
- 20   continue
-      htmax = 0.0d0
-      do 40 j = 2,k
-         rj = dfloat(j)
-         sxmx = 0.0d0
-         do 30 i = 1,n
-            sx(i) = sx(i) + tx(i+j-1)
-            absx = abs(sx(i))
-            if (sxmx.lt.absx) sxmx = absx
- 30      continue
-         if (ibin) then
-            bssmx = rn*(abs(sxmx)-0.5d0)**2/(rj*(rn-rj))
-         else
-            bssmx = rn*sxmx**2/(rj*(rn-rj))
-         endif
-         if (htmax.lt.bssmx) htmax = bssmx
- 40   continue
-      if (ibin) then
-         if (tss .le. 0.0001d0) tss = 1.0d0
-         htmax = htmax/(tss/rn)
-      else
-         if (tss .le. htmax+0.0001d0) tss = htmax + 1.0d0
-         htmax = htmax/((tss-htmax)/(rn-2.0d0))
-      endif
-
-      return
-      end
-
+c     tail probability of circular binary segmentation statistic
+c     from Siegmund (1988) or Yao (1989) paper
       double precision function tailp(b, delta, m, ngrid, tol)
       double precision b, delta, tol
       integer m, ngrid
@@ -119,6 +79,42 @@ c     integral of 1/(t*(1-t))**2 from x to x+a
          lnu1 = -0.583d0*x
       endif
       nu = exp(lnu1)
+
+      return
+      end
+
+c     tail probability of binary segmentation statistic
+c     from page 387 of Siegmund (1986) paper
+      double precision function btailp(b, m, ng, tol)
+      integer m, ng
+      double precision b, tol
+
+      double precision ll, ul, dincr, nulo, nuhi, x, x1, dm
+      integer i, k
+
+      double precision fpnorm, nu
+      external fpnorm, nu
+
+      dm = dfloat(m)
+      k = 2
+      ll = b*sqrt(1.0/dfloat(m-k) - 1.0/dfloat(m))
+      ul = b*sqrt(1.0/dfloat(k) - 1.0/dfloat(m))
+      dincr = (ul - ll)/dfloat(ng)
+
+      btailp = 0.0
+      x = ll
+      x1 = x + (b**2)/(dm*x)
+      nulo = nu(x1, tol)/x
+      do 10 i = 1, ng
+         x = x + dincr
+         x1 = x + (b**2)/(dm*x)
+         nuhi = nu(x1, tol)/x
+         btailp = btailp + (nuhi + nulo)*dincr
+         nulo = nuhi
+ 10   continue
+      btailp = b*exp(-b**2/2)*btailp/2.506628275
+
+      btailp =  btailp + 2*(1.0-fpnorm(b))
 
       return
       end

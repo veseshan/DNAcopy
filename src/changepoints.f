@@ -1,22 +1,24 @@
 c     Ternary segmentation with permutation reference distribution
-      subroutine fndcpt(n,twon,x,tss,px,sx,tx,nperm,cpval,ncpt,
-     1     icpt,ibin,hybrid,hk,delta,ngrid,sbn,sbdry,tol)
-      integer n,twon,nperm,ncpt,icpt(2),hk,ngrid,sbn,sbdry(sbn)
+      subroutine fndcpt(n,x,tss,px,sx,nperm,cpval,ncpt,icpt,ibin,
+     1     hybrid,hk,delta,ngrid,sbn,sbdry,tol)
+      integer n,nperm,ncpt,icpt(2),hk,ngrid,sbn,sbdry(sbn)
       logical ibin,hybrid
-      double precision x(n),tss,px(n),sx(n),tx(twon),cpval,delta,tol
+      double precision x(n),tss,px(n),sx(n),cpval,delta,tol
 
       integer np,nrej,nrejc,iseg(2),n1,n2,n12,l,k
       double precision ostat,ostat1,pstat,tpval,pval1,pval2
 
-      double precision tailp, tmax, htmax, tpermp
-      external tailp, tmax, htmax, tpermp
+c     new functions to replace tmax and htmax (also tmaxo replaces tmax1)
+      double precision tailp, tmaxp, htmaxp, tpermp
+      external tailp, tmaxp, htmaxp, tpermp
 
       call rndstart()
 
       nrej = 0
       ncpt = 0
 
-      call tmax1(n,twon,x,tss,sx,tx,iseg,ostat,ibin)
+c      call tmax1(n,twon,x,tss,sx,tx,iseg,ostat,ibin)
+      call tmaxo(n,x,tss,sx,iseg,ostat,ibin)
       ostat1 = sqrt(ostat)
       ostat = ostat * 0.99999
 c      call dblepr("Max Stat",8,ostat,1)
@@ -35,7 +37,8 @@ c     o.w calculate p-value and decide if & how data are segmented
          k=nrejc*(nrejc+1)/2 + 1
          do 50 np = 1,nperm
             call xperm(n,x,px)
-            pstat = htmax(n,twon,hk,tss,px,sx,tx,ibin)
+c            pstat = htmax(n,twon,hk,tss,px,sx,tx,ibin)
+            pstat = htmaxp(n,hk,tss,px,sx,ibin)
             if (ostat.le.pstat) then
                nrej = nrej + 1
                k = k + 1
@@ -48,7 +51,8 @@ c     o.w calculate p-value and decide if & how data are segmented
          k=nrejc*(nrejc+1)/2 + 1
          do 100 np = 1,nperm
             call xperm(n,x,px)
-            pstat = tmax(n,twon,tss,px,sx,tx,ibin)
+c            pstat = tmax(n,twon,tss,px,sx,tx,ibin)
+            pstat = tmaxp(n,tss,px,sx,ibin)
 c     call dblepr("Perm Max Stat",13,pstat,1)
             if (ostat.le.pstat) then
                nrej = nrej + 1
@@ -95,153 +99,7 @@ c            call dblepr("binseg p-value",14,tpval,1)
       return
       end
 
-      double precision function tmax(n,twon,tss,px,sx,tx,ibin)
-      integer n,twon
-      double precision tss,px(n),sx(n),tx(twon)
-      logical ibin
-
-      integer i,j
-c      double precision xsum,sx2,x1,x2,rj,rn,tij,xvar,
-      double precision rn,rj,absx,sxmx,bssmx
-
-      rn = dfloat(n)
-      do 20 i = 1,n
-         tx(i) = px(i)
-         tx(n+i) = tx(i)
-         sx(i) = tx(i)
- 20   continue
-      tmax = 0.0
-c     compute the max statistic for segments of length j
-      do 40 j = 2,(n-1)/2
-         rj = dfloat(j)
-         sxmx = 0.0
-         do 30 i = 1,n
-            sx(i) = sx(i) + tx(i+j-1)
-            absx = abs(sx(i))
-            if (sxmx.lt.absx) sxmx = absx
- 30      continue
-         if (ibin) then
-            bssmx = rn*(abs(sxmx)-0.5)**2/(rj*(rn-rj))
-         else
-            bssmx = rn*sxmx**2/(rj*(rn-rj))
-         endif
-         if (tmax.lt.bssmx) tmax = bssmx
- 40   continue
-c     compute the max statistic for segments of length n/2 (if integer)
-      if (n.eq.2*(n/2)) then
-         j = n/2
-         rj = dfloat(j)
-         sxmx = 0.0
-         do 50 i = 1,n/2
-            sx(i) = sx(i) + tx(i+j-1)
-            absx = abs(sx(i))
-            if (sxmx.lt.absx) sxmx = absx
- 50      continue
-         if (ibin) then
-            bssmx = rn*(abs(sxmx)-0.5)**2/(rj*(rn-rj))
-         else
-            bssmx = rn*sxmx**2/(rj*(rn-rj))
-         endif
-         if (tmax.lt.bssmx) tmax = bssmx
-      endif
-      if (ibin) then
-         if (tss.le.0.0001) tss = 1.0
-         tmax = tmax/(tss/rn)
-      else
-         if (tss.le.tmax+0.0001) tss = tmax + 1.0
-         tmax = tmax/((tss-tmax)/(rn-2.0))
-      endif
-
-      return
-      end
-
-      subroutine tmax1(n,twon,x,tss,sx,tx,iseg,ostat,ibin)
-      integer n,twon,iseg(2)
-      double precision x(n),tss,sx(n),tx(twon),ostat
-      logical ibin
-
-      integer i,j, sxmxi, tmaxi, tmaxj
-c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
-      double precision rn,rj,absx,sxmx,bssmx,tmax
-
-      rn = dfloat(n)
-      ostat = -0.5
-      do 20 i = 1,n
-         tx(i) = x(i)
-         tx(n+i) = tx(i)
-         sx(i) = tx(i)
- 20   continue
-      tmax = -0.5
-c     compute the max statistic for segments of length j
-      do 40 j = 2,(n-1)/2
-         rj = dfloat(j)
-c     sxmx is the maximum of abs partial sums x[i] + ... + x[i+j-1]
-         sxmx = -0.5
-         do 30 i = 1,n
-            sx(i) = sx(i) + tx(i+j-1)
-            absx = abs(sx(i))
-            if (sxmx.lt.absx) then 
-               sxmx = absx
-c     i is the start point for the current maximum
-               sxmxi = i
-            endif
- 30      continue
-         if (ibin) then
-            bssmx = rn*(abs(sxmx)-0.5)**2/(rj*(rn-rj))
-         else
-            bssmx = rn*sxmx**2/(rj*(rn-rj))
-         endif
-         if (tmax.lt.bssmx) then 
-            tmax = bssmx
-            tmaxi = sxmxi
-            tmaxj = j
-         endif
- 40   continue
-c     compute the max statistic for segments of length n/2 (if integer)
-      if (n.eq.2*(n/2)) then
-         j = n/2
-         rj = dfloat(j)
-         sxmx = -0.5
-         do 50 i = 1,n/2
-            sx(i) = sx(i) + tx(i+j-1)
-            absx = abs(sx(i))
-            if (sxmx.lt.absx) then 
-               sxmx = absx
-               sxmxi = i
-            endif
- 50      continue
-         if (ibin) then
-            bssmx = rn*(abs(sxmx)-0.5)**2/(rj*(rn-rj))
-         else
-            bssmx = rn*sxmx**2/(rj*(rn-rj))
-         endif
-         if (tmax.lt.bssmx) then
-            tmax = bssmx
-            tmaxi = sxmxi
-            tmaxj = j
-         endif
-      endif
-c     convert statistic to t^2 form
-      if (ibin) then
-         if (tss.le.0.0001) tss = 1.0
-         tmax = tmax/(tss/rn)
-      else
-         if (tss.le.tmax+0.0001) tss = tmax + 1.0
-         tmax = tmax/((tss-tmax)/(rn-2.0))
-      endif
-
-      ostat = tmax
-      if (tmaxi+tmaxj-1.le.n) then
-         iseg(1) = tmaxi-1
-         iseg(2) = tmaxi-1+tmaxj
-      else
-         iseg(1) = tmaxi-1+tmaxj-n
-         iseg(2) = tmaxi-1
-      endif
-
-      return
-      end
-
+c     code to permute the data vector
       subroutine xperm(n,x,px)
       integer n
       double precision x(n),px(n)
@@ -266,42 +124,73 @@ c     convert statistic to t^2 form
       return
       end
 
+c     function for the p-value of t-statistics for removing edge effects
       double precision function tpermp(n1,n2,n,x,px,nperm)
       integer n1,n2,n,nperm
       double precision x(n),px(n)
       integer np,i,m1
-      double precision xsum1,xsum2,xbar,ostat,pstat,rn1,rn2,rm1
+      double precision xsum1,xsum2,xbar,ostat,pstat,rn1,rn2,rm1,
+     1     tstat, tss, rn
 
       rn1 = dfloat(n1)
       rn2 = dfloat(n2)
+      rn = rn1 + rn2
       if (n1.eq.1 .or. n2.eq.1) then
          nrej = nperm
          go to 110
       endif
       xsum1 = 0.0
+      tss = 0.0
       do 10 i=1,n1
+         px(i) = x(i)
          xsum1 = xsum1 + x(i)
+         tss = tss + x(i)**2
  10   continue
       xsum2 = 0.0
       do 20 i=n1+1,n
+         px(i) = x(i)
          xsum2 = xsum2 + x(i)
+         tss = tss + x(i)**2
  20   continue
-      xbar = (xsum1 + xsum2)/(rn1+rn2)
+      xbar = (xsum1 + xsum2)/rn
+      tss = tss - rn*(xbar**2)
       if (n1.le.n2) then
          m1 = n1
          rm1 = rn1
          ostat = 0.99999*abs(xsum1/rn1 - xbar)
+         tstat = (ostat**2)*rn1*rn/rn2
       else
          m1 = n2
          rm1 = rn2
          ostat = 0.99999*abs(xsum2/rn2 - xbar)
+         tstat = (ostat**2)*rn2*rn/rn1
       endif
 c      call dblepr("O-Stat",6,ostat,1)
       nrej = 0
+      tstat = tstat/((tss-tstat)/(rn-2.0))
+c      call dblepr("T-square",8,tstat,1)
+c     if observed t is large (> 5) don't bother with permutation p-value
+      if (tstat .gt. 25) go to 110
       do 100 np = 1,nperm
-         call xperm(n,x,px)
-         xsum1 = 0.0
-         do 30 i=1,m1
+c*******************************************
+c     the following is very inefficient
+c*******************************************
+c         call xperm(n,x,px)
+c         xsum1 = 0.0
+c         do 30 i=1,m1
+c            xsum1 = xsum1 + px(i)
+c 30      continue
+c*******************************************
+c     changed to the following: instead of
+c     full permutation sample m1 w.o. repl
+c******************************************* 
+         xsum1 = 0
+         do 30 i = n,n-m1+1,-1
+            cc = dunif()
+            j = int(cc*dfloat(i))+1
+            tmpx = px(i)
+            px(i) = px(j)
+            px(j) = tmpx
             xsum1 = xsum1 + px(i)
  30      continue
          pstat = abs(xsum1/rm1 - xbar)
