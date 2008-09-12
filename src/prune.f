@@ -6,6 +6,9 @@
       double precision ssq, wssqk, wssq1, wssqj
       logical jleft
 
+      double precision errssq
+      external errssq
+
       ssq = 0.0
       do 10 i = 1,n
          ssq = ssq + x(i)**2
@@ -59,9 +62,9 @@
       return
       end
 
-      function errssq(nseg,lseg,sx,k,loc)
+      double precision function errssq(nseg,lseg,sx,k,loc)
       integer nseg, lseg(nseg),k,loc(k)
-      double precision errssq, sx(nseg)
+      double precision sx(nseg)
 
       double precision segsx
       integer segnx, i, j

@@ -17,7 +17,8 @@ c      call dblepr("Max Stat",8,ostat,1)
       integer n
       double precision x(n)
 
-      double precision sumxi, btmaxi, dn, di
+      integer i
+      double precision sumxi, btmaxi, dn, di, ostat
 
       sumxi = x(1)
       ostat = 0.0
@@ -63,7 +64,7 @@ c     pseudo confidence interval based on permutations
       double precision x(n),vfact(n),sumxk
 
       integer i
-      double precision sumxi, ostat
+      double precision sumxi, ostat, btmaxi
 
       ostat = vfact(k)*(sumxk**2)
       ibseg = k

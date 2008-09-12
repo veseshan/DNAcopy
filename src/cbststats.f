@@ -33,6 +33,9 @@ c     max and min partial sums and their locations
       psdiff = psmax - psmin
 
       tmax = -0.5
+      sxmxi = -1
+      tmaxi = -1
+      tmaxj = -1
 c     compute the max statistic for segments of length j
       do 40 j = 2,(n-1)/2
          rj = dfloat(j)
@@ -144,7 +147,7 @@ c     function for calculating the full max t-statistic on permuted data
 
       tmaxp = 0.0
 c     compute the max statistic for segments of length j
-      do 50 j = 2,k
+      do 50 j = 2,(n-1)/2
          rj = dfloat(j)
          rnjov1 = rn/(rj*(rn-rj))
          if (ibin) then

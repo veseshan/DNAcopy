@@ -7,6 +7,7 @@ c     with one-sided p-value
       double precision btailp
       external btailp
 
+      integer i
       double precision tss
 
       tss = 0
@@ -28,6 +29,7 @@ c     t_i = S_i*sqrt(n/(i*(n-i)))/sqrt((tss - S_i^2*n/(i*(n-i)))/(n-2))
       integer n, eloc
       double precision x(n), tss, ostat
 
+      integer i
       double precision sumxi, btmaxi, dn, di
 
       sumxi = x(1)

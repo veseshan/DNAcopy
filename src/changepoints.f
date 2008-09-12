@@ -128,9 +128,13 @@ c     function for the p-value of t-statistics for removing edge effects
       double precision function tpermp(n1,n2,n,x,px,nperm)
       integer n1,n2,n,nperm
       double precision x(n),px(n)
-      integer np,i,m1
+
+      integer np,i,m1,j,nrej
       double precision xsum1,xsum2,xbar,ostat,pstat,rn1,rn2,rm1,
-     1     tstat, tss, rn
+     1     tstat, tss, rn, cc, tmpx
+
+      double precision dunif
+      external dunif
 
       rn1 = dfloat(n1)
       rn2 = dfloat(n2)
