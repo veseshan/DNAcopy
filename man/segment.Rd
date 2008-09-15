@@ -7,8 +7,8 @@
 }
 \usage{
   segment(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
-                    kmax=25, nmin=200, eta=0.05, sbdry=NULL, trim = 0.025,
-                    undo.splits=c("none","prune", "sdundo"), 
+                    min.width=2, kmax=25, nmin=200, eta=0.05, sbdry=NULL,
+                    trim = 0.025, undo.splits=c("none","prune", "sdundo"), 
                     undo.prune=0.05, undo.SD=3, verbose=1)
 }
 \arguments{
@@ -20,6 +20,8 @@
     method the maximum over the entire region is split into maximum of
     max over small segments and max over the rest.  Approximation is
     used for the larger segment max. Default is hybrid.}
+  \item{min.width}{the minimum number of markers for a changed segment.
+    The default is 2 but can be made larger (current limit 5).}
   \item{kmax}{the maximum width of smaller segment for permutation
     in the hybrid method.}
   \item{nmin}{the minimum length of data for which the approximation of

@@ -1,3 +1,8 @@
+Changes in Version 1.15.3
+
+   o the minimum width of segment is user selectable (argument min.width). 
+     Changed from the fixed value of 2 based on user demand.  Max value 5.
+
 Changes in Version 1.15.2
 
    o changed to a faster algorithm for calculating the max t-statistic

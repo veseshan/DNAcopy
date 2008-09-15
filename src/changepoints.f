@@ -1,7 +1,7 @@
 c     Ternary segmentation with permutation reference distribution
       subroutine fndcpt(n,x,tss,px,sx,nperm,cpval,ncpt,icpt,ibin,
-     1     hybrid,hk,delta,ngrid,sbn,sbdry,tol)
-      integer n,nperm,ncpt,icpt(2),hk,ngrid,sbn,sbdry(sbn)
+     1     hybrid,al0,hk,delta,ngrid,sbn,sbdry,tol)
+      integer n,nperm,ncpt,icpt(2),al0,hk,ngrid,sbn,sbdry(sbn)
       logical ibin,hybrid
       double precision x(n),tss,px(n),sx(n),cpval,delta,tol
 
@@ -18,7 +18,7 @@ c     new functions to replace tmax and htmax (also tmaxo replaces tmax1)
       ncpt = 0
 
 c      call tmax1(n,twon,x,tss,sx,tx,iseg,ostat,ibin)
-      call tmaxo(n,x,tss,sx,iseg,ostat,ibin)
+      call tmaxo(n,x,tss,sx,iseg,ostat,al0,ibin)
       ostat1 = sqrt(ostat)
       ostat = ostat * 0.99999
 c      call dblepr("Max Stat",8,ostat,1)
@@ -38,7 +38,7 @@ c     o.w calculate p-value and decide if & how data are segmented
          do 50 np = 1,nperm
             call xperm(n,x,px)
 c            pstat = htmax(n,twon,hk,tss,px,sx,tx,ibin)
-            pstat = htmaxp(n,hk,tss,px,sx,ibin)
+            pstat = htmaxp(n,hk,tss,px,sx,al0,ibin)
             if (ostat.le.pstat) then
                nrej = nrej + 1
                k = k + 1
@@ -52,7 +52,7 @@ c            pstat = htmax(n,twon,hk,tss,px,sx,tx,ibin)
          do 100 np = 1,nperm
             call xperm(n,x,px)
 c            pstat = tmax(n,twon,tss,px,sx,tx,ibin)
-            pstat = tmaxp(n,tss,px,sx,ibin)
+            pstat = tmaxp(n,tss,px,sx,al0,ibin)
 c     call dblepr("Perm Max Stat",13,pstat,1)
             if (ostat.le.pstat) then
                nrej = nrej + 1

@@ -1,10 +1,11 @@
 segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
-                    kmax=25, nmin=200, eta=0.05, sbdry=NULL, trim = 0.025,
-                    undo.splits=c("none","prune", "sdundo"), undo.prune=0.05,
-                    undo.SD=3, verbose=1)
+                    min.width=2, kmax=25, nmin=200, eta=0.05, sbdry=NULL,
+                    trim = 0.025, undo.splits=c("none","prune", "sdundo"),
+                    undo.prune=0.05, undo.SD=3, verbose=1)
   {
     if (!inherits(x, 'CNA')) stop("First arg must be a copy number array object")
     call <- match.call()
+    if (min.width < 2 | min.width > 5) stop("minimum segment width should be between 2 and 5")
     if (missing(sbdry)) {
       if (nperm==10000 & alpha==0.01 & eta==0.05) {
         sbdry <- default.DNAcopy.bdry
@@ -42,8 +43,9 @@ segment <- function(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
       for (ic in uchrom) {
         if (verbose>=2) cat(paste("  current chromosome:", ic, "\n"))
         segci <- changepoints(genomdati[chromi==ic], data.type, alpha, sbdry,
-                              sbn, nperm, p.method, kmax, nmin, trimmed.SD,
-                              undo.splits, undo.prune, undo.SD, verbose)
+                              sbn, nperm, p.method, min.width, kmax, nmin,
+                              trimmed.SD, undo.splits, undo.prune, undo.SD,
+                              verbose)
         sample.lsegs <- c(sample.lsegs, segci$lseg)
         sample.segmeans <- c(sample.segmeans, segci$segmeans)
       }

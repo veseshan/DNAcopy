@@ -1,6 +1,6 @@
 c     function for calculating the full max t-statistic
-      subroutine tmaxo(n,x,tss,sx,iseg,ostat,ibin)
-      integer n,iseg(2)
+      subroutine tmaxo(n,x,tss,sx,iseg,ostat,al0,ibin)
+      integer n,iseg(2),al0
       double precision x(n),tss,sx(n),ostat
       logical ibin
 
@@ -37,7 +37,7 @@ c     max and min partial sums and their locations
       tmaxi = -1
       tmaxj = -1
 c     compute the max statistic for segments of length j
-      do 40 j = 2,(n-1)/2
+      do 40 j = al0,(n-1)/2
          rj = dfloat(j)
          rnjov1 = rn/(rj*(rn-rj))
          if (ibin) then
@@ -125,8 +125,8 @@ c     convert statistic to t^2 form
       end
 
 c     function for calculating the full max t-statistic on permuted data
-      double precision function tmaxp(n,tss,px,sx,ibin)
-      integer n
+      double precision function tmaxp(n,tss,px,sx,al0,ibin)
+      integer n,al0
       double precision tss,px(n),sx(n)
       logical ibin
 
@@ -147,7 +147,7 @@ c     function for calculating the full max t-statistic on permuted data
 
       tmaxp = 0.0
 c     compute the max statistic for segments of length j
-      do 50 j = 2,(n-1)/2
+      do 50 j = al0,(n-1)/2
          rj = dfloat(j)
          rnjov1 = rn/(rj*(rn-rj))
          if (ibin) then
@@ -203,8 +203,8 @@ c     compute the max statistic for segments of length n/2 (if integer)
       end
 
 c     function for the max (over small arcs) t-statistic on permuted data
-      double precision function htmaxp(n,k,tss,px,sx,ibin)
-      integer n,k
+      double precision function htmaxp(n,k,tss,px,sx,al0,ibin)
+      integer n,k,al0
       double precision tss,px(n),sx(n)
       logical ibin
 
@@ -226,7 +226,7 @@ c         if (sx(i) .gt. psmax) psmax = sx(i)
       psdiff = psmax - psmin
 
       htmaxp = 0.0d0
-      do 50 j = 2,k
+      do 50 j = al0,k
          rj = dfloat(j)
          rnjov1 = rn/(rj*(rn-rj))
          if (ibin) then

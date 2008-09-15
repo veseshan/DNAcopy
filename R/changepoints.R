@@ -1,8 +1,8 @@
 changepoints <- function(genomdat, data.type="logratio", alpha=0.01, sbdry,
-                         sbn, nperm=10000, p.method="hybrid", kmax=25,
-                         nmin=200, trimmed.SD = NULL, undo.splits="none",
-                         undo.prune=0.05, undo.SD=3, verbose=1, ngrid=100,
-                         tol=1e-6)
+                         sbn, nperm=10000, p.method="hybrid", min.width=2,
+                         kmax=25, nmin=200, trimmed.SD=NULL, undo.splits=
+                         "none", undo.prune=0.05, undo.SD=3, verbose=1,
+                         ngrid=100, tol=1e-6)
   {
     n <- length(genomdat)
     if (missing(trimmed.SD)) trimmed.SD <- mad(diff(genomdat))/sqrt(2)
@@ -41,6 +41,7 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01, sbdry,
                             icpt=integer(2),
                             ibin=as.logical(data.type=="binary"),
                             hybrid=as.logical(hybrid),
+                            al0=as.integer(min.width),
                             hk=as.integer(kmax),
                             delta=as.double(delta),
                             ngrid=as.integer(ngrid),
