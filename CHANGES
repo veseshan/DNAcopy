@@ -1,3 +1,7 @@
+Changes in Version 1.15.4
+
+   o make sure there are at least 10 obsns when t-stat threshold is used
+
 Changes in Version 1.15.3
 
    o the minimum width of segment is user selectable (argument min.width). 

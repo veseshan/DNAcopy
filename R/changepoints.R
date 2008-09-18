@@ -14,7 +14,7 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01, sbdry,
       {
         current.n <- seg.end[k]-seg.end[k-1]
         if (verbose>=3) cat(".... current segment:",seg.end[k-1]+1,"-",seg.end[k],"\n")
-        if(current.n >= 4)
+        if(current.n >= 2*min.width)
           {
             current.genomdat <- genomdat[(seg.end[k-1]+1):seg.end[k]]
 #   centering the current data will save a lot of computations later

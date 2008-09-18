@@ -27,7 +27,9 @@ c      call intpr("Location",8,iseg,2)
 c     if maximal t-statistic is too small (for now use 0.1) don't split
       if (ostat1 .le. 0.1) go to 500
 c     if maximal t-statistic is too large (for now use 7.0) split
-      if (ostat1 .ge. 7.0) go to 200
+c     also make sure it's not affected by outliers i.e. small seglength
+      l = min(iseg(2) - iseg(1), n - iseg(2) + iseg(1))
+      if ((ostat1 .ge. 7.0) .and. (l .ge. 10)) go to 200
 c     o.w calculate p-value and decide if & how data are segmented
       if (hybrid) then
          pval1 = tailp(ostat1, delta, n, ngrid, tol)
@@ -174,7 +176,8 @@ c      call dblepr("O-Stat",6,ostat,1)
       tstat = tstat/((tss-tstat)/(rn-2.0))
 c      call dblepr("T-square",8,tstat,1)
 c     if observed t is large (> 5) don't bother with permutation p-value
-      if (tstat .gt. 25) go to 110
+c     also make sure there are enough observations i.e. m1 >= 10
+      if ((tstat .gt. 25) .and. (m1 .ge. 10)) go to 110
       do 100 np = 1,nperm
 c*******************************************
 c     the following is very inefficient
