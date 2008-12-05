@@ -9,6 +9,7 @@
 \usage{
   CNA(genomdat, chrom, maploc, data.type=c("logratio","binary"),
                  sampleid=NULL)
+  \method{print}{CNA}(x, \dots)
 }
 \arguments{
   \item{genomdat}{a vector or matrix of data from array-CGH, ROMA, or
@@ -23,6 +24,8 @@
   \item{data.type}{logratio (aCGH, ROMA, etc.) or binary (LOH).}
   \item{sampleid}{sample identifier.  If missing the samples are named
     by prefixing "Sample" to consecutive integers.}
+  \item{x}{object returned by CNA}
+  \item{...}{arguments to be passed onto print command called within.}
 }
 \value{
   An object of class \code{CNA}.  There is a \code{print} method that

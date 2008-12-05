@@ -1,3 +1,11 @@
+Changes in Version 1.17.1
+
+   o NAMESPACE file added and man pages fixed to reflect it.
+
+
+1.15.4 became 1.16.0 in Bioconductor 2.3 & =1.17.0 now
+------------------------------------------------------
+
 Changes in Version 1.15.4
 
    o make sure there are at least 10 obsns when t-stat threshold is used

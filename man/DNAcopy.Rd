@@ -2,9 +2,16 @@
 \alias{DNAcopy}
 \alias{print.DNAcopy}
 \title{Results of segmenting a CNA data object}
+\usage{
+\method{print}{DNAcopy}(x, \dots)
+}
 \description{
   The results of segmenting data from copy number array experiments from
   programs such as circular binary segmentation (CBS).
+}
+\arguments{
+  \item{x}{an object of class \code{DNAcopy} -- output of segment.}
+  \item{...}{arguments to be passed onto print command called within.}
 }
 \value{
   \item{data}{The original CNA object which was the input for segment}

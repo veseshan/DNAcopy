@@ -50,11 +50,14 @@
 }
 
 \value{
-  a data frame with six columns.  Each row of the data frame contains a
-  segment for which there are six variables: the sample id, the
-  chromosome number, the map position of the start of the segment, the
-  map position of the end of the segment, the number of markers in the
-  segment, and the average value in the segment.
+  An object of class \code{DNAcopy}.  It has three elements:
+  \item{data}{The original CNA object which was the input for segment}
+  \item{out}{a data frame with six columns.  Each row of the data frame
+    contains a segment for which there are six variables: the sample id,
+    the chromosome number, the map position of the start of the segment,
+    the map position of the end of the segment, the number of markers in
+    the segment, and the average value in the segment.}
+  \item{call}{the call that produced the output object.}
 }
 
 \details{

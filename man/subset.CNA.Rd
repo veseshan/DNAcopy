@@ -33,7 +33,8 @@ CNA.object <- CNA(cbind(coriell$Coriell.05296,coriell$Coriell.13330),
 
 #Take the first ten chromosomes of the first sample
 
-subset.CNA.object <- subset.CNA(CNA.object,chromlist=1:10,samplelist="c05296")
+#subset.CNA.object <- subset.CNA(CNA.object,chromlist=1:10,samplelist="c05296")
+subset.CNA.object <- subset(CNA.object,chromlist=1:10,samplelist="c05296")
 }
 
 \keyword{nonparametric}
