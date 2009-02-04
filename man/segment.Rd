@@ -68,7 +68,7 @@
   t-statistic.  A reference distribution, used to decided whether or not
   to split, is estimated by permutation.  Options are given to eliminate
   splits when the means of adjacent segments are not sufficiently far
-  apart.  Note that after the first split the $\alpha$-levels of the
+  apart.  Note that after the first split the \eqn{\alpha}-levels of the
   tests for splitting are not unconditional.
 
   We recommend using one of the undoing options to remove change-points
