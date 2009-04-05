@@ -11,9 +11,9 @@
   Internal functions of package DNAcopy.
 }
 \usage{
-changepoints(genomdat, data.type = "logratio", alpha = 0.01, sbdry, sbn,
-                 nperm = 10000, p.method="hybrid", min.width=2, kmax=25,
-                 nmin = 200, trimmed.SD = NULL, undo.splits = "none",
+changepoints(genomdat, data.type = "logratio", alpha = 0.01, weights = NULL,
+                 sbdry, sbn, nperm = 10000, p.method="hybrid", min.width=2,
+                 kmax=25, nmin = 200, trimmed.SD = NULL, undo.splits = "none",
                  undo.prune = 0.05, undo.SD = 3, verbose = 1, ngrid=100,
                  tol=1e-6) 
 changepoints.prune(genomdat, lseg, change.cutoff=0.05)

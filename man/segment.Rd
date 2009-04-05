@@ -6,13 +6,16 @@
   equal copy number using circular binary segmentation (CBS).
 }
 \usage{
-  segment(x, alpha=0.01, nperm=10000, p.method = c("hybrid","perm"),
-                    min.width=2, kmax=25, nmin=200, eta=0.05, sbdry=NULL,
-                    trim = 0.025, undo.splits=c("none","prune", "sdundo"), 
-                    undo.prune=0.05, undo.SD=3, verbose=1)
+  segment(x, weights = NULL, alpha = 0.01, nperm = 10000, p.method = 
+                    c("hybrid", "perm"), min.width=2, kmax=25, nmin=200, 
+                    eta=0.05, sbdry=NULL, trim = 0.025, undo.splits = 
+                    c("none", "prune", "sdundo"), undo.prune=0.05, 
+                    undo.SD=3, verbose=1)
 }
 \arguments{
   \item{x}{an object of class CNA}
+  \item{weights}{a vector of weights for the probes. the weights should be
+    inversely proportional to their variances.}
   \item{alpha}{significance levels for the test to accept change-points.}
   \item{nperm}{number of permutations used for p-value computation.}
   \item{p.method}{method used for p-value computation.  For the "perm"
