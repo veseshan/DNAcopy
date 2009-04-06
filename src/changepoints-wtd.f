@@ -84,7 +84,7 @@ c     call intpr("num rej",7,nrej,1)
             n1 = iseg(1)
             n12 = iseg(2)
             n2 = n12 - n1
-            tpval = wtpermp(n1,n2,n12,x(l),px,nperm)
+            tpval = wtpermp(n1,n2,n12,x(l),px,wts(l),rwts(l),nperm)
 c            call dblepr("binseg p-value",14,tpval,1)
             if (tpval.le.cpval) then
                ncpt = 1
@@ -94,7 +94,7 @@ c            call dblepr("binseg p-value",14,tpval,1)
             n12 = n - iseg(1)
             n2 = n - iseg(2)
             n1 = n12 - n2
-            tpval = wtpermp(n1,n2,n12,x(l),px,nperm)
+            tpval = wtpermp(n1,n2,n12,x(l),px,wts(l),rwts(l),nperm)
 c            call dblepr("binseg p-value",14,tpval,1)
             if (tpval.le.cpval) then
                ncpt = ncpt + 1
