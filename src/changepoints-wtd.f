@@ -198,7 +198,9 @@ c     also make sure there are enough observations i.e. m1 >= 10
             tmpx = px(i)
             px(i) = px(j)
             px(j) = tmpx
-            xsum1 = xsum1 + px(i)/rwts(i)
+c     the observation should be divided by sqrt(wts(i)) to get the correct 
+c     probe variance.  But should be multiplied by wts(i) for statistic
+            xsum1 = xsum1 + px(i)*rwts(i)
  30      continue
          pstat = abs(xsum1/rm1 - xbar)
 c         call dblepr("P-Stat",6,pstat,1)
