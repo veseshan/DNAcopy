@@ -112,7 +112,11 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01, weights=
     ll <- uu <- 0
     for(i in 1:length(lseg)) {
       uu <- uu + lseg[i]
-      segmeans[i] <- mean(genomdat[(ll+1):uu])
+      if (weighted) {
+        segmeans[i] <- sum(genomdat[(ll+1):uu]*weights[(ll+1):uu])/sum(weights[(ll+1):uu])
+      } else {
+        segmeans[i] <- mean(genomdat[(ll+1):uu])
+      }
       ll <- uu
     }
     list("lseg" = lseg, "segmeans" = segmeans)

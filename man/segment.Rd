@@ -14,8 +14,10 @@
 }
 \arguments{
   \item{x}{an object of class CNA}
-  \item{weights}{a vector of weights for the probes. the weights should be
-    inversely proportional to their variances.}
+  \item{weights}{a vector of weights for the probes. The weights should be
+    inversely proportional to their variances.  Currently all weights
+    should be positive i.e. remove probes with zero weight prior to
+    segmentation.}
   \item{alpha}{significance levels for the test to accept change-points.}
   \item{nperm}{number of permutations used for p-value computation.}
   \item{p.method}{method used for p-value computation.  For the "perm"
@@ -102,6 +104,16 @@ plot(genomdat)
 chrom <- rep(1:2,c(290,210))
 maploc <- c(1:290,1:210)
 test2 <- segment(CNA(genomdat, chrom, maploc))
+
+# test code for weighted CBS
+set.seed(97)
+wts <- sample(1:3, 500, replace=TRUE)
+genomdat <- rnorm(500, sd=0.3)/sqrt(wts) +
+rep(c(-0.2,0.1,1,-0.5,0.2,-0.5,0.1,-0.2),c(137,87,17,49,29,52,87,42))
+plot(genomdat)
+chrom <- rep(1:2,c(290,210))
+maploc <- c(1:290,1:210)
+test3 <- segment(CNA(genomdat, chrom, maploc), weights=wts)
 
 #A real analyis
 
