@@ -1,3 +1,8 @@
+Changes in Version 1.19.2
+
+   o Fixed a rarely triggered bug in the new code
+
+
 Changes in Version 1.19.1
 
    o Faster algorithm to compute the CBS maximum t-statistic

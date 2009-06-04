@@ -1,6 +1,6 @@
 Package: DNAcopy
 Title: DNA copy number data analysis
-Version: 1.19.1
+Version: 1.19.2
 Author: Venkatraman E. Seshan, Adam Olshen
 Description: Segments DNA copy number data using circular binary
         segmentation to detect regions with abnormal copy number

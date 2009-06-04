@@ -245,8 +245,11 @@ c
             awtmax = psrn - awtmax
             if (awthi .ge. psrnov2) then
                do 70 i = ilo, ihi
-                  if ((bi .eq. 1) .and. (bj .eq. nb)) 
-     1                 jhi1 = min(jhi, jhi - al0 + i)
+                  if ((bi .eq. 1) .and. (bj .eq. nb)) then 
+                     jhi1 = min(jhi, jhi - al0 + i)
+                  else
+                     jhi1 = jhi
+                  endif
                   do 65 j = jhi1, jlo, -1
                      awt1 = cwts(j) - cwts(i)
                      if (awt1 .ge. awtmax) then
@@ -514,8 +517,11 @@ c
             awtmax = psrn - awtmax
             if (awthi .ge. psrnov2) then
                do 70 i = ilo, ihi
-                  if ((bi .eq. 1) .and. (bj .eq. nb)) 
-     1                 jhi1 = min(jhi, jhi - al0 + i)
+                  if ((bi .eq. 1) .and. (bj .eq. nb)) then 
+                     jhi1 = min(jhi, jhi - al0 + i)
+                  else
+                     jhi1 = jhi
+                  endif
                   do 65 j = jhi1, jlo, -1
                      awt1 = cwts(j) - cwts(i)
                      if (awt1 .ge. awtmax) then
