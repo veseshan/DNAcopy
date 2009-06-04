@@ -1,3 +1,11 @@
+Changes in Version 1.19.1
+
+   o Faster algorithm to compute the CBS maximum t-statistic
+
+
+1.17.5 became 1.18.0 in Bioconductor 2.4 & =1.19.0 now
+------------------------------------------------------
+
 Changes in Version 1.17.5
 
    o For weighted CBS return weighted segment means (not ordinary mean).

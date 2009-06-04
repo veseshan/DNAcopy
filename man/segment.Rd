@@ -30,7 +30,8 @@
   \item{kmax}{the maximum width of smaller segment for permutation
     in the hybrid method.}
   \item{nmin}{the minimum length of data for which the approximation of
-    maximum statistic is used under the hybrid method.}
+    maximum statistic is used under the hybrid method. should be larger
+    than 4*kmax}
   \item{eta}{the probability to declare a change conditioned on the
     permuted statistic exceeding the observed statistic exactly  
     j (= 1,...,nperm*alpha) times.}

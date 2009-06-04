@@ -1,12 +1,12 @@
 c     Ternary segmentation with permutation reference distribution
 c     probes have weights due to differences in variances
 
-      subroutine wfindcpt(n,x,tss,wts,rwts,cwts,px,sx,mncwt,nperm,cpval,
-     1     ncpt,icpt,hybrid,al0,hk,delta,ngrid,sbn,sbdry,tol)
+      subroutine wfindcpt(n,x,tss,wts,rwts,cwts,px,sx,nperm,cpval,ncpt,
+     1     icpt,hybrid,al0,hk,mncwt,delta,ngrid,sbn,sbdry,tol)
       integer n,nperm,ncpt,icpt(2),al0,hk,ngrid,sbn,sbdry(sbn)
       logical hybrid
       double precision x(n),tss,wts(n),rwts(n),cwts(n),px(n),sx(n),
-     1     mncwt(n),cpval,delta,tol
+     1     cpval,mncwt(hk),delta,tol
 
       integer np,nrej,nrejc,iseg(2),n1,n2,n12,l,k
       double precision ostat,ostat1,pstat,tpval,pval1,pval2
@@ -21,11 +21,9 @@ c     new functions to replace tmax and htmax (also tmaxo replaces tmax1)
       ncpt = 0
 
 c     call the observed statistic routine
-      call wtmaxo(n,x,wts,tss,sx,cwts,mncwt,iseg,ostat,al0)
+      call wtmaxo(n,x,wts,tss,sx,cwts,iseg,ostat,al0)
       ostat1 = sqrt(ostat)
       ostat = ostat * 0.99999
-c      call dblepr("Max Stat",8,ostat,1)
-c      call intpr("Location",8,iseg,2)
 
 c     if maximal t-statistic is too small (for now use 0.1) don't split
       if (ostat1 .le. 0.1) go to 500
@@ -35,8 +33,8 @@ c     also make sure it's not affected by outliers i.e. small seglength
       if ((ostat1 .ge. 7.0) .and. (l .ge. 10)) go to 200
 c     o.w calculate p-value and decide if & how data are segmented
       if (hybrid) then
+         call getmncwt(n, cwts, hk, mncwt, delta)
 c     delta is a function of arc lengths
-         delta = mncwt(hk+1)/cwts(n)
          pval1 = tailp(ostat1, delta, n, ngrid, tol)
          if (pval1 .gt. cpval) go to 500
          pval2 = cpval - pval1
@@ -46,7 +44,7 @@ c     delta is a function of arc lengths
 c     call permutation code for data with weights
             call wxperm(n,x,px,rwts)
 c     call the small arc permutation statistic function
-            pstat = hwtmaxp(n,hk,tss,px,wts,sx,cwts,mncwt,al0)
+            pstat = hwtmaxp(n,hk,px,wts,sx,cwts,mncwt,al0)
             if (ostat.le.pstat) then
                nrej = nrej + 1
                k = k + 1
@@ -61,13 +59,11 @@ c     call the small arc permutation statistic function
 c     call permutation code for data with weights
             call wxperm(n,x,px,rwts)
 c     call full data permutation statistic function
-            pstat = wtmaxp(n,tss,px,wts,sx,cwts,mncwt,al0)
-c     call dblepr("Perm Max Stat",13,pstat,1)
+            pstat = wtmaxp(n,px,wts,sx,cwts,al0)
             if (ostat.le.pstat) then
                nrej = nrej + 1
                k = k + 1
             endif
-c     call intpr("num rej",7,nrej,1)
             if (nrej.gt.nrejc) go to 500
             if (np .ge. sbdry(k)) go to 200
  100     continue
@@ -85,7 +81,6 @@ c     call intpr("num rej",7,nrej,1)
             n12 = iseg(2)
             n2 = n12 - n1
             tpval = wtpermp(n1,n2,n12,x(l),px,wts(l),rwts(l),nperm)
-c            call dblepr("binseg p-value",14,tpval,1)
             if (tpval.le.cpval) then
                ncpt = 1
                icpt(1) = iseg(1)
@@ -95,7 +90,6 @@ c            call dblepr("binseg p-value",14,tpval,1)
             n2 = n - iseg(2)
             n1 = n12 - n2
             tpval = wtpermp(n1,n2,n12,x(l),px,wts(l),rwts(l),nperm)
-c            call dblepr("binseg p-value",14,tpval,1)
             if (tpval.le.cpval) then
                ncpt = ncpt + 1
                icpt(ncpt) = iseg(2)
@@ -183,10 +177,8 @@ c     function for the p-value of t-statistics for removing edge effects
          ostat = 0.99999*abs(xsum2/rn2 - xbar)
          tstat = (ostat**2)*rn2*rn/rn1
       endif
-c      call dblepr("O-Stat",6,ostat,1)
       nrej = 0
       tstat = tstat/((tss-tstat)/(dfloat(n)-2.0))
-c      call dblepr("T-square",8,tstat,1)
 c     if observed t is large (> 5) don't bother with permutation p-value
 c     also make sure there are enough observations i.e. m1 >= 10
       if ((tstat .gt. 25) .and. (m1 .ge. 10)) go to 110
@@ -203,7 +195,6 @@ c     probe variance.  But should be multiplied by wts(i) for statistic
             xsum1 = xsum1 + px(i)*rwts(i)
  30      continue
          pstat = abs(xsum1/rm1 - xbar)
-c         call dblepr("P-Stat",6,pstat,1)
          if (ostat.le.pstat) nrej = nrej + 1
  100  continue
  110  wtpermp = dfloat(nrej)/dfloat(nperm)

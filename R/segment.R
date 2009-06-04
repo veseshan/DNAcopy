@@ -7,6 +7,7 @@ segment <- function(x, weights=NULL, alpha=0.01, nperm=10000, p.method=
     if (!inherits(x, 'CNA')) stop("First arg must be a copy number array object")
     call <- match.call()
     if (min.width < 2 | min.width > 5) stop("minimum segment width should be between 2 and 5")
+    if (nmin < 4*kmax) stop("nmin should be >= 4*kmax")
     if (missing(sbdry)) {
       if (nperm==10000 & alpha==0.01 & eta==0.05) {
         sbdry <- default.DNAcopy.bdry

@@ -4,108 +4,273 @@ c     --------------------------------------------------------------
 c         This is relevant only for log-ratio not binary data
 c     --------------------------------------------------------------
 c     function for calculating the full max weighted t-statistic
-      subroutine wtmaxo(n,x,wts,tss,sx,cwts,mncwt,iseg,ostat,al0)
+c     new approach to maximizing t-statistic
+
+      subroutine wtmaxo(n,x,wts,tss,sx,cwts,iseg,ostat,al0)
       integer n,iseg(2),al0
-      double precision x(n),wts(n),tss,sx(n),cwts(n),mncwt(n),ostat
-c     wts is the vector of weights for each probe
-c     cwts is the cumsum of wts divided by sqrt(cwts(n))
-c     mncwt is the min seg weight for a given seg length
+      double precision x(n),wts(n),tss,sx(n),cwts(n),ostat
+c     
+c     look at the partial sums in blocks of size sqrt(n)
+c     
+      integer ipsmin, ipsmax, ipsmin0, ipsmax0, nb, i, j, k, l, nb1,
+     1     nb2, bi, bj, ilo, ihi, jlo, jhi, ihi1, jlo1, jhi1,
+     2     tmaxi, tmaxj, nal0
+      double precision psum, psmin, psmax, psmin0, psmax0, bssmax,
+     1     bsslim, rn, sij1, sij2, sijmx0, bijbss, awtmax, psrnov2,
+     2     psdiff, psrj, psrn, psrnj, awtlo, awthi, awt1
+c     
+c     use local arrays for working within blocks
+c     block partial sum max and min 
+      double precision, allocatable :: bpsmax(:), bpsmin(:)
+c     location of the max and min
+      integer, allocatable :: bb(:), ibmin(:), ibmax(:)
 
-      integer i,j, tmaxi, tmaxj, nmj, ipj, ipnmj
-c      double precision xsum,sx2,x1,x2,rij,rw,tij,xvar
-      double precision rn, rj, bssmx, tmax, bssij
+c     t statistic corresponding to max for block i,j
+      double precision, allocatable :: bssbij(:), bssijmax(:), awt(:)
+c     row, column and order vector for reordering bssbij
+      integer, allocatable :: bloci(:), blocj(:), loc(:)
 
-c     max and min partial sums and their locations
-      integer ipsmin, ipsmax
-      double precision psmin, psmax, psrj, psrnj, rnj
-
-      rn = cwts(n)
-      ostat = -0.5
-      sx(1) = x(1)*wts(1)
-      psmin = sx(1)
-      ipsmin = 1
-      psmax = sx(1)
-      ipsmax = 1
-      do 20 i = 2,n
-         sx(i) = sx(i-1) + x(i)*wts(i)
-         if (sx(i) .lt. psmin) then 
-            psmin = sx(i)
-            ipsmin = i
-         endif
-         if (sx(i) .gt. psmax) then 
-            psmax = sx(i)
-            ipsmax = i
-         endif
- 20   continue
-      psrj = abs(cwts(ipsmax) - cwts(ipsmin))
-      psrnj = psrj*(rn-psrj)
-      psrj = min(psrj, rn-psrj)
-
-      bssmx = (psmax - psmin)**2/psrnj
-      if (ipsmax .gt. ipsmin) then
-         tmaxi = ipsmin
-         tmaxj = ipsmax
+c     calculate number of blocks (nb) and block boundaries (vector bb)
+      rn = dfloat(n)
+      if (n .ge. 50) then
+         nb = nint(sqrt(dfloat(n)))
       else
-         tmaxi = ipsmax
-         tmaxj = ipsmin
+         nb = 1
       endif
 
-c     compute the max bss for segments of length j
-      do 40 j = al0,(n-1)/2
-c     sxmx is the maximum of abs partial sums x[i+1] + ... + x[i+j-1]
-         do 30 i = 1,n-j
-            ipj = i + j
-            rj = cwts(ipj) - cwts(i)
-            mncwt(j) = min(mncwt(j), rj)
-            rnj = rj*(rn-rj)
-            if (rnj .lt. psrnj) then
-               bssij = (sx(ipj) - sx(i))**2/rnj
-               if (bssij .gt. bssmx) then 
-                  bssmx = bssij
-                  tmaxi = i
-                  tmaxj = ipj
+c     the number of paiwise block comparison
+      nb2 = nb*(nb+1)/2
+c     allocate memory
+      allocate(bpsmax(nb), bpsmin(nb))
+      allocate(bb(nb), ibmin(nb), ibmax(nb))
+      allocate(bssbij(nb2), bssijmax(nb2), awt(nb2))
+      allocate(bloci(nb2), blocj(nb2), loc(nb2))
+
+c     block boundaries
+      do 110 i = 1, nb
+         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+ 110  continue
+
+c     find the max, min of partial sums and their locations within blocks
+      ilo = 1
+      psum = 0
+      psmin0 = 0
+      psmax0 = 0
+      ipsmin0 = n
+      ipsmax0 = n
+      do 20 j = 1, nb
+         sx(ilo) = psum + x(ilo)*wts(ilo)
+         psmin = sx(ilo)
+         ipsmin = ilo
+         psmax = sx(ilo)
+         ipsmax = ilo
+         do 10 i = ilo+1, bb(j)
+            sx(i) = sx(i-1) + x(i)*wts(i)
+            if (sx(i) .lt. psmin) then 
+               psmin = sx(i)
+               ipsmin = i
+            endif
+            if (sx(i) .gt. psmax) then 
+               psmax = sx(i)
+               ipsmax = i
+            endif
+ 10      continue
+c     store the block min, max and locations
+         ibmin(j) = ipsmin
+         ibmax(j) = ipsmax
+         bpsmin(j) = psmin
+         bpsmax(j) = psmax
+c     adjust global min, max and locations
+         if (psmin .lt. psmin0) then
+            psmin0 = psmin
+            ipsmin0 = ipsmin
+         endif
+         if (psmax .gt. psmax0) then
+            psmax0 = psmax
+            ipsmax0 = ipsmax
+         endif
+c     reset ilo to be the block boundary + 1
+         psum = sx(bb(j))
+         ilo = bb(j) + 1
+ 20   continue
+
+c     calculate bss for max s_i - min s_i
+      psdiff = psmax0 - psmin0
+      psrn = cwts(n)
+      psrj = abs(cwts(ipsmax0) - cwts(ipsmin0))
+      psrnj = psrj*(psrn-psrj)
+      bssmax = (psdiff**2)/psrnj
+      tmaxi = min(ipsmax0, ipsmin0)
+      tmaxj = max(ipsmax0, ipsmin0)
+
+c     for a pair of blocks (i,j) calculate the max absolute t-statistic
+c     at the (min_i, max_j) and (max_i, min_j) locations 
+c     for other indices the t-statistic can be bounded using this
+c
+c     if a block doesn't have the potential to exceed bssmax ignore it
+c     calculate the bsslim for each block and include ones >= bssmax
+
+      psrnov2 = psrn/2
+      l = 0
+      nal0 = n - al0
+      do 40 i = 1, nb
+         do 30 j = i, nb
+c     calculate bsslim
+            if (i .eq. 1) then
+               ilo = 1
+            else
+               ilo = bb(i-1) + 1
+            endif
+            ihi = bb(i)
+            if (j .eq. 1) then
+               jlo = 1
+            else
+               jlo = bb(j-1) + 1
+            endif
+            jhi = bb(j)
+c     for wCBS calculated hi and lo arc weights instead of lengths
+            awthi = cwts(jhi) - cwts(ilo)
+            if (jhi - ilo .gt. nal0) then
+               awthi = 0
+               do 35 k = 1, al0
+                  awthi = max(awthi, cwts(nal0+k) - cwts(k))
+ 35            continue
+            endif
+            if (i .eq. j) then
+               awtlo = cwts(ilo+al0) - cwts(ilo)
+               do 36 k = ilo + 1, ihi - al0
+                  awtlo = min(awtlo, cwts(k+al0) - cwts(k))
+ 36            continue
+            else if (i+1 .eq. j) then
+               awtlo = cwts(jlo) - cwts(jlo-al0)
+               do 37 k = jlo - al0 + 1, ihi
+                  awtlo = min(awtlo, cwts(k+al0) - cwts(k))
+ 37            continue
+            else
+               awtlo = cwts(jlo) - cwts(ihi)
+            endif
+c     max S_k over block j - min S_k over block i
+            sij1 = abs(bpsmax(j) - bpsmin(i))
+c     max S_k over block i - min S_k over block j
+            sij2 = abs(bpsmax(i) - bpsmin(j))
+c     if i = j then sij1 and sij2 are the same
+            sijmx0 = max(sij1, sij2)
+            psrnj = min(awtlo*(psrn-awtlo), awthi*(psrn-awthi))
+            bsslim = (sijmx0**2)/psrnj
+c     if its as large as bssmax add block
+            if (bssmax .le. bsslim) then
+               l = l+1
+               loc(l) = l
+               bloci(l) = i
+               blocj(l) = j
+               bssijmax(l) = bsslim
+c     max sij in the (i,j) block, t-statistic etc
+               if (sij1 .gt. sij2) then
+                  awt(l) = abs(cwts(ibmax(j)) - cwts(ibmin(i)))
+                  bssbij(l) = (sij1**2)/(awt(l)*(psrn-awt(l)))
+               else
+                  awt(l) = abs(cwts(ibmin(j)) - cwts(ibmax(i)))
+                  bssbij(l) = (sij2**2)/(awt(l)*(psrn-awt(l)))
                endif
             endif
  30      continue
-         nmj = n - j
-         do 35 i = 1, j
-            ipnmj = i + nmj
-            rj = cwts(ipnmj) - cwts(i)
-            mncwt(j) = min(mncwt(j), rn-rj)
-            rnj = rj*(rn-rj)
-            if (rnj .lt. psrnj) then
-               bssij = (sx(ipnmj) - sx(i))**2/rnj
-c     absx = abs(sx(ipnmj) - sx(i))
-               if (bssij .gt. bssmx) then 
-                  bssmx = bssij
-                  tmaxi = i
-                  tmaxj = ipnmj
-               endif
-            endif
- 35      continue
-         if (mncwt(j) .ge. psrj) go to 60
  40   continue
-c     compute the max statistic for segments of length n/2 (if integer)
-      if (n.eq.2*(n/2)) then
-         j = n/2
-         do 50 i = 1,n-j
-            ipj = i + j
-            rj = cwts(ipj) - cwts(i)
-            rnj = rj*(rn-rj)
-            if (rnj .lt. psrnj) then
-               bssij = (sx(ipj) - sx(i))**2/rnj
-               if (bssij .gt. bssmx) then 
-                  bssmx = bssij
-                  tmaxi = i
-                  tmaxj = ipj
-               endif
+
+      nb1 = l
+
+c     Now sort the t-statistics by their magnitude
+      call qsort4(bssbij, loc, 1, nb1)
+
+c     now go through the blocks in reverse order (largest down)
+      do 100 l = nb1, 1, -1
+         k = loc(l)
+c     need to check a block only if it has potential to increase bss
+c     rjlo is the smalllest (j-i) in the block and rjhi is the largest
+         bsslim = bssijmax(k)
+         if (bssmax .le. bsslim) then
+c     bi, bj give the block location
+            bi = bloci(k)
+            bj = blocj(k)
+            awtmax = awt(k)
+            if (bi .eq. 1) then
+               ilo = 1
+            else
+               ilo = bb(bi-1) + 1
             endif
- 50      continue
-      endif
-c     convert statistic to t^2 form
- 60   if (tss .le. bssmx+0.0001) tss = bssmx + 1.0
-      tmax = bssmx/((tss-bssmx)/(dfloat(n)-2.0))
-      ostat = tmax
+            ihi = bb(bi)
+            if (bj .eq. 1) then
+               jlo = 1
+            else
+               jlo = bb(bj-1) + 1
+            endif
+            jhi = bb(bj)
+            awthi = cwts(jhi) - cwts(ilo)
+            if (bi .eq. bj) then
+               awtlo = 0
+            else
+               awtlo = cwts(jlo) - cwts(ihi)
+            endif
+c
+c     if arc wt is larger than half total wt (psrn/2) make is psrn - arc wt
+c
+            if (awtmax .gt. psrn - awtmax) awtmax = psrn - awtmax
+c
+c     if awtlo <= psrn/2 start from (ihi, jlo) and go up
+c     if awthi >= psrn/2 start from (ilo, jhi) and go down
+c
+            if (awtlo .le. psrnov2) then
+               if (bi .eq.bj) then 
+                  ihi1 = ihi - al0
+               else
+                  ihi1 = ihi
+               endif
+               do 60 i = ihi1, ilo, -1
+                  jlo1 = max(i + al0, jlo)
+                  do 55 j = jlo1, jhi
+                     awt1 = cwts(j) - cwts(i)
+                     if (awt1 .le. awtmax) then
+                        bijbss = (sx(j) - sx(i))**2/(awt1*(psrn-awt1))
+                        if (bijbss .gt. bssmax) then
+                           bssmax = bijbss
+                           tmaxi = i
+                           tmaxj = j
+                        endif
+                     endif
+ 55               continue
+ 60            continue
+            endif
+c
+c     make arc wt  psrn - arc wt
+c
+            awtmax = psrn - awtmax
+            if (awthi .ge. psrnov2) then
+               do 70 i = ilo, ihi
+                  if ((bi .eq. 1) .and. (bj .eq. nb)) 
+     1                 jhi1 = min(jhi, jhi - al0 + i)
+                  do 65 j = jhi1, jlo, -1
+                     awt1 = cwts(j) - cwts(i)
+                     if (awt1 .ge. awtmax) then
+                        bijbss = (sx(j) - sx(i))**2/(awt1*(psrn-awt1))
+                        if (bijbss .gt. bssmax) then
+                           bssmax = bijbss
+                           tmaxi = i
+                           tmaxj = j
+                        endif
+                     endif
+ 65               continue
+ 70            continue
+            endif
+         endif
+ 100  continue
+
+      if (tss.le.bssmax+0.0001) tss = bssmax + 1.0
+      bssmax = bssmax/((tss-bssmax)/(rn-2.0))
+
+c     deallocate memory
+      deallocate(bpsmax, bpsmin, bb, ibmin, ibmax)
+      deallocate(bssbij, bssijmax, bloci, blocj, loc, awt)
+
+      ostat = bssmax
       iseg(1) = tmaxi
       iseg(2) = tmaxj
 
@@ -113,78 +278,274 @@ c     convert statistic to t^2 form
       end
 
 c     function for calculating the full max wtd t-statistic on permuted data
-      double precision function wtmaxp(n,tss,px,wts,sx,cwts,mncwt,al0)
+c     using a new approach to maximizing t-statistic
+      double precision function wtmaxp(n,px,wts,sx,cwts,al0)
       integer n,al0
-      double precision tss,px(n),wts(n),sx(n),cwts(n),mncwt(n)
+      double precision px(n),wts(n),sx(n),cwts(n)
+c     
+c     look at the partial sums in blocks of size sqrt(n)
+c     
+      integer ipsmin, ipsmax, ipsmin0, ipsmax0, nb, i, j, k, l, nb1,
+     1     nb2, bi, bj, ilo, ihi, jlo, jhi, ihi1, jlo1, jhi1, nal0
+      double precision psum, psmin, psmax, psmin0, psmax0, bssmax,
+     1     bsslim, rn, sij1, sij2, sijmx0, bijbss, awtmax, psrnov2,
+     2     psdiff, psrj, psrn, psrnj, awtlo, awthi, awt1, ssq, tss
+c     
+c     use local arrays for working within blocks
+c     block partial sum max and min 
+      double precision, allocatable :: bpsmax(:), bpsmin(:)
+c     location of the max and min
+      integer, allocatable :: bb(:), ibmin(:), ibmax(:)
 
-      integer i, j, nmj, ipj, ipnmj
-      double precision rn, rj, rnj, bssmax, bssij, psmin, psmax, psdiff,
-     1     bsslim,ssq
+c     t statistic corresponding to max for block i,j
+      double precision, allocatable :: bssbij(:), bssijmax(:), awt(:)
+c     row, column and order vector for reordering bssbij
+      integer, allocatable :: bloci(:), blocj(:), loc(:)
 
-      rn = cwts(n)
-      sx(1) = px(1)*wts(1)
-      ssq = wts(1)*px(1)**2
-      psmin = sx(1)
-      psmax = sx(1)
-      do 20 i = 2,n
-         sx(i) = sx(i-1) + px(i)*wts(i)
-         ssq = ssq + wts(i)*px(i)**2
-         psmin = min(psmin, sx(i))
-         psmax = max(psmax, sx(i))
- 20   continue
-      psdiff = psmax - psmin
-      tss = ssq - (sx(n)/rn)**2
-
-      bssmax = 0.0
-c     compute the max statistic for segments of length j
-      do 50 j = al0,(n-1)/2         
-         rj = mncwt(j)
-c     since psdiff is the maximum sx(i+j) - sx(i) can be 
-         bsslim = psdiff**2/(rj*(rn-rj))
-         if (bsslim .lt. bssmax) go to 70
-         do 30 i = 1,n-j
-            ipj = i+j
-            rj = cwts(ipj) - cwts(i)
-            rnj = rj*(rn-rj)
-            bssij = (sx(ipj) - sx(i))**2/rnj
-            if (bssij .gt. bssmax) bssmax = bssij
- 30      continue
-         nmj = n - j
-         do 40 i = 1, j
-            ipnmj = i + nmj
-            rj = cwts(ipnmj) - cwts(i)
-            rnj = rj*(rn-rj)
-            bssij = (sx(ipnmj) - sx(i))**2/rnj
-            if (bssij .gt. bssmax) bssmax = bssij
- 40      continue
- 50   continue
-
-c     compute the max statistic for segments of length n/2 (if integer)
-      if (n.eq.2*(n/2)) then
-         j = n/2
-         do 60 i = 1,n/2
-            ipj = i + j
-            rj = cwts(ipj) - cwts(i)
-            rnj = rj*(rn-rj)
-            bssij = (sx(ipj) - sx(i))**2/rnj
-            if (bssij .gt. bssmax) bssmax = bssij
- 60      continue
+c     calculate number of blocks (nb) and block boundaries (vector bb)
+      rn = dfloat(n)
+      if (n .ge. 50) then
+         nb = nint(sqrt(dfloat(n)))
+      else
+         nb = 1
       endif
- 70   if (tss .le. bssmax+0.0001) tss = bssmax + 1.0
-      wtmaxp = bssmax/((tss-bssmax)/(dfloat(n)-2.0))
+
+c     the number of paiwise block comparison
+      nb2 = nb*(nb+1)/2
+c     allocate memory
+      allocate(bpsmax(nb), bpsmin(nb))
+      allocate(bb(nb), ibmin(nb), ibmax(nb))
+      allocate(bssbij(nb2), bssijmax(nb2), awt(nb2))
+      allocate(bloci(nb2), blocj(nb2), loc(nb2))
+
+c     block boundaries
+      do 110 i = 1, nb
+         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+ 110  continue
+
+c     find the max, min of partial sums and their locations within blocks
+      ilo = 1
+      psum = 0
+      psmin0 = 0
+      psmax0 = 0
+      ipsmin0 = n
+      ipsmax0 = n
+      ssq = 0
+      do 20 j = 1, nb
+         sx(ilo) = psum + px(ilo)*wts(ilo)
+         ssq = ssq + (px(ilo)**2)*wts(ilo)
+         psmin = sx(ilo)
+         ipsmin = ilo
+         psmax = sx(ilo)
+         ipsmax = ilo
+         do 10 i = ilo+1, bb(j)
+            sx(i) = sx(i-1) + px(i)*wts(i)
+            ssq = ssq + (px(i)**2)*wts(i)
+            if (sx(i) .lt. psmin) then 
+               psmin = sx(i)
+               ipsmin = i
+            endif
+            if (sx(i) .gt. psmax) then 
+               psmax = sx(i)
+               ipsmax = i
+            endif
+ 10      continue
+c     store the block min, max and locations
+         ibmin(j) = ipsmin
+         ibmax(j) = ipsmax
+         bpsmin(j) = psmin
+         bpsmax(j) = psmax
+c     adjust global min, max and locations
+         if (psmin .lt. psmin0) then
+            psmin0 = psmin
+            ipsmin0 = ipsmin
+         endif
+         if (psmax .gt. psmax0) then
+            psmax0 = psmax
+            ipsmax0 = ipsmax
+         endif
+c     reset ilo to be the block boundary + 1
+         psum = sx(bb(j))
+         ilo = bb(j) + 1
+ 20   continue
+
+c     calculate bss for max s_i - min s_i
+      psdiff = psmax0 - psmin0
+      psrn = cwts(n)
+      tss = ssq - (sx(n)/psrn)**2
+      psrj = abs(cwts(ipsmax0) - cwts(ipsmin0))
+      psrnj = psrj*(psrn-psrj)
+      bssmax = (psdiff**2)/psrnj
+
+c     for a pair of blocks (i,j) calculate the max absolute t-statistic
+c     at the (min_i, max_j) and (max_i, min_j) locations 
+c     for other indices the t-statistic can be bounded using this
+c
+c     if a block doesn't have the potential to exceed bssmax ignore it
+c     calculate the bsslim for each block and include ones >= bssmax
+
+      psrnov2 = psrn/2
+      l = 0
+      nal0 = n - al0
+      do 40 i = 1, nb
+         do 30 j = i, nb
+c     calculate bsslim
+            if (i .eq. 1) then
+               ilo = 1
+            else
+               ilo = bb(i-1) + 1
+            endif
+            ihi = bb(i)
+            if (j .eq. 1) then
+               jlo = 1
+            else
+               jlo = bb(j-1) + 1
+            endif
+            jhi = bb(j)
+c     for wCBS calculated hi and lo arc weights instead of lengths
+            awthi = cwts(jhi) - cwts(ilo)
+            if (jhi - ilo .gt. nal0) then
+               awthi = 0
+               do 35 k = 1, al0
+                  awthi = max(awthi, cwts(nal0+k) - cwts(k))
+ 35            continue
+            endif
+            if (i .eq. j) then
+               awtlo = cwts(ilo+al0) - cwts(ilo)
+               do 36 k = ilo + 1, ihi - al0
+                  awtlo = min(awtlo, cwts(k+al0) - cwts(k))
+ 36            continue
+            else if (i+1 .eq. j) then
+               awtlo = cwts(jlo) - cwts(jlo-al0)
+               do 37 k = jlo - al0 + 1, ihi
+                  awtlo = min(awtlo, cwts(k+al0) - cwts(k))
+ 37            continue
+            else
+               awtlo = cwts(jlo) - cwts(ihi)
+            endif
+c     max S_k over block j - min S_k over block i
+            sij1 = abs(bpsmax(j) - bpsmin(i))
+c     max S_k over block i - min S_k over block j
+            sij2 = abs(bpsmax(i) - bpsmin(j))
+c     if i = j then sij1 and sij2 are the same
+            sijmx0 = max(sij1, sij2)
+            psrnj = min(awtlo*(psrn-awtlo), awthi*(psrn-awthi))
+            bsslim = (sijmx0**2)/psrnj
+c     if its as large as bssmax add block
+            if (bssmax .le. bsslim) then
+               l = l+1
+               loc(l) = l
+               bloci(l) = i
+               blocj(l) = j
+               bssijmax(l) = bsslim
+c     max sij in the (i,j) block, t-statistic etc
+               if (sij1 .gt. sij2) then
+                  awt(l) = abs(cwts(ibmax(j)) - cwts(ibmin(i)))
+                  bssbij(l) = (sij1**2)/(awt(l)*(psrn-awt(l)))
+               else
+                  awt(l) = abs(cwts(ibmin(j)) - cwts(ibmax(i)))
+                  bssbij(l) = (sij2**2)/(awt(l)*(psrn-awt(l)))
+               endif
+            endif
+ 30      continue
+ 40   continue
+      nb1 = l
+
+c     Now sort the t-statistics by their magnitude
+      call qsort4(bssbij, loc, 1, nb1)
+
+c     now go through the blocks in reverse order (largest down)
+      do 100 l = nb1, 1, -1
+         k = loc(l)
+c     need to check a block only if it has potential to increase bss
+c     rjlo is the smalllest (j-i) in the block and rjhi is the largest
+         bsslim = bssijmax(k)
+         if (bssmax .le. bsslim) then
+c     bi, bj give the block location
+            bi = bloci(k)
+            bj = blocj(k)
+            awtmax = awt(k)
+            if (bi .eq. 1) then
+               ilo = 1
+            else
+               ilo = bb(bi-1) + 1
+            endif
+            ihi = bb(bi)
+            if (bj .eq. 1) then
+               jlo = 1
+            else
+               jlo = bb(bj-1) + 1
+            endif
+            jhi = bb(bj)
+            awthi = cwts(jhi) - cwts(ilo)
+            if (bi .eq. bj) then
+               awtlo = 0
+            else
+               awtlo = cwts(jlo) - cwts(ihi)
+            endif
+c
+c     if arc wt is larger than half total wt (psrn/2) make is psrn - arc wt
+c
+            if (awtmax .gt. psrn - awtmax) awtmax = psrn - awtmax
+c
+c     if awtlo <= psrn/2 start from (ihi, jlo) and go up
+c     if awthi >= psrn/2 start from (ilo, jhi) and go down
+c
+            if (awtlo .le. psrnov2) then
+               if (bi .eq.bj) then 
+                  ihi1 = ihi - al0
+               else
+                  ihi1 = ihi
+               endif
+               do 60 i = ihi1, ilo, -1
+                  jlo1 = max(i + al0, jlo)
+                  do 55 j = jlo1, jhi
+                     awt1 = cwts(j) - cwts(i)
+                     if (awt1 .le. awtmax) then
+                        bijbss = (sx(j) - sx(i))**2/(awt1*(psrn-awt1))
+                        if (bijbss .gt. bssmax) bssmax = bijbss
+                     endif
+ 55               continue
+ 60            continue
+            endif
+c
+c     make arc wt  psrn - arc wt
+c
+            awtmax = psrn - awtmax
+            if (awthi .ge. psrnov2) then
+               do 70 i = ilo, ihi
+                  if ((bi .eq. 1) .and. (bj .eq. nb)) 
+     1                 jhi1 = min(jhi, jhi - al0 + i)
+                  do 65 j = jhi1, jlo, -1
+                     awt1 = cwts(j) - cwts(i)
+                     if (awt1 .ge. awtmax) then
+                        bijbss = (sx(j) - sx(i))**2/(awt1*(psrn-awt1))
+                        if (bijbss .gt. bssmax) bssmax = bijbss
+                     endif
+ 65               continue
+ 70            continue
+            endif
+         endif
+ 100  continue
+
+      if (tss.le.bssmax+0.0001) tss = bssmax + 1.0
+      wtmaxp = bssmax/((tss-bssmax)/(rn-2.0))
+
+c     deallocate memory
+      deallocate(bpsmax, bpsmin, bb, ibmin, ibmax)
+      deallocate(bssbij, bssijmax, bloci, blocj, loc, awt)
 
       return
       end
 
 c     function for the max (over small arcs) wtd t-statistic on permuted data
-      double precision function hwtmaxp(n,k,tss,px,wts,sx,cwts,mncwt,
-     1     al0)
+      double precision function hwtmaxp(n,k,px,wts,sx,cwts,mncwt,al0)
       integer n,k,al0
-      double precision tss,px(n),wts(n),sx(n),cwts(n),mncwt(n)
+      double precision px(n),wts(n),sx(n),cwts(n),mncwt(k)
 
       integer i, j, nmj, ipj, ipnmj
       double precision rn, rj, rnj, bssmax, bssij, psmin, psmax, psdiff,
-     1     bsslim, ssq
+     1     bsslim, ssq, tss
 
       rn = cwts(n)
       sx(1) = px(1)*wts(1)
@@ -226,6 +587,45 @@ c     since psdiff is the maximum sx(i+j) - sx(i) can be
  50   continue
  60   if (tss .le. bssmax+0.0001d0) tss = bssmax + 1.0d0
       hwtmaxp = bssmax/((tss-bssmax)/(dfloat(n)-2.0d0))
+
+      return
+      end
+
+c     the new statistic routine doesn't compute mncwt
+      subroutine getmncwt(n, cwts, k, mncwt, delta)
+      integer n, k
+      double precision cwts(n), mncwt(k), delta
+
+      integer i, j, nmj
+      double precision rj, rn
+
+      rn = cwts(n)
+      do 30 j = 1,k
+         mncwt(j) = cwts(j)
+         nmj = n-j
+         do 10 i = 1,nmj
+            rj = cwts(i+j) - cwts(i)
+            mncwt(j) = min(mncwt(j), rj)
+ 10      continue
+         do 20 i = 1, j
+            rj = cwts(i+nmj) - cwts(i)
+            mncwt(j) = min(mncwt(j), rn-rj)
+ 20      continue
+ 30   continue
+
+      j = k+1
+      nmj = n-j
+      delta = cwts(j)
+      do 40 i = 1,nmj
+         rj = cwts(i+j) - cwts(i)
+         delta = min(delta, rj)
+ 40   continue
+      do 50 i = 1, j
+         rj = cwts(i+nmj) - cwts(i)
+         delta = min(delta, rn-rj)
+ 50   continue
+
+      delta = delta/cwts(n)
 
       return
       end
