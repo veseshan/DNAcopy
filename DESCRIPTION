@@ -7,4 +7,4 @@ Description: Segments DNA copy number data using circular binary
 Maintainer: Venkatraman E. Seshan <ves2111@columbia.edu>
 biocViews: Microarray, DNACopyNumber
 LazyData: yes
-License: GPL version 2 or later
+License: GPL (>= 2)
