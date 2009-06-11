@@ -17,6 +17,8 @@ set.seed(0xbeef)
 # Tolerance (maybe decrease?)
 tol <- .Machine$double.eps^0.5
 
+print(sessionInfo())
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Simulating copy-number data
@@ -24,14 +26,16 @@ tol <- .Machine$double.eps^0.5
 # Number of loci
 J <- 1000
 
+x <- sort(runif(J, min=0, max=1000))
+w <- runif(J)
 mu <- double(J)
-mu[200:300] <- mu[200:300] + 1
-mu[650:800] <- mu[650:800] - 1
+jj <- (200 <= x & x < 300)
+mu[jj] <- mu[jj] + 1
+jj <- (650 <= x & x < 800)
+mu[jj] <- mu[jj] - 1
+w[jj] <- 0.001 
 eps <- rnorm(J, sd=1/2)
 y <- mu + eps
-x <- sort(runif(length(y), max=length(y)))
-w <- runif(J)
-w[650:800] <- 0.001
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -50,18 +54,23 @@ print(cnR)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Test: Non-weighted segmentation
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+t <- system.time({
 fitR <- segment(cnR, verbose=1)
+})
+cat("Processing time:\n")
+print(t)
 print(fitR)
 
-# Expected results [from dput(fitR$output)]
-truth <- structure(list(ID=c("SampleA", "SampleA", "SampleA", "SampleA",
-"SampleA"), chrom=c(1, 1, 1, 1, 1), loc.start=c(0.551678240299225,
-207.80026470311, 293.691275408491, 659.097356721759, 814.257808262482
-), loc.end=c(207.684752298519, 292.710821842775, 658.396144397557,
-812.704775715247, 999.108265852556), num.mark=c(201, 99, 349,
-151, 200), seg.mean=c(0.0164, 1.0474, -0.0227, -1.0813, -0.0612
-)), .Names=c("ID", "chrom", "loc.start", "loc.end", "num.mark",
-"seg.mean"), row.names=c(NA, -5L), class="data.frame")
+# Expected results
+# These were obtained by dput(fitR$output) using DNAcopy v1.19.0
+truth <- structure(list(ID = c("SampleA", "SampleA", "SampleA", "SampleA",
+"SampleA"), chrom = c(1, 1, 1, 1, 1), loc.start = c(1.36857712641358,
+201.604291098192, 303.775111911818, 650.741211604327, 800.302447052673
+), loc.end = c(199.083976913244, 301.066882908344, 647.42697100155,
+798.971758922562, 999.329038895667), num.mark = c(209, 105, 337,
+138, 211), seg.mean = c(0.0256, 1.0099, -0.0084, -0.9792, -0.0289
+)), .Names = c("ID", "chrom", "loc.start", "loc.end", "num.mark",
+"seg.mean"), row.names = c(NA, -5L), class = "data.frame")
 
 stopifnot(all.equal(fitR$output, truth, tolerance=tol))
 
@@ -70,16 +79,21 @@ stopifnot(all.equal(fitR$output, truth, tolerance=tol))
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Test: Weighted segmentation
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+t <- system.time({
 fitR <- segment(cnR, weights=w, verbose=1)
+})
+cat("Processing time:\n")
+print(t)
 print(fitR)
 
-# Expected results [from dput(fitR$output)]
-truth <- structure(list(ID=c("SampleA", "SampleA", "SampleA"), chrom=c(1,
-1, 1), loc.start=c(0.551678240299225, 206.219613086432, 293.691275408491
-), loc.end=c(205.489653628320, 292.710821842775, 999.108265852556
-), num.mark=c(198, 102, 700), seg.mean=c(-0.0045, 1.0659,
--0.0425)), .Names=c("ID", "chrom", "loc.start", "loc.end",
-"num.mark", "seg.mean"), row.names=c(NA, -3L), class="data.frame")
+# Expected results
+# These were obtained by dput(fitR$output) using DNAcopy v1.19.0
+truth <- structure(list(ID = c("SampleA", "SampleA", "SampleA"), chrom = c(1,
+1, 1), loc.start = c(1.36857712641358, 201.604291098192, 303.775111911818
+), loc.end = c(199.083976913244, 301.066882908344, 999.329038895667
+), num.mark = c(209, 105, 686), seg.mean = c(0.0259, 1.0004,
+-0.0233)), .Names = c("ID", "chrom", "loc.start", "loc.end",
+"num.mark", "seg.mean"), row.names = c(NA, -3L), class = "data.frame")
 
 stopifnot(all.equal(fitR$output, truth, tolerance=tol))
 
@@ -89,3 +103,14 @@ stopifnot(all.equal(fitR$output, truth, tolerance=tol))
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Reset to previous random seed
 .Random.seed <- oldSeed
+
+print(sessionInfo())
+
+
+######################################################################
+# HISTORY
+# 2009-06-10
+# o Asserted that DNAcopy v1.19.2 gives the same results as 
+#   DNAcopy v1.19.2 on a Windows Vista machine using R v2.9.0 patched.
+# o Created.
+######################################################################
