@@ -101,6 +101,12 @@ c     calculate bss for max s_i - min s_i
       tmaxi = min(ipsmax0, ipsmin0)
       tmaxj = max(ipsmax0, ipsmin0)
 
+c     if the segment is all constant then psdiff = 0 and so bssmax = 0
+      if (psdiff .le. 0) then
+         bssmax = 0
+         go to 120
+      endif
+
 c     for a pair of blocks (i,j) calculate the max absolute t-statistic
 c     at the (min_i, max_j) and (max_i, min_j) locations 
 c     for other indices the t-statistic can be bounded using this
@@ -288,7 +294,7 @@ c     excess calcultaions to set range of i
          endif
  100  continue
 
-      if (ibin) then
+ 120  if (ibin) then
          if (tss.le.0.0001) tss = 1.0
          bssmax = bssmax/(tss/rn)
       else

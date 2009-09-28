@@ -96,6 +96,11 @@ c     reset ilo to be the block boundary + 1
 
 c     calculate bss for max s_i - min s_i
       psdiff = psmax0 - psmin0
+c     if the segment is all constant then psdiff = 0 and so bssmax = 0
+      if (psdiff .le. 0) then
+         bssmax = 0
+         go to 120
+      endif
       psrn = cwts(n)
       psrj = abs(cwts(ipsmax0) - cwts(ipsmin0))
       psrnj = psrj*(psrn-psrj)
@@ -266,7 +271,7 @@ c
          endif
  100  continue
 
-      if (tss.le.bssmax+0.0001) tss = bssmax + 1.0
+ 120  if (tss.le.bssmax+0.0001) tss = bssmax + 1.0
       bssmax = bssmax/((tss-bssmax)/(rn-2.0))
 
 c     deallocate memory
