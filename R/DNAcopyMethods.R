@@ -75,14 +75,14 @@ smooth.CNA <- function(x, smooth.region=2, outlier.SD.scale=4,
       for (i in uchrom) {
         ina <- which(!is.na(genomdat) & !(abs(genomdat)==Inf) & chrom==i)
         n <- length(genomdat[ina])
-        smoothed.data <- sapply(1:n, function(i, x, n, nbhd, oSD, sSD) {
-          xi <- x[i]
-          nbhd <- i+nbhd
-          xnbhd <- x[nbhd[nbhd>0 & nbhd <=n]]
-          if (xi > max(xnbhd) + oSD) xi <- median(c(xi,xnbhd)) + sSD
-          if (xi < min(xnbhd) - oSD) xi <- median(c(xi,xnbhd)) - sSD
-          xi
-        }, genomdat[ina], n, c(-k:-1, 1:k), outlier.SD, smooth.SD)
+        smoothed.data <- .Fortran("smoothLR",
+                                  as.integer(n),
+                                  as.double(genomdat[ina]),
+                                  sgdat=double(n),
+                                  as.integer(k),
+                                  as.double(outlier.SD),
+                                  as.double(smooth.SD),
+                                  PACKAGE = "DNAcopy")$sgdat
         x[,isamp+2][ina] <- smoothed.data
       }
     }
