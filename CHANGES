@@ -1,3 +1,7 @@
+Changes in Version 1.19.6
+
+   o added function glFrequency to calculate gains and losses
+
 Changes in Version 1.19.5
 
    o Changed smooth.CNA from all R to Fortran backbone
