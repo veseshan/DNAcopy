@@ -7,8 +7,8 @@ c     sSD = how close should it be moved
       integer n, k
       double precision gdat(n), sgdat(n), oSD, sSD
 
-      integer i, j, ilo, ihi, k2, j1, nk
-      double precision xdiff, mnnbd, mxnbd, xmed
+      integer i, j, ilo, ihi, k1, k2, j1
+      double precision mnnbd, mxnbd, xmed
 
 c     temporary arrayd for finding median
       double precision, allocatable :: xnbhd(:)
