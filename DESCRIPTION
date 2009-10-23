@@ -4,7 +4,7 @@ Version: 1.19.6
 Author: Venkatraman E. Seshan, Adam Olshen
 Description: Segments DNA copy number data using circular binary
         segmentation to detect regions with abnormal copy number
-Maintainer: Venkatraman E. Seshan <ves2111@columbia.edu>
+Maintainer: Venkatraman E. Seshan <seshanv@mskcc.org>
 biocViews: Microarray, CopyNumberVariants
 LazyData: yes
 License: GPL (>= 2)
