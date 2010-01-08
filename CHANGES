@@ -1,3 +1,11 @@
+Changes in Version 1.21.1
+
+   o changed our affiliations in the vignette
+
+
+1.19.6 became 1.20.0 in Bioconductor 2.5 & =1.21.0 now
+------------------------------------------------------
+
 Changes in Version 1.19.6
 
    o added function glFrequency to calculate gains and losses

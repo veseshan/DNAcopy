@@ -27,13 +27,13 @@
 \maketitle
 
 \begin{center}
-$^1$Department of Biostatistics\\
-Columbia University\\
-{\tt ves2111@columbia.edu}\\
+$^1$Department of Epidemiology and Biostatistics\\
+Memorial Sloan-Kettering Cancer Center\\
+{\tt seshanv@mskcc.org}\\
 \ \\
 $^2$Department of Epidemiology and Biostatistics\\
-Memorial Sloan-Kettering Cancer Center\\
-{\tt olshena@mskcc.org}
+University of California, San Francisco\\
+{\tt olshena@biostat.ucsf.edu}
 \end{center}
 
 \tableofcontents
