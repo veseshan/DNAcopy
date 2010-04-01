@@ -550,6 +550,7 @@ c     deallocate memory
       end
 
 c     function for the max (over small arcs) wtd t-statistic on permuted data
+c     new code to speed up this part 4/1/2010
       double precision function hwtmaxp(n,k,px,wts,sx,cwts,mncwt,al0)
       integer n,k,al0
       double precision px(n),wts(n),sx(n),cwts(n),mncwt(k)
@@ -558,45 +559,140 @@ c     function for the max (over small arcs) wtd t-statistic on permuted data
       double precision rn, rj, rnj, bssmax, bssij, psmin, psmax, psdiff,
      1     bsslim, ssq, tss
 
+c     create blocks of size k (or k+1) to span 1 thru n
+c     block partial sum max and min 
+      double precision, allocatable :: bpsmax(:), bpsmin(:)
+c     location of the max and min
+      integer, allocatable :: bb(:)
+c     variables to work on block specific data
+      integer nb, ilo, ihi, l
+      double precision psum, psdiffsq
+
+      rn = dfloat(n)
+c     number of blocks
+      nb = int(rn/dfloat(k))
+c     allocate memory
+      allocate(bpsmax(nb), bpsmin(nb))
+      allocate(bb(nb))
+c     block boundaries
+      do 110 i = 1, nb
+         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+ 110  continue
+
+c     don't need global min and max
+c     find the max, min of partial sums and their locations within blocks
+      ilo = 1
+      psum = 0
+      ssq = 0.0d0
+      bssmax = 0.0d0
       rn = cwts(n)
-      sx(1) = px(1)*wts(1)
-      ssq = wts(1)*px(1)**2
-      psmin = sx(1)
-      psmax = sx(1)
-      do 20 i = 2,n
-         sx(i) = sx(i-1) + px(i)*wts(i)
-         ssq = ssq + wts(i)*px(i)**2
-         psmin = min(psmin, sx(i))
-         psmax = max(psmax, sx(i))
-c         if (sx(i) .lt. psmin) psmin = sx(i)
-c         if (sx(i) .gt. psmax) psmax = sx(i)
+      do 20 j = 1, nb
+         sx(ilo) = psum + px(ilo)*wts(ilo)
+         ssq = ssq + wts(ilo)*px(ilo)**2
+         psmin = sx(ilo)
+         ipsmin = ilo
+         psmax = sx(ilo)
+         ipsmax = ilo
+         do 10 i = ilo+1, bb(j)
+            sx(i) = sx(i-1) + px(i)*wts(i)
+            ssq = ssq + wts(i)*px(i)**2
+            if (sx(i) .lt. psmin) then 
+               psmin = sx(i)
+               ipsmin = i
+            endif
+            if (sx(i) .gt. psmax) then 
+               psmax = sx(i)
+               ipsmax = i
+            endif
+ 10      continue
+c     store the block min, max and locations
+         bpsmin(j) = psmin
+         bpsmax(j) = psmax
+c     reset ilo to be the block boundary + 1
+         psum = sx(bb(j))
+         ilo = bb(j) + 1
+c     calculate the bss at the block max & min pr
+         i = abs(ipsmin - ipsmax)
+         if ((i .le. k) .and. (i .ge. al0)) then
+            rj = abs(cwts(ipsmax) - cwts(ipsmin))
+            rnj = rj*(rn-rj)
+            bssij = (bpsmax(j) - bpsmin(j))**2/rnj
+            if (bssmax .lt. bssij) bssmax = bssij
+         endif
  20   continue
-      psdiff = psmax - psmin
       tss = ssq - (sx(n)/rn)**2
 
-      bssmax = 0.0d0
-      do 50 j = al0,k
+c     check the first block
+      ilo = 1
+      ihi = bb(1)
+      psdiff = bpsmax(1) - bpsmin(1)
+      psdiffsq = psdiff**2
+      do 40 j = al0,k
          rj = mncwt(j)
-c     since psdiff is the maximum sx(i+j) - sx(i) can be 
-         bsslim = psdiff**2/(rj*(rn-rj))
-         if (bsslim .lt. bssmax) go to 60
-         do 30 i = 1,n-j
+         bsslim = psdiffsq/(rj*(rn-rj))
+         if (bsslim .lt. bssmax) go to 50
+         sxmx = 0.0d0
+         do 30 i = ilo,ihi-j
             ipj = i+j
             rj = cwts(ipj) - cwts(i)
-            rnj = rj*(rn-rj)
-            bssij = (sx(ipj) - sx(i))**2/rnj
+            bssij = (sx(ipj) - sx(i))**2/(rj*(rn-rj))
             if (bssij .gt. bssmax) bssmax = bssij
  30      continue
-         nmj = n - j
-         do 40 i = 1, j
+ 40   continue
+
+c     now the minor arcs spanning the end (n)
+ 50   psdiff = max(abs(bpsmax(1)-bpsmin(nb)), abs(bpsmax(nb)-bpsmin(1)))
+      psdiffsq = psdiff**2
+      do 70 j = al0,k
+         rj = mncwt(j)
+         bsslim = psdiffsq/(rj*(rn-rj))
+         if (bsslim .lt. bssmax) go to 100
+         nmj = n-j
+         do 60 i = 1,j
             ipnmj = i + nmj
             rj = cwts(ipnmj) - cwts(i)
-            rnj = rj*(rn-rj)
-            bssij = (sx(ipnmj) - sx(i))**2/rnj
+            bssij = (sx(ipnmj) - sx(i))**2/(rj*(rn-rj))
             if (bssij .gt. bssmax) bssmax = bssij
- 40      continue
- 50   continue
- 60   if (tss .le. bssmax+0.0001d0) tss = bssmax + 1.0d0
+ 60      continue
+ 70   continue
+
+c     now the other blocks
+ 100  do 200 l = 2,nb
+         ilo = bb(l-1)+1
+         ihi = bb(l)
+         psdiff = bpsmax(l) - bpsmin(l)
+         psdiffsq = psdiff**2
+         do 140 j = al0,k
+            rj = mncwt(j)
+            bsslim = psdiffsq/(rj*(rn-rj))
+            if (bsslim .lt. bssmax) go to 150
+            sxmx = 0.0d0
+            do 130 i = ilo,ihi-j
+               ipj = i+j
+               rj = cwts(ipj) - cwts(i)
+               bssij = (sx(ipj) - sx(i))**2/(rj*(rn-rj))
+               if (bssij .gt. bssmax) bssmax = bssij
+ 130        continue
+ 140     continue
+ 150     psdiff = max(abs(bpsmax(l)-bpsmin(l-1)), 
+     1        abs(bpsmax(l-1)-bpsmin(l)))
+         psdiffsq = psdiff**2
+         do 170 j = al0,k
+            rj = mncwt(j)
+            bsslim = psdiffsq/(rj*(rn-rj))
+            if (bsslim .lt. bssmax) go to 200
+            do 160 i = ilo-j,ilo-1
+               ipj = i+j
+               rj = cwts(ipj) - cwts(i)
+               bssij = (sx(ipj) - sx(i))**2/(rj*(rn-rj))
+               if (bssij .gt. bssmax) bssmax = bssij
+ 160        continue
+ 170     continue
+ 200  continue
+
+c      call dblepr("bss max", 7, bssmax, 1)
+
+      if (tss .le. bssmax+0.0001d0) tss = bssmax + 1.0d0
       hwtmaxp = bssmax/((tss-bssmax)/(dfloat(n)-2.0d0))
 
       return

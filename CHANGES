@@ -1,3 +1,7 @@
+Changes in Version 1.21.2
+
+   o changed the code for htmaxp & hwtmaxp for the hybrid
+
 Changes in Version 1.21.1
 
    o changed our affiliations in the vignette

@@ -26,7 +26,9 @@
     max over small segments and max over the rest.  Approximation is
     used for the larger segment max. Default is hybrid.}
   \item{min.width}{the minimum number of markers for a changed segment.
-    The default is 2 but can be made larger (current limit 5).}
+    The default is 2 but can be made larger.  Maximum possible value is
+    set at 5 since arbitrary widths can have the undesirable effect of
+    incorrect change-points when a true signal of narrow widths exists.}
   \item{kmax}{the maximum width of smaller segment for permutation
     in the hybrid method.}
   \item{nmin}{the minimum length of data for which the approximation of

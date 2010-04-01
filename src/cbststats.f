@@ -603,57 +603,185 @@ c     deallocate memory
       end
 
 c     function for the max (over small arcs) t-statistic on permuted data
+c     new code to speed up this part 3/31/2010
       double precision function htmaxp(n,k,tss,px,sx,al0,ibin)
       integer n,k,al0
       double precision tss,px(n),sx(n)
       logical ibin
 
-      integer i, j, nmj, nmji
+      integer i, j, nmj
       double precision rn, rj, absx, sxmx, bssmx, psmin, psmax, psdiff,
      1     bsslim, rnjov1
 
-      rn = dfloat(n)
-      sx(1) = px(1)
-      psmin = sx(1)
-      psmax = sx(1)
-      do 20 i = 2,n
-         sx(i) = sx(i-1) + px(i)
-         psmin = min(psmin, sx(i))
-         psmax = max(psmax, sx(i))
-c         if (sx(i) .lt. psmin) psmin = sx(i)
-c         if (sx(i) .gt. psmax) psmax = sx(i)
- 20   continue
-      psdiff = psmax - psmin
+c     create blocks of size k (or k+1) to span 1 thru n
+c     block partial sum max and min 
+      double precision, allocatable :: bpsmax(:), bpsmin(:)
+c     location of the max and min
+      integer, allocatable :: bb(:)
+c     variables to work on block specific data
+      integer nb, ilo, ihi, l
+      double precision psum, psdiffsq
 
+      rn = dfloat(n)
+c     number of blocks of size k (plus fraction since n/k may not be integer)
+      nb = int(rn/dfloat(k))
+c     allocate memory
+      allocate(bpsmax(nb), bpsmin(nb))
+      allocate(bb(nb))
+c     block boundaries
+      do 110 i = 1, nb
+         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+ 110  continue
+
+c     don't need global min and max
+c     find the max, min of partial sums and their locations within blocks
+      ilo = 1
+      psum = 0
       htmaxp = 0.0d0
-      do 50 j = al0,k
+      do 20 j = 1, nb
+         sx(ilo) = psum + px(ilo)
+         psmin = sx(ilo)
+         ipsmin = ilo
+         psmax = sx(ilo)
+         ipsmax = ilo
+         do 10 i = ilo+1, bb(j)
+            sx(i) = sx(i-1) + px(i)
+            if (sx(i) .lt. psmin) then 
+               psmin = sx(i)
+               ipsmin = i
+            endif
+            if (sx(i) .gt. psmax) then 
+               psmax = sx(i)
+               ipsmax = i
+            endif
+ 10      continue
+c     store the block min, max and locations
+         bpsmin(j) = psmin
+         bpsmax(j) = psmax
+c     reset ilo to be the block boundary + 1
+         psum = sx(bb(j))
+         ilo = bb(j) + 1
+c     calculate the bss at the block max & min pr
+         i = abs(ipsmin - ipsmax)
+         if ((i .le. k) .and. (i .ge. al0)) then
+            rj = dfloat(i)
+            rnjov1 = rn/(rj*(rn-rj))
+            if (ibin) then
+               bssmx = rnjov1*(bpsmax(j) - bpsmin(j) -0.5)**2
+            else
+               bssmx = rnjov1*(bpsmax(j) - bpsmin(j))**2
+            endif
+            if (htmaxp .lt. bssmx) htmaxp = bssmx
+         endif
+ 20   continue
+
+c     check the first block
+      ilo = 1
+      ihi = bb(1)
+      psdiff = bpsmax(1) - bpsmin(1)
+      if (ibin) then
+         psdiffsq = (psdiff-0.5)**2
+      else
+         psdiffsq = psdiff**2
+      endif
+      do 40 j = al0,k
          rj = dfloat(j)
          rnjov1 = rn/(rj*(rn-rj))
-         if (ibin) then
-            bsslim = rnjov1*(psdiff-0.5)**2
-         else
-            bsslim = rnjov1*psdiff**2
-         endif
-         if (bsslim .lt. htmaxp) go to 60
+         bsslim = rnjov1*psdiffsq
+         if (bsslim .lt. htmaxp) go to 50
          sxmx = 0.0d0
-         do 30 i = 1,n-j
+         do 30 i = ilo,ihi-j
             absx = abs(sx(i+j) - sx(i))
             if (sxmx.lt.absx) sxmx = absx
  30      continue
-         nmj = n - j
-         do 40 i = 1, j
-            nmji = nmj + i
-            absx = abs(sx(nmji) - sx(i))
-            if (sxmx.lt.absx) sxmx = absx
- 40      continue
          if (ibin) then
             bssmx = rnjov1*(abs(sxmx)-0.5)**2
          else
             bssmx = rnjov1*sxmx**2
          endif
          if (htmaxp.lt.bssmx) htmaxp = bssmx
- 50   continue
- 60   if (ibin) then
+ 40   continue
+
+c     now the minor arcs spanning the end (n)
+ 50   psdiff = max(abs(bpsmax(1)-bpsmin(nb)), abs(bpsmax(nb)-bpsmin(1)))
+      if (ibin) then
+         psdiffsq = (psdiff-0.5)**2
+      else
+         psdiffsq = psdiff**2
+      endif
+      do 70 j = al0,k
+         rj = dfloat(j)
+         rnjov1 = rn/(rj*(rn-rj))
+         bsslim = rnjov1*psdiffsq
+         if (bsslim .lt. htmaxp) go to 100
+         sxmx = 0.0d0
+         nmj = n-j
+         do 60 i = 1,j
+            absx = abs(sx(i+nmj) - sx(i))
+            if (sxmx.lt.absx) sxmx = absx
+ 60      continue
+         if (ibin) then
+            bssmx = rnjov1*(abs(sxmx)-0.5)**2
+         else
+            bssmx = rnjov1*sxmx**2
+         endif
+         if (htmaxp.lt.bssmx) htmaxp = bssmx
+ 70   continue
+
+c     now the other blocks
+ 100  do 200 l = 2,nb
+         ilo = bb(l-1)+1
+         ihi = bb(l)
+         psdiff = bpsmax(l) - bpsmin(l)
+         if (ibin) then
+            psdiffsq = (psdiff-0.5)**2
+         else
+            psdiffsq = psdiff**2
+         endif
+         do 140 j = al0,k
+            rj = dfloat(j)
+            rnjov1 = rn/(rj*(rn-rj))
+            bsslim = rnjov1*psdiffsq
+            if (bsslim .lt. htmaxp) go to 150
+            sxmx = 0.0d0
+            do 130 i = ilo,ihi-j
+               absx = abs(sx(i+j) - sx(i))
+               if (sxmx.lt.absx) sxmx = absx
+ 130        continue
+            if (ibin) then
+               bssmx = rnjov1*(abs(sxmx)-0.5)**2
+            else
+               bssmx = rnjov1*sxmx**2
+            endif
+            if (htmaxp.lt.bssmx) htmaxp = bssmx
+ 140     continue
+ 150     psdiff = max(abs(bpsmax(l)-bpsmin(l-1)), 
+     1        abs(bpsmax(l-1)-bpsmin(l)))
+         if (ibin) then
+            psdiffsq = (psdiff-0.5)**2
+         else
+            psdiffsq = psdiff**2
+         endif
+         do 170 j = al0,k
+            rj = dfloat(j)
+            rnjov1 = rn/(rj*(rn-rj))
+            bsslim = rnjov1*psdiffsq
+            if (bsslim .lt. htmaxp) go to 200
+            sxmx = 0.0d0
+            nmj = n-j
+            do 160 i = ilo-j,ilo-1
+               absx = abs(sx(i+j) - sx(i))
+               if (sxmx.lt.absx) sxmx = absx
+ 160        continue
+            if (ibin) then
+               bssmx = rnjov1*(abs(sxmx)-0.5)**2
+            else
+               bssmx = rnjov1*sxmx**2
+            endif
+            if (htmaxp.lt.bssmx) htmaxp = bssmx
+ 170     continue
+ 200  continue
+      if (ibin) then
          if (tss .le. 0.0001d0) tss = 1.0d0
          htmaxp = htmaxp/(tss/rn)
       else
