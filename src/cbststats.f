@@ -789,5 +789,8 @@ c     now the other blocks
          htmaxp = htmaxp/((tss-htmaxp)/(rn-2.0d0))
       endif
 
+c     deallocate memory
+      deallocate(bpsmax, bpsmin, bb)
+
       return
       end

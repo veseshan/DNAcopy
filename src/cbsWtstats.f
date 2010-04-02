@@ -695,6 +695,9 @@ c      call dblepr("bss max", 7, bssmax, 1)
       if (tss .le. bssmax+0.0001d0) tss = bssmax + 1.0d0
       hwtmaxp = bssmax/((tss-bssmax)/(dfloat(n)-2.0d0))
 
+c     deallocate memory
+      deallocate(bpsmax, bpsmin, bb)
+
       return
       end
 
