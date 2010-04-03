@@ -6,7 +6,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Startup
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-scriptName <- "benchmark,20096010,segment"
+scriptName <- "benchmark,20090610,segment"
 
 library("DNAcopy")
 library("R.utils")
