@@ -110,7 +110,8 @@ print(sessionInfo())
 ######################################################################
 # HISTORY
 # 2009-06-10
-# o Asserted that DNAcopy v1.19.2 gives the same results as 
-#   DNAcopy v1.19.2 on a Windows Vista machine using R v2.9.0 patched.
+# o ROBUSTNESS: Added this test to assert that DNAcopy v1.19.2 and 
+#   newer will numerically give the same results as DNAcopy v1.19.0.
+#   This test is ran each time with R CMD check.
 # o Created.
 ######################################################################
