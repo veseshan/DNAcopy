@@ -32,6 +32,11 @@
   gives the number of samples and probes and the type of data.
 }
 
+\details{
+  Data that are NA, Inf, NaN will be removed on a per sample basis for
+  "genomdat" and all samples for "chrom" and "maploc".  
+}
+
 \examples{
 
 data(coriell)

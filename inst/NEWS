@@ -1,3 +1,8 @@
+Changes in Version 1.21.4
+
+   o moved CHANGES file to inst/NEWS.
+   o documentation of CNA and segment say that missing values will be removed.
+
 Changes in Version 1.21.3
 
    o forgot to deallocate memory in the new code

@@ -86,6 +86,9 @@
   Since the segmentation procedure uses a permutation reference
   distribution, R commands for setting and saving seeds should be used
   if the user wishes to reproduce the results.
+
+  Data that are NA, Inf, NaN will be removed on a per sample basis for
+  "genomdat" and all samples for "chrom" and "maploc".  
 }
 
 \examples{
