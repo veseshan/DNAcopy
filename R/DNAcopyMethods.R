@@ -5,9 +5,10 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
     if (is.factor(chrom)) chrom <- as.character(chrom)
     if (!is.numeric(maploc)) stop("maploc must be numeric")
     data.type <- match.arg(data.type)
-    if (sum(is.na(chrom)|is.na(maploc))>0)
+    ina <- (!is.na(chrom) & is.finite(maploc))
+    if (sum(!ina)>0)
       warning("markers with missing chrom and/or maploc removed\n")
-    sortindex <- order(chrom, maploc, na.last=NA)
+    sortindex <- which(ina)[order(chrom[ina], maploc[ina])]
     if (is.vector(genomdat)) genomdat <- as.matrix(genomdat)
     if (!missing(sampleid)) {
       if (length(sampleid) != ncol(genomdat)) {
@@ -23,11 +24,8 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
 
     if(!all(sapply(unique(chrom),function(ichrom,chrom,maploc){
       length(maploc[chrom==ichrom])-length(unique(maploc[chrom==ichrom]))
-    },chrom,maploc)==0)) {
-      warning("array has repeated maploc positions\n")
-    } else {
-      rownames(zzz) <- paste(zzz$chrom,zzz$maploc,sep="-")
-    }      
+    },chrom,maploc)==0)) warning("array has repeated maploc positions\n")
+
     attr(zzz, "data.type") <- data.type
     class(zzz) <- c("CNA","data.frame")
     zzz

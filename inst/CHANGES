@@ -1,7 +1,16 @@
+Changes in Version 1.21.5
+
+   o ADDED packageStartupMessage THAT CNA DATA FORMAT WILL CHANGE
+   o changed filename of NEWS to CHANGES; file format didn't work with news
+   o changed function .First.lib to .onLoad
+   o in the function CNA, changed code for ordering by chrom and maploc 
+     because of "na.last=NA" slowed it down terribly
+   o removed the unnecessary rownames command in CNA
+
 Changes in Version 1.21.4
 
-   o moved CHANGES file to inst/NEWS.
-   o documentation of CNA and segment say that missing values will be removed.
+   o moved CHANGES file to inst/NEWS
+   o documentation of CNA and segment say that missing values will be removed
 
 Changes in Version 1.21.3
 
