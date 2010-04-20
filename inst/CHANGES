@@ -1,3 +1,7 @@
+Changes in Version 1.21.6
+
+   o Fixed indexing bug (i <= k or i > n-k, not and) in smoothCNA.f
+
 Changes in Version 1.21.5
 
    o ADDED packageStartupMessage THAT CNA DATA FORMAT WILL CHANGE

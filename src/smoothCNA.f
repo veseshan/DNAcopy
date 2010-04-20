@@ -12,7 +12,7 @@ c     sSD = how close should it be moved
 
 c     temporary arrayd for finding median
       double precision, allocatable :: xnbhd(:)
-c     row, column and order vector for reordering bssbij
+c     order vector for calculating the median
       integer, allocatable :: loc(:)
 
       k2 = 2*k + 1
@@ -30,7 +30,7 @@ c     check if ith observation is an outlier
             mnnbd = gdat(i-k)
             mxnbd = gdat(i-k)
          endif
-         if ((i .le. k) .and. (i .gt. n-k)) then
+         if ((i .le. k) .or. (i .gt. n-k)) then
             k1 = ihi - ilo + 1
             do 10 j = ilo, ihi
                if (j .ne. i) then
@@ -59,7 +59,7 @@ c     if it is bring it closer to the median
                loc(j1) = j1
  20         continue
             call qsort4(xnbhd, loc, 1, k1)
-            if ((i .le. k) .and. (i .gt. n-k)) then
+            if ((i .le. k) .or. (i .gt. n-k)) then
                j1 = k1/2
                if (k1 .eq. 2*j1) then
                   xmed = (xnbhd(j1+1) + xnbhd(j1+1))/2
@@ -77,7 +77,7 @@ c     if it is bring it closer to the median
                loc(j1) = j1
  30         continue
             call qsort4(xnbhd, loc, 1, k1)
-            if ((i .le. k) .and. (i .gt. n-k)) then
+            if ((i .le. k) .or. (i .gt. n-k)) then
                j1 = k1/2
                if (k1 .eq. 2*j1) then
                   xmed = (xnbhd(j1+1) + xnbhd(j1+1))/2
