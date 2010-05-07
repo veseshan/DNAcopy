@@ -1,3 +1,12 @@
+Changes in Version 1.23.1
+
+   o Added zoomIntoRegion function.
+   o Added an option to return the row numbers of the segments.
+
+
+1.21.6 became 1.22.0 in Bioconductor 2.6 & =1.23.0 now
+------------------------------------------------------
+
 Changes in Version 1.21.6
 
    o Fixed indexing bug (i <= k or i > n-k, not and) in smoothCNA.f
