@@ -2,7 +2,7 @@ segment <- function(x, weights=NULL, alpha=0.01, nperm=10000, p.method=
                     c("hybrid","perm"), min.width=2, kmax=25, nmin=200, 
                     eta=0.05, sbdry=NULL, trim = 0.025, undo.splits=
                     c("none","prune", "sdundo"), undo.prune=0.05, undo.SD=3,
-                    showSegRows=FALSE, verbose=1)
+                    verbose=1)
   {
     if (!inherits(x, 'CNA')) stop("First arg must be a copy number array object")
     call <- match.call()
@@ -38,10 +38,9 @@ segment <- function(x, weights=NULL, alpha=0.01, nperm=10000, p.method=
     allsegs$loc.end <- NULL
     allsegs$num.mark <- NULL
     allsegs$seg.mean <- NULL
-    if (showSegRows) {
-      allsegs$startRow <- NULL
-      allsegs$endRow <- NULL
-    }
+    segRows <- list()
+    segRows$startRow <- NULL
+    segRows$endRow <- NULL
     for (isamp in 1:nsample) {
       if (verbose>=1) cat(paste("Analyzing:", sampleid[isamp],"\n"))
       genomdati <- x[,isamp+2]
@@ -75,16 +74,15 @@ segment <- function(x, weights=NULL, alpha=0.01, nperm=10000, p.method=
       allsegs$loc.end <- c(allsegs$loc.end, x$maploc[sample.segs.end])
       allsegs$num.mark <- c(allsegs$num.mark, sample.lsegs)
       allsegs$seg.mean <- c(allsegs$seg.mean, sample.segmeans)
-      if (showSegRows) {
-        allsegs$startRow <- c(allsegs$startRow, sample.segs.start)
-        allsegs$endRow <- c(allsegs$endRow, sample.segs.end)
-      }
+      segRows$startRow <- c(segRows$startRow, sample.segs.start)
+      segRows$endRow <- c(segRows$endRow, sample.segs.end)
     }
     allsegs$ID <- sampleid[allsegs$ID]
     allsegs$seg.mean <- round(allsegs$seg.mean, 4)
     allsegs <- as.data.frame(allsegs)
     allsegs$ID <- as.character(allsegs$ID)
     segres$output <- allsegs
+    segres$segRows <- as.data.frame(segRows)
     segres$call <- call    
     class(segres) <- "DNAcopy"
     segres

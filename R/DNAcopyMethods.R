@@ -285,7 +285,7 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
   } else { if(int.dev & !parask & nsample>1) par(ask=parask) })
 }
 
-print.DNAcopy <- function(x, ...)
+print.DNAcopy <- function(x, showSegRows=FALSE, ...)
   {
     if (!inherits(x, "DNAcopy")) stop("Object is not the result of segment")
     if (!is.null(cl<- x$call))
@@ -294,7 +294,16 @@ print.DNAcopy <- function(x, ...)
         dput(cl)
         cat("\n")
       }
-    print(x$output)
+    if (showSegRows) {
+      if (is.null(x$segRows)) {
+        print(x$output)
+        warning("segRows missing.  Object may be a subset or from DNAcopy < 1.23.2.\n")
+      } else {
+        print(cbind(x$output, x$segRows))
+      }
+    } else {
+      print(x$output)
+    }
   }
 
 subset.DNAcopy <- function(x, chromlist=NULL, samplelist=NULL, ...)

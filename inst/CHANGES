@@ -1,3 +1,8 @@
+Changes in Version 1.23.2
+
+   o row numbers of the segments are automatically returned as the object
+     segRows in the output.  The print method shows it if showSegRows=TRUE.
+
 Changes in Version 1.23.1
 
    o Added zoomIntoRegion function.

@@ -10,7 +10,7 @@
                     c("hybrid", "perm"), min.width=2, kmax=25, nmin=200, 
                     eta=0.05, sbdry=NULL, trim = 0.025, undo.splits = 
                     c("none", "prune", "sdundo"), undo.prune=0.05, 
-                    undo.SD=3, showSegRows=FALSE, verbose=1)
+                    undo.SD=3, verbose=1)
 }
 \arguments{
   \item{x}{an object of class CNA}
@@ -51,8 +51,6 @@
     when eliminating splits if undo.splits="prune".}
   \item{undo.SD}{the number of SDs between means to keep a split if
     undo.splits="sdundo".}
-  \item{showSegRows}{if TRUE the row numbers of the segment start and
-    end are returned in addition to map position.} 
   \item{verbose}{level of verbosity for monitoring the program's
     progress where 0 produces no printout, 1 prints the current sample,
     2 the current chromosome and 3 the current segment.  The default
@@ -66,9 +64,9 @@
     contains a segment for which there are six variables: the sample id,
     the chromosome number, the map position of the start of the segment,
     the map position of the end of the segment, the number of markers in
-    the segment, and the average value in the segment. Optionally two
-    additional columns - the row numbers of for the segment start and
-    end can also be returned.}
+    the segment, and the average value in the segment.}
+  \item{segRows}{a data frame with the start and end row of each segment
+    in the data matrix.  print command shows it with the showSegRows=T}
   \item{call}{the call that produced the output object.}
 }
 
@@ -113,7 +111,7 @@ rep(c(-0.2,0.1,1,-0.5,0.2,-0.5,0.1,-0.2),c(137,87,17,49,29,52,87,42))
 plot(genomdat)
 chrom <- rep(1:2,c(290,210))
 maploc <- c(1:290,1:210)
-test2 <- segment(CNA(genomdat, chrom, maploc), showSegRows=TRUE)
+test2 <- segment(CNA(genomdat, chrom, maploc))
 
 # test code for weighted CBS
 set.seed(97)

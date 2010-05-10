@@ -3,7 +3,7 @@
 \alias{print.DNAcopy}
 \title{Results of segmenting a CNA data object}
 \usage{
-\method{print}{DNAcopy}(x, \dots)
+\method{print}{DNAcopy}(x, showSegRows=FALSE, \dots)
 }
 \description{
   The results of segmenting data from copy number array experiments from
@@ -11,6 +11,8 @@
 }
 \arguments{
   \item{x}{an object of class \code{DNAcopy} -- output of segment.}
+  \item{showSegRows}{option to show row numbers for the segment start
+    and end.  default is FALSE.}
   \item{...}{arguments to be passed onto print command called within.}
 }
 \value{
