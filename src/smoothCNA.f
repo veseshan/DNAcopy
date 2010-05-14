@@ -23,12 +23,12 @@ c     range of the neighborhood
          ilo = max(1, i-k)
          ihi = min(n, i+k)
 c     check if ith observation is an outlier
-         if (i .le. k) then
-            mnnbd = gdat(i+k)
-            mxnbd = gdat(i+k)
+         if (i .eq. ilo) then
+            mnnbd = gdat(ihi)
+            mxnbd = gdat(ihi)
          else
-            mnnbd = gdat(i-k)
-            mxnbd = gdat(i-k)
+            mnnbd = gdat(ilo)
+            mxnbd = gdat(ilo)
          endif
          if ((i .le. k) .or. (i .gt. n-k)) then
             k1 = ihi - ilo + 1
@@ -62,7 +62,7 @@ c     if it is bring it closer to the median
             if ((i .le. k) .or. (i .gt. n-k)) then
                j1 = k1/2
                if (k1 .eq. 2*j1) then
-                  xmed = (xnbhd(j1+1) + xnbhd(j1+1))/2
+                  xmed = (xnbhd(j1) + xnbhd(j1+1))/2
                else
                   xmed = xnbhd(j1+1)
                endif
@@ -80,7 +80,7 @@ c     if it is bring it closer to the median
             if ((i .le. k) .or. (i .gt. n-k)) then
                j1 = k1/2
                if (k1 .eq. 2*j1) then
-                  xmed = (xnbhd(j1+1) + xnbhd(j1+1))/2
+                  xmed = (xnbhd(j1) + xnbhd(j1+1))/2
                else
                   xmed = xnbhd(j1+1)
                endif
