@@ -1,5 +1,5 @@
 \name{coriell}
-\docType{coriell}
+\docType{data}
 \alias{coriell}
 \title{Array CGH data set of Coriell cell lines}
 \description{
