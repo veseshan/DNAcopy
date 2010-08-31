@@ -1,0 +1,186 @@
+%\VignetteIndexEntry{DNAcopy}
+%\VignetteDepends{}
+%\VignetteKeywords{DNA Copy Number Analysis}
+%\VignettePackage{DNAcopy}
+
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage[authoryear,round]{natbib}
+\usepackage{hyperref}
+\SweaveOpts{echo=FALSE}
+
+\setlength{\textheight}{8.5in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\oddsidemargin}{0.25in}
+\setlength{\evensidemargin}{0.25in}
+
+\begin{document}
+\setkeys{Gin}{width=0.99\textwidth}
+
+
+\title{\bf DNAcopy for a number of Very Large Arrays}
+
+\author{Venkatraman E. Seshan}
+
+\maketitle
+
+\begin{center}
+Department of Epidemiology and Biostatistics\\
+Memorial Sloan-Kettering Cancer Center\\
+{\tt seshanv@mskcc.org}\\
+\end{center}
+
+%\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This a guide to the use of file backed data in {\tt DNAcopy} using the package
+{\tt ff} \citep{ff} or {\tt bigmemory} \citep{bm} to analyze large data sets.
+
+\bigskip
+{\bf CAUTION:} {\sf All copies of the filebacked data still refer to the same
+  original data file.  If you make any change the changes are made to the data
+  file and so any change in one object will affect all other objects that refer
+  to the data file.}
+
+\bigskip
+We will perform an analysis on simulated data.  There are 10 samples with 100
+thousand probes each.  For simplicity we will use only 2 chromosomes with equal
+number of probes.
+
+\bigskip
+\centerline{\underline{\large \bf Using {\sf ff} to store the data}}
+
+<<echo=TRUE,print=FALSE>>=
+library(DNAcopy)
+library(ff)
+@ 
+
+Now we generate the data.  chrom and maploc first
+
+<<echo=TRUE,print=FALSE>>=
+set.seed(0xfbd000)
+chr <- rep(1:2, c(54321,45679))
+pos <- (chr -1) + runif(100000)
+@ 
+
+Get a temporary file for the data backingfile and descriptor
+
+<<echo=TRUE,print=FALSE>>=
+bfile <- strsplit(tempfile(pattern="fbm", tmpdir="."),"/")[[1]][2]
+gdat <- ff(vmode="double", dim=c(1e5, 10), file=bfile)
+gc()
+@ 
+
+Get the logratio and add the step function for the mean.  Once can use this a
+template to create the data matrix for real dat.  If the results are available
+as one file per sample, then the files can be read one at a time and the data
+stored in the corresponding column.  The big.matrix must be initialized with
+the appropriate number of rows (number of probes) and columns (sample size).
+
+<<echo=TRUE,print=FALSE>>=
+xmean <- 1*(pos > 0.2 & pos < 0.35) - 1*(pos > 1.47 & pos < 1.61)
+for(i in 1:10) gdat[,i] <- rnorm(1e5) + xmean
+gc()
+@ 
+
+\noindent
+Before segmentation the data needs to be made into a CNA object.
+
+<<echo=TRUE,print=FALSE>>=
+testfbm <- CNA(genomdat=gdat, chrom=chr, maploc=pos)
+gc()
+@ 
+
+\noindent
+Now run the outlier smoothing.  Note that since genomdat is file based we need
+the overwrite option.  This will replace the orginal testfbm with the smoothed
+version.  The output is the difference between the original and the smoothed
+data.
+
+<<echo=TRUE,print=FALSE>>=
+sdiff.testfbm <- smooth.CNA(testfbm, overwrite=TRUE)
+gc()
+@ 
+
+\noindent
+And segmentation is run.  This code is not run to conform to check/build time
+limit.
+
+<<eval=FALSE,echo=TRUE>>=
+segment.testfbm <- segment(testfbm, verbose=0)
+@ 
+
+The original data can be restored to the backingfile with unsmooth.CNA
+<<echo=TRUE,print=FALSE>>=
+unsmooth.CNA(testfbm, sdiff.testfbm)
+@ 
+
+\bigskip
+\centerline{\underline{\large \bf Using {\sf bigmemory} to store the data}}
+
+<<echo=TRUE,print=FALSE>>=
+rm(chr, pos, gdat, bfile, testfbm, xmean, sdiff.testfbm)
+gc(reset=TRUE)
+library(bigmemory)
+set.seed(0xfbd000)
+chr <- rep(1:2, c(54321,45679))
+pos <- (chr -1) + runif(100000)
+bfile <- strsplit(tempfile(pattern="fbm", tmpdir="."),"/")[[1]][2]
+gdat <- filebacked.big.matrix(1e5, 10, backingfile=bfile)
+gc()
+xmean <- 1*(pos > 0.2 & pos < 0.35) - 1*(pos > 1.47 & pos < 1.61)
+for(i in 1:10) gdat[,i] <- rnorm(1e5) + xmean
+gc()
+testfbm <- CNA(genomdat=gdat, chrom=chr, maploc=pos)
+gc()
+sdiff.testfbm <- smooth.CNA(testfbm, overwrite=TRUE)
+gc()
+@
+<<eval=FALSE,echo=TRUE>>=
+segment.testfbm <- segment(testfbm, verbose=0)
+@ 
+
+\bigskip
+\centerline{\underline{\large \bf Data stored in memory}}
+
+\bigskip
+The memory utilization increases dramatically when the same code is run with
+matrices.
+
+<<echo=TRUE,print=FALSE>>=
+unlink(c(bfile, paste(bfile,"desc",sep=".")))
+rm(chr, pos, gdat, bfile, testfbm, xmean, sdiff.testfbm)
+gc(reset=TRUE)
+set.seed(0xfbd000)
+chr <- rep(1:2, c(50000,50000))
+pos <- (chr -1) + runif(100000)
+gc()
+gdat <- matrix(0, 1e5,10)
+xmean <- 1*(pos > 0.2 & pos < 0.35) - 1*(pos > 1.47 & pos < 1.61)
+for(i in 1:10) gdat[,i] <- rnorm(1e5) + xmean
+gc()
+testfbm <- CNA(genomdat=gdat, chrom=chr, maploc=pos)
+gc()
+smoothed.testfbm <- smooth.CNA(testfbm)
+gc()
+@ 
+
+Additional code to compare the outputs (again not run due to time constraint).
+
+<<eval=FALSE,echo=TRUE>>=
+segment.smoothed.testfbm <- segment(smoothed.testfbm, verbose=0)
+gc()
+dim(segment.testfbm@output)
+dim(segment.smoothed.testfbm@output)
+nres <- as.matrix(segment.smoothed.testfbm@output[,-2])
+summary(as.matrix(segment.testfbm@output[,-2]) - nres)
+@ 
+
+%\newpage
+\bibliographystyle{apalike}
+\bibliography{LargeDataDNAcopy}
+
+\end{document}

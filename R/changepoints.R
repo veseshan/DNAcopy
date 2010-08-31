@@ -166,18 +166,3 @@ changepoints.sdundo <- function(genomdat, lseg, trimmed.SD, change.SD=3) {
   lseg.sdundo <- diff(c(0,cpt.loc))
   lseg.sdundo
 }
-
-trimmed.variance <- function(genomdat, trim=0.025)
-  {
-    n <- length(genomdat)
-    n.keep <- round((1-2*trim)*(n-1))
-    inflfact(trim)*sum((sort(abs(diff(genomdat)))[1:n.keep])^2 / (2*n.keep))
-  }
-
-inflfact <- function(trim)
-  {
-    a <- qnorm(1-trim)
-    x <- seq(-a,a,length=10001)
-    x1 <- (x[-10001] + x[-1])/2
-    1/(sum(x1^2*dnorm(x1)/(1-2*trim))*(2*a/10000))
-  }

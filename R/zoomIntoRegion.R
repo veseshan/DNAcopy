@@ -1,9 +1,11 @@
 zoomIntoRegion <- function(x, chrom, sampleid, maploc.start=NULL, maploc.end=NULL, pt.pch=NULL, pt.cex=NULL, pt.col=NULL, segcol=NULL, seglwd=NULL, ...) {
-  tmp <- subset(x, chrom=chrom[1], samplelist=sampleid[1])
-  lrdata <- tmp$data
-  if (missing(maploc.start)) maploc.start <- min(lrdata$maploc, na.rm=T) - 1
-  if (missing(maploc.end)) maploc.end <- max(lrdata$maploc, na.rm=T) + 1
-  ii <- ((lrdata$maploc >= maploc.start) & (lrdata$maploc <= maploc.end))
+  if (class(x) != "DNAcopy") stop("First arg must be a DNAcopy object")
+  subx <- subset(x, chromlist=chrom[1], samplelist=sampleid[1], fbdata=FALSE)
+  maploc <- subx$maploc
+  lrdata <- subx[,1]
+  if (missing(maploc.start)) maploc.start <- min(maploc, na.rm=T) - 1
+  if (missing(maploc.end)) maploc.end <- max(maploc, na.rm=T) + 1
+  ii <- ((maploc >= maploc.start) & (maploc <= maploc.end))
   if (missing(pt.pch)) pt.pch <- "."
   if (missing(pt.cex)) {
     if (pt.pch==".") { pt.cex <- 3}
@@ -13,8 +15,8 @@ zoomIntoRegion <- function(x, chrom, sampleid, maploc.start=NULL, maploc.end=NUL
   if (missing(segcol)) segcol <- "red"
   if (missing(seglwd)) seglwd <- 3
   
-  plot(lrdata[ii,2], lrdata[ii,3], main = sampleid, xlab="Genomic Position", ylab = "log-ratio", pch = pt.pch, cex = pt.cex, col = pt.col, ...)
-  segs <- tmp$output
+  plot(maploc[ii], lrdata[ii], main = sampleid, xlab="Genomic Position", ylab = "log-ratio", pch = pt.pch, cex = pt.cex, col = pt.col, ...)
+  segs <- subx$output
   jj <- ((segs$loc.start <= maploc.end) & (segs$loc.end >= maploc.start))
   segs <- segs[jj,]
   k <- nrow(segs)

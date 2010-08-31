@@ -1,10 +1,14 @@
 Package: DNAcopy
 Title: DNA copy number data analysis
-Version: 1.23.3
+Version: 1.23.4
 Author: Venkatraman E. Seshan, Adam Olshen
 Description: Segments DNA copy number data using circular binary
         segmentation to detect regions with abnormal copy number
 Maintainer: Venkatraman E. Seshan <seshanv@mskcc.org>
 biocViews: Microarray, CopyNumberVariants
+Depends: methods
+Suggests: bigmemory, ff
+LazyLoad: yes
 LazyData: yes
 License: GPL (>= 2)
+
