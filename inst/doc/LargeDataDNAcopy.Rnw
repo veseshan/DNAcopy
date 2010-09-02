@@ -69,7 +69,7 @@ pos <- (chr -1) + runif(100000)
 Get a temporary file for the data backingfile and descriptor
 
 <<echo=TRUE,print=FALSE>>=
-bfile <- strsplit(tempfile(pattern="fbm", tmpdir="."),"/")[[1]][2]
+bfile <- "ffmatrixgenomdat.ff"
 gdat <- ff(vmode="double", dim=c(1e5, 10), file=bfile)
 gc()
 @ 
@@ -128,7 +128,7 @@ library(bigmemory)
 set.seed(0xfbd000)
 chr <- rep(1:2, c(54321,45679))
 pos <- (chr -1) + runif(100000)
-bfile <- strsplit(tempfile(pattern="fbm", tmpdir="."),"/")[[1]][2]
+bfile <- "bigmatrixgenomdat.bm"
 gdat <- filebacked.big.matrix(1e5, 10, backingfile=bfile)
 gc()
 xmean <- 1*(pos > 0.2 & pos < 0.35) - 1*(pos > 1.47 & pos < 1.61)

@@ -1,3 +1,7 @@
+Changes in Version 1.23.5
+
+   o Windows tempfile error - fixed tempfile in LargeDataDNAcopy vignette
+
 Changes in Version 1.23.4
 
    o Major change to enable filebased data matrix using ff or bigmemory.
