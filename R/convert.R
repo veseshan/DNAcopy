@@ -1,7 +1,8 @@
 # function to convert old CNA object
-convertCNA <- function(object, fbdata=NULL, backingfile=NULL) {
+convertCNA <- function(object, fbdata=NULL, backingfile=NULL, fbtype=c("ff","bm")) {
   if (isS4(object)) {message("Already an S4 CNA object")}
   else {
+    fbtype <- match.arg(fbtype)
     ns <- ncol(object) - 2
     nr <- nrow(object)
     sampleid <- colnames(object)[-(1:2)]
@@ -11,16 +12,21 @@ convertCNA <- function(object, fbdata=NULL, backingfile=NULL) {
     maploc <- object$maploc
     data.type <- attr(object, "data.type")
     if (!missing(fbdata) && is.logical(fbdata) && fbdata) {
-      genomdat <- filebacked.big.matrix(nr, ns, backingfile=backingfile, dimnames=list(c(),sampleid))
-      fbspecs <- describe(genomdat)
+      if (fbtype == "ff") {
+        genomdat <- ff(vmode="double", dim=c(nr, ns), file=backingfile)
+        colnames(genomdat) <- sampleid
+      } else {
+        genomdat <- filebacked.big.matrix(nr, ns, backingfile=backingfile, dimnames=list(c(),sampleid))
+      }
     } else {
       fbdata <- FALSE
       genomdat <- matrix(0, nr,ns)
       colnames(genomdat) <- sampleid
     }
     for (i in 1:ns) genomdat[,i] <- object[,i+2]
-    if (fbdata) {
-      new("CNA", chrom=chrom, maploc=maploc, genomdat=genomdat, data.type=data.type, fbspecs=fbspecs)
+    if (fbtype=="bm") {
+      bigmemdesc <- describe(genomdat)@description
+      new("CNA", chrom=chrom, maploc=maploc, genomdat=genomdat, data.type=data.type, bigmemorydesc=bigmemdesc)
     } else {
       new("CNA", chrom=chrom, maploc=maploc, genomdat=genomdat, data.type=data.type)
     }
@@ -28,9 +34,10 @@ convertCNA <- function(object, fbdata=NULL, backingfile=NULL) {
 }
 
 # function to convert old DNAcopy object
-convertDNAcopy <- function(object, fbdata=NULL, backingfile=NULL) {
+convertDNAcopy <- function(object, fbdata=NULL, backingfile=NULL, fbtype=c("ff","bm")) {
   if (isS4(object)) {message("Already an S4 CNA object")}
   else {
+    fbtype <- match.arg(fbtype)
     call <- object$call
     ns <- ncol(object$data) - 2
     nr <- nrow(object$data)
@@ -44,15 +51,20 @@ convertDNAcopy <- function(object, fbdata=NULL, backingfile=NULL) {
     else {segRows <- object$segRows}
     data.type <- attr(object$data, "data.type")
     if (!missing(fbdata) && is.logical(fbdata) && fbdata) {
-      genomdat <- filebacked.big.matrix(nr, ns, backingfile=backingfile, dimnames=list(c(),sampleid))
-      fbspecs <- describe(genomdat)
+      if (fbtype == "ff") {
+        genomdat <- ff(vmode="double", dim=c(nr, ns), file=backingfile)
+        colnames(genomdat) <- sampleid
+      } else {
+        genomdat <- filebacked.big.matrix(nr, ns, backingfile=backingfile, dimnames=list(c(),sampleid))
+      }
     } else {
       fbdata <- FALSE
       genomdat <- matrix(0, nr,ns)
       colnames(genomdat) <- sampleid
     }
     for (i in 1:ns) genomdat[,i] <- object$data[,i+2]
-    if (fbdata) {
+    if (fbtype=="bm") {
+      bigmemdesc <- describe(genomdat)@description
       new("DNAcopy", call=call, output=output, segRows= segRows, chrom=chrom, maploc=maploc, genomdat=genomdat, data.type=data.type, fbspecs=fbspecs)
     } else {
       new("DNAcopy", call=call, output=output, segRows= segRows, chrom=chrom, maploc=maploc, genomdat=genomdat, data.type=data.type)

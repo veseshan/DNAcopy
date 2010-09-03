@@ -1,3 +1,9 @@
+Changes in Version 1.23.6
+
+   o Create a submatrix of genomdat to handle NA for chrom and non finite
+     maploc since file based genomdat has these rows in the end.
+   o Add the ff option to convert functions.
+
 Changes in Version 1.23.5
 
    o Windows tempfile error - fixed tempfile in LargeDataDNAcopy vignette

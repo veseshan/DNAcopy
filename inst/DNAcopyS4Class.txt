@@ -7,3 +7,8 @@ Since DNAcopy object contains a CNA object it has also changed.
 Convert any saved CNA/DNAcopy object using convertCNA/convertDNAcopy.
 
 LargeDataDNAcopy.pdf in the doc sub-directory for file based data guide.
+
+CAUTION:  If xdat is a CNA object and xseg the output from segment then
+the logratio for sample i cannot be accessed as xdat[["i+2"]] or 
+xseg$data[["i+2"]].  xdat[,i+2] will work but will now give sample i+2 
+and not sample i.  Both xdat[,i] & xseg[,i] give you the correct data.

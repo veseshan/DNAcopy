@@ -6,8 +6,8 @@
   Creates a CNA and DNAcopy data objects to new S4 classes.
 }
 \usage{
-  convertDNAcopy(object, fbdata=NULL, backingfile=NULL)
-  convertCNA(object, fbdata=NULL, backingfile=NULL)
+  convertDNAcopy(object, fbdata=NULL, backingfile=NULL, fbtype=c("ff","bm"))
+  convertCNA(object, fbdata=NULL, backingfile=NULL, fbtype=c("ff","bm"))
 }
 
 \arguments{
@@ -15,6 +15,7 @@
   \item{fbdata}{logical specify whether genomdat should be a file backed
   big.matrix.}
   \item{backingfile}{the backing file to be used if fbdata is TRUE.}
+  \item{fbtype}{whether ff or bigmemory (bm) is used for backing file.}
 }
 
 \value{CNA or DNAcopy objects corresponding to the new S4 classes.}
@@ -24,4 +25,3 @@
   working directory.  A descriptor file with extension .desc will also
   be created.
 }
-

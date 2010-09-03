@@ -7,7 +7,7 @@
 }
 \usage{
   CNA(genomdat, chrom, maploc, data.type=c("logratio","binary"),
-                 sampleid=NULL)
+                 sampleid=NULL, presorted=FALSE)
 }
 \arguments{
   \item{genomdat}{a vector or matrix of data from array-CGH, ROMA, or
@@ -22,6 +22,10 @@
   \item{data.type}{logratio (aCGH, ROMA, etc.) or binary (LOH).}
   \item{sampleid}{sample identifier.  If missing the samples are named
     by prefixing "Sample" to consecutive integers.}
+  \item{presorted}{logical indicator telling if the data have already
+    been sorted by chrom and maploc.  Default is FALSE.  For file based
+    data to minimize changes to the backing file we recommend data to be
+    sorted externally and set this to TRUE.}
 }
 \value{
   An object of class \code{CNA}.  There is a \code{print} method that

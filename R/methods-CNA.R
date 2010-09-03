@@ -61,8 +61,9 @@ setMethod("show", "CNA", function(object){
 
 # function to initialize a CNA object
 CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
-                sampleid=NULL) {
+                sampleid=NULL, presorted=FALSE) {
   data.type <- match.arg(data.type)
+# sanity checks to prepare for different matrix types
   if (is(genomdat,"ff_matrix")) {
     bigmem <- FALSE
     fbdata <- TRUE
@@ -75,9 +76,7 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
     fbdata <- TRUE
     if (is.nil(genomdat@address))
       stop("pointer address missing for the backing file of genomdat")
-    fbspecs <- describe(genomdat)
-    bigmemdesc <- fbspecs@description
-    bfile <- bigmemdesc$filename
+    bfile <- describe(genomdat)@description$filename
     if (!file.exists(bfile))
       stop(paste("data file not in current working directory:", getwd()))
   } else {
@@ -87,23 +86,28 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
     if (!is.numeric(genomdat)) stop("genomdat must be numeric")
     if (is.vector(genomdat)) genomdat <- as.matrix(genomdat)
   }
-  nsample <- ncol(genomdat)
+# make sure chrom is numeric or ordered and maploc is numeric
   if (is.factor(chrom) | is.character(chrom)) chrom <- orderedChrom(chrom)
   if (!is.numeric(maploc)) stop("maploc must be numeric")
-
+# number of samples
+  nsample <- ncol(genomdat)
+# find which probes have non-missing chrom and finite maploc
   ina <- (!is.na(chrom) & is.finite(maploc))
-  if (sum(!ina)>0)
+  rowsin <- sum(ina)
+  rowsout <- nrow(genomdat) - rowsin  
+  if (rowsout > 0)
     warning("markers with missing chrom and/or maploc removed\n")
-
-  if (fbdata) {
+# sort only if data have not been sorted   
+  if (!presorted) {
+#   order the probes by chrom and maploc for file based data
+#   move the missing chrom or non-finite maploc to the end
     sortindex <- c(which(ina)[order(chrom[ina], maploc[ina])], which(!ina))
-  } else {
-    sortindex <- which(ina)[order(chrom[ina], maploc[ina])]
+#   sort the data by chrom and maploc ordering
+    chrom <- chrom[sortindex]
+    maploc <- maploc[sortindex]
+    for (i in 1:nsample) genomdat[,i] <- genomdat[sortindex,i]
   }
-  chrom <- chrom[sortindex]
-  maploc <- maploc[sortindex]
-  for (i in 1:nsample) genomdat[,i] <- genomdat[sortindex,i]
-  
+# name the samples  
   if (!missing(sampleid)) {
     if (length(sampleid) != ncol(genomdat)) {
       warning("length(sampleid) and ncol(genomdat) differ, names ignored\n")
@@ -123,18 +127,33 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
       sampleid <- paste("Sample", 1:ncol(genomdat))
     }
   }
+# bigmem is finicky about setting column names.
+  if (bigmem) options(bigmemory.allow.dimnames = TRUE)
+  colnames(genomdat) <- sampleid
+  if (bigmem) options(bigmemory.allow.dimnames = FALSE)
 
-  if (is(genomdat, "big.matrix")) {
-    bigmemdesc$colNames <- sampleid
-  } else {
-    colnames(genomdat) <- sampleid
+# create sub genomdat matrix since the last rowsout rows correspond to NA
+# for chrom or maploc; vw for ff_matrix has to be NULL when setting dimnames
+  if (rowsout > 0) {
+    chrom <- chrom[1:rowsin]
+    maploc <- maploc[1:rowsin]
+    if (fbdata) {
+      if (bigmem) {
+        genomdat <- sub.big.matrix(genomdat, 1, rowsin, 1, nsample)
+      } else {
+        vw(genomdat) <- rbind(c(0,0), c(rowsin,nsample), c(rowsout,0))
+      }
+    } else {
+      genomdat <- genomdat[1:rowsin,]
+    }
   }
-
+# check for duplicate probes (i.e. repeated maploc within a chromosome)
   if (length(ii <- which(diff(maploc)==0)) > 0) {
     if (any(chrom[ii]==chrom[ii+1])) warning("array has repeated maploc positions\n")
   }
-
+# create CNA object
   if (bigmem) {
+    bigmemdesc <- describe(genomdat)@description
     zzz <- new("CNA", chrom=chrom, maploc=maploc, genomdat=genomdat, data.type=data.type, bigmemorydesc=bigmemdesc)
   } else {
     zzz <- new("CNA", chrom=chrom, maploc=maploc, genomdat=genomdat, data.type=data.type)
