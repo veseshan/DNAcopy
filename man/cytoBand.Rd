@@ -1,5 +1,4 @@
 \name{cytoBand}
-\docType{data}
 \alias{cytoBand}
 \title{Cytogenic band data}
 \description{

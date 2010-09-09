@@ -1,5 +1,5 @@
-\name{oldDNAcopyPlot}
-\alias{oldDNAcopyPlot}
+\name{plot.DNAcopy}
+\alias{plot.DNAcopy}
 \title{Plot the data and results from segment of a CNA object}
 \description{
   Plots the data from a copy number array experiment (aCGH, ROMA etc.)
@@ -7,7 +7,7 @@
   numbers.
 } 
 \usage{
-  oldDNAcopyPlot(x, plot.type=c("whole", "plateau", "samplebychrom",
+  \method{plot}{DNAcopy}(x, plot.type=c("whole", "plateau", "samplebychrom",
                "chrombysample"), xmaploc=FALSE, altcol=TRUE, sbyc.layout=
                 NULL, cbys.nchrom=1, cbys.layout=NULL, include.means=TRUE,
                 zeroline=TRUE, pt.pch=NULL, pt.cex=NULL, pt.cols=NULL,
@@ -90,19 +90,19 @@ segment.smoothed.CNA.object <- segment(smoothed.CNA.object, verbose=1)
 
 #Plot whole studies
 
-oldDNAcopyPlot(segment.smoothed.CNA.object, plot.type="w")
+plot(segment.smoothed.CNA.object, plot.type="w")
 
 #Plot each study by chromosome
 
-oldDNAcopyPlot(segment.smoothed.CNA.object, plot.type="s")
+plot(segment.smoothed.CNA.object, plot.type="s")
 
 #Plot each chromosome across studies (6 per page)
 
-oldDNAcopyPlot(segment.smoothed.CNA.object, plot.type="c", cbys.layout=c(2,1), cbys.nchrom=6)
+plot(segment.smoothed.CNA.object, plot.type="c", cbys.layout=c(2,1), cbys.nchrom=6)
 
 #Plot by plateaus
 
-oldDNAcopyPlot(segment.smoothed.CNA.object, plot.type="p")
+plot(segment.smoothed.CNA.object, plot.type="p")
 
 }
 

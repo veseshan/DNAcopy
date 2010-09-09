@@ -1,21 +1,12 @@
-Changes in Version 1.23.6
+Changes in Version 1.23.7
 
-   o Create a submatrix of genomdat to handle NA for chrom and non finite
-     maploc since file based genomdat has these rows in the end.
-   o Add the ff option to convert functions.
-
-Changes in Version 1.23.5
-
-   o Windows tempfile error - fixed tempfile in LargeDataDNAcopy vignette
-
-Changes in Version 1.23.4
-
-   o Major change to enable filebased data matrix using ff or bigmemory.
-   o CNA and DNAcopy objects have been made S4 classes.
-   o Saved data can be converted to new S4 classes using convertCNA and
-     convertDNAcopy.
-   o The plot method has been simplified (plots only one sample).  
-     The original plot method is provided as a function (oldDNAcopyPlot).
+   o Versions 1.23.4 to 1.23.6 were changes made to use file based data. 
+     This needed changing CNA and DNAcopy objects to S4 classes which was
+     too much of a paradigm shift for users.  So changes are undone here.
+   o Change default smooth.region to 10 in smooth.CNA
+   o Added function plotSample for whole genome plot of a single sample.
+   o Fixed the is.integer to is.numeric in subset functions.
+   o CNA accomodates data.frames (as.matrix not needed) and presorted data.
 
 Changes in Version 1.23.3 (same fix applied in v1.22.1)
 

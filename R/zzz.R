@@ -1,3 +1,4 @@
 .onLoad <- function(libname, pkgname) {
-  packageStartupMessage("\n  CNA and DNAcopy objects have a new (S4 Class) form\n  see the file DNAcopyS4Class.txt in the package directory\n  and LargeDataDNAcopy.pdf in the doc sub-directory for details\n")
+  library.dynam("DNAcopy", pkgname, libname)
+  packageStartupMessage("\n**************************************************************************\n   The plan to change the data format for CNA object has been postponed   \n in order to ensure backward compatibility with older versions of DNAcopy \n**************************************************************************\n")
 }
