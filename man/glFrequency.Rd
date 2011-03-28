@@ -20,6 +20,6 @@
   available data (pfreq), and the gain (gain) and loss (loss).
 }
 
-\author{Venkatraman E. Seshan \email{ves2111@columbia.edu} }
+\author{Venkatraman E. Seshan}
 
 \keyword{nonparametric}

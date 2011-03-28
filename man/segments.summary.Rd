@@ -31,6 +31,6 @@ segments.summary(test1)
 
 }
 
-\author{Venkatraman E. Seshan \email{ves2111@columbia.edu} }
+\author{Venkatraman E. Seshan}
 
 \keyword{nonparametric}
