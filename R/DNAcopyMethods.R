@@ -71,13 +71,13 @@ smooth.CNA <- function(x, smooth.region=10, outlier.SD.scale=4,
     if(attr(x, "data.type")=="binary") stop("Not smoothing binary data ")
     for (isamp in 1:nsample) {
       genomdat <- x[,isamp+2]
-      ina <- which(!is.na(genomdat) & !(abs(genomdat)==Inf))
+      ina <- which(is.finite(genomdat))
       trimmed.SD <- sqrt(trimmed.variance(genomdat[ina], trim))
       outlier.SD <- outlier.SD.scale*trimmed.SD
       smooth.SD <- smooth.SD.scale*trimmed.SD
       k <- smooth.region
       for (i in uchrom) {
-        ina <- which(!is.na(genomdat) & !(abs(genomdat)==Inf) & chrom==i)
+        ina <- which(is.finite(genomdat) & chrom==i)
         n <- length(genomdat[ina])
         smoothed.data <- .Fortran("smoothLR",
                                   as.integer(n),
@@ -195,7 +195,7 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
     for (ichrom in uchrom) {
       for (isamp in 1:nsample) {
         genomdat <- xdat[chrom0==ichrom, isamp+2]
-        ina <- which(!is.na(genomdat) & !(abs(genomdat) == Inf))
+        ina <- which(is.finite(genomdat))
         genomdat <- genomdat[ina]
         ii <- cumsum(c(0, xres$num.mark[xres$ID == sampleid[isamp] & xres$chrom==ichrom]))
         mm <- xres$seg.mean[xres$ID == sampleid[isamp] & xres$chrom==ichrom]
@@ -222,7 +222,7 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
     for (isamp in 1:nsample)
       {
         genomdat <- xdat[, isamp+2]
-        ina <- which(!is.na(genomdat) & !(abs(genomdat) == Inf))
+        ina <- which(is.finite(genomdat))
         genomdat <- genomdat[ina]
         wcol <- wcol0[ina]
         chrom <- chrom0[ina]

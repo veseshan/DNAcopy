@@ -19,7 +19,7 @@ segments.p <- function(x, ngrid=100, tol=1e-6, alpha=0.05, search.range=100,
 # genomdat = logratio data of sample isamp
       genomdat <- xdat[, iisamp]
 # ina = location of the missing values and infinity
-      ina <- which(!is.na(genomdat) & !(abs(genomdat) == Inf))
+      ina <- which(is.finite(genomdat))
 # subset out the missing & infinity locations
       genomdat <- genomdat[ina]
       chrom <- chrom0[ina]

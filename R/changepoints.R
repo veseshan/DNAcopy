@@ -15,24 +15,29 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01, weights=
       {
         current.n <- seg.end[k]-seg.end[k-1]
         if (verbose>=3) cat(".... current segment:",seg.end[k-1]+1,"-",seg.end[k],"\n")
-        if(current.n >= 2*min.width)
-          {
-            current.genomdat <- genomdat[(seg.end[k-1]+1):seg.end[k]]
+        if(current.n >= 2*min.width) {
+          current.genomdat <- genomdat[(seg.end[k-1]+1):seg.end[k]]
 #   check whether hybrid method needs to be used
-            hybrid <- FALSE
-            delta <- 0
-            if ((p.method=="hybrid") & (nmin < current.n)) {
-              hybrid <- TRUE
-              delta <- (kmax+1)/current.n
-            }
+          hybrid <- FALSE
+          delta <- 0
+          if ((p.method=="hybrid") & (nmin < current.n)) {
+            hybrid <- TRUE
+            delta <- (kmax+1)/current.n
+          }
 #   call the changepoint routine
-            if (weighted) {
+          if (weighted) {
 #   get the weights for the current set of probes
-              current.wts <- weights[(seg.end[k-1]+1):seg.end[k]]
-              current.rwts <- sqrt(current.wts)
-              current.cwts <- cumsum(current.wts)/sqrt(sum(current.wts))
+            current.wts <- weights[(seg.end[k-1]+1):seg.end[k]]
+            current.rwts <- sqrt(current.wts)
+            current.cwts <- cumsum(current.wts)/sqrt(sum(current.wts))
+#   if all values of current.genomdat are the same don't segment
+            if (isTRUE(all.equal(diff(range(current.genomdat)), 0))) {
+              zzz <- list()
+              zzz$ncpt <- 0
+            } else {
 #   centering the current data will save a lot of computations later
-              current.genomdat <- current.genomdat - sum(current.genomdat*current.wts)/sum(current.wts)
+              current.avg <- sum(current.genomdat*current.wts)/sum(current.wts)
+              current.genomdat <- current.genomdat - current.avg
 #   need total sum of squares too
               current.tss <- sum(current.wts*(current.genomdat^2))
               zzz <- .Fortran("wfindcpt",
@@ -58,9 +63,16 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01, weights=
                               sbdry=as.integer(sbdry),
                               tol= as.double(tol),
                               PACKAGE="DNAcopy")
-            } else { 
+            }
+          } else { 
+#   if all values of current.genomdat are the same don't segment
+            if (isTRUE(all.equal(diff(range(current.genomdat)), 0))) {
+              zzz <- list()
+              zzz$ncpt <- 0
+            } else {
 #   centering the current data will save a lot of computations later
-              current.genomdat <- current.genomdat - mean(current.genomdat)
+              current.avg <- mean(current.genomdat)
+              current.genomdat <- current.genomdat - current.avg
 #   need total sum of squares too
               current.tss <- sum(current.genomdat^2)
               zzz <- .Fortran("fndcpt",
@@ -85,11 +97,10 @@ changepoints <- function(genomdat, data.type="logratio", alpha=0.01, weights=
                               PACKAGE="DNAcopy")
             }
           }
-        else
-          {
-            zzz <- list()
-            zzz$ncpt <- 0
-          }
+        } else {
+          zzz <- list()
+          zzz$ncpt <- 0
+        }
         if(zzz$ncpt==0) change.loc <- c(change.loc,seg.end[k])
         seg.end <- switch(1+zzz$ncpt,seg.end[-k],
                           c(seg.end[1:(k-1)],seg.end[k-1]+zzz$icpt[1],seg.end[k]),

@@ -12,7 +12,7 @@ glFrequency <- function(xout, threshold=1) {
 #    ii <- !is.na(xout$data[,i+2])
     genomdat <- xout$data[,i+2]
 # ii = location of the missing values and infinity
-    ii <- which(!is.na(genomdat) & !(abs(genomdat) == Inf))
+    ii <- which(is.finite(genomdat))
 # segment means as a vector
     segout <- xout$output[xout$output$ID==snames[i+2],]
     segmean <- rep(segout$seg.mean, segout$num.mark)

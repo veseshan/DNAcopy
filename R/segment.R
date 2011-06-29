@@ -44,7 +44,7 @@ segment <- function(x, weights=NULL, alpha=0.01, nperm=10000, p.method=
     for (isamp in 1:nsample) {
       if (verbose>=1) cat(paste("Analyzing:", sampleid[isamp],"\n"))
       genomdati <- x[,isamp+2]
-      ina <- which(!is.na(genomdati) & !(abs(genomdati)==Inf))
+      ina <- which(is.finite(genomdati))
       genomdati <- genomdati[ina]
       trimmed.SD <- sqrt(trimmed.variance(genomdati, trim))
       chromi <- x$chrom[ina]
