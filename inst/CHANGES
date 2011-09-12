@@ -1,3 +1,10 @@
+Changes in Version 1.27.2
+
+   o segment function gets default.DNAcopy.bdry internaly instead of assuming
+     DNAcopy is loaded. Allows for loading package by NAMESPACE only.
+   o xmaploc now works for samplebychrom and chrombysample also.
+
+
 Changes in Version 1.27.1
 
    o Don't further segment if all values in the current segment are the same.

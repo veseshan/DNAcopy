@@ -193,25 +193,34 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
   if (plot.type == "chrombysample") {
     atchrom <- 0.5/cbys.nchrom
     for (ichrom in uchrom) {
+      if (xmaploc) maploc1 <- maploc0[chrom0==ichrom]
       for (isamp in 1:nsample) {
         genomdat <- xdat[chrom0==ichrom, isamp+2]
         ina <- which(is.finite(genomdat))
         genomdat <- genomdat[ina]
+        if (xmaploc) maploc <- maploc1[ina]
         ii <- cumsum(c(0, xres$num.mark[xres$ID == sampleid[isamp] & xres$chrom==ichrom]))
         mm <- xres$seg.mean[xres$ID == sampleid[isamp] & xres$chrom==ichrom]
         kk <- length(ii)
         zz <- cbind(ii[-kk] + 1, ii[-1])
-        plot(genomdat, pch = pt.pch, cex=pt.cex, xaxt="n", ylim = ylim, ylab = sampleid[isamp])
+        if (xmaploc) {
+          plot(maploc, genomdat, pch = pt.pch, cex=pt.cex, xaxt="n", ylim = ylim, ylab = sampleid[isamp])
+        } else {
+          plot(genomdat, pch = pt.pch, cex=pt.cex, xaxt="n", ylim = ylim, ylab = sampleid[isamp])
+        }
         if(zeroline) abline(h=0, col=zlcol, lwd=lwd)
         if (isamp%%cbys.layout[1] == 0) {
           axis(1, outer=TRUE)
           title(xlab="Index")
         }
         if (include.means) {
-          for (i in 1:(kk - 1))
-            {
+          for (i in 1:(kk - 1)) {
+            if (xmaploc) { 
+              lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
+            } else {
               lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=lwd)
             }
+          }
         }
       }
       mtext(paste("Chromosome",ichrom), side = 3, line = 1, at = atchrom, outer=TRUE, font=2)
@@ -257,14 +266,22 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
             cc <- xres$chrom[xres$ID == sampleid[isamp]]
             for (ichrom in uchrom)
               {
-                plot(genomdat[chrom == ichrom], pch = pt.pch, cex=pt.cex, ylab = "", main = paste("Chromosome", ichrom), ylim = ylim)
+                if (xmaploc) {
+                  plot(maploc[chrom == ichrom], genomdat[chrom == ichrom], pch = pt.pch, cex=pt.cex, xlab="maploc", ylab = "", main = paste("Chromosome", ichrom), ylim = ylim)
+                } else {
+                  plot(genomdat[chrom == ichrom], pch = pt.pch, cex=pt.cex, ylab = "", main = paste("Chromosome", ichrom), ylim = ylim)
+                }
                 if(zeroline) abline(h=0, col=zlcol, lwd=lwd)
                 if (include.means) {
                   jj <- which(cc==ichrom)
                   jj0 <- min(jj)
                   for (i in jj)
                     {
-                      lines(1+zz[i, ]-zz[jj0,1], rep(mm[i], 2), col = segcol, lwd=lwd)
+                      if (xmaploc) {
+                        lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
+                      } else {
+                        lines(1+zz[i, ]-zz[jj0,1], rep(mm[i], 2), col = segcol, lwd=lwd)
+                      }
                     }
                 }
               }
