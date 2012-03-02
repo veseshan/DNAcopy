@@ -1,3 +1,13 @@
+Changes in Version 1.29.1
+
+   o added additional details the smooth.CNA help function
+   o made sure that CNA orders data correctly when chrom is an ordered 
+     variable with both integer and character values (i.e. X or Y).
+
+
+1.27.2 became 1.28.0 in Bioconductor 2.9 & =1.29.0 now
+------------------------------------------------------
+
 Changes in Version 1.27.2
 
    o segment function gets default.DNAcopy.bdry internaly instead of assuming

@@ -21,7 +21,9 @@
     for smoothing outliers and undoing splits based on SD.}
 }
 \value{
-  An object of class \code{CNA} with outliers smoothed
+  An object of class \code{CNA} with outliers smoothed i.e the logratio
+  values of singleton outliers is shrunk towards the values of its
+  neighbors. The output is of the same dimension as the input.
 }
 \examples{
 

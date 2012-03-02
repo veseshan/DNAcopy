@@ -36,7 +36,12 @@
 
 \details{
   Data that are NA, Inf, NaN will be removed on a per sample basis for
-  "genomdat" and all samples for "chrom" and "maploc".  
+  "genomdat" and all samples for "chrom" and "maploc".
+
+  If the chrom variable has non-numeric values make it into an ordered
+  variable to get them ordered correctly. E.g. for human genome use:
+  \code{chrom <- ordered(chrom, levels=c(1:22,"X","Y"))} to prepare the
+  variable if chromosomes X and Y are present in your data.
 }
 
 \examples{

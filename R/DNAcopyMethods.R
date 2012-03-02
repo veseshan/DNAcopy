@@ -3,7 +3,6 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
   {
     if (is.data.frame(genomdat)) genomdat <- as.matrix(genomdat)
     if (!is.numeric(genomdat)) stop("genomdat must be numeric")
-    if (is.factor(chrom)) chrom <- as.character(chrom)
     if (!is.numeric(maploc)) stop("maploc must be numeric")
     data.type <- match.arg(data.type)
     ina <- (!is.na(chrom) & is.finite(maploc))
@@ -14,6 +13,7 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
     } else {
       sortindex <- which(ina)
     }
+    if (is.factor(chrom)) chrom <- as.character(chrom)
     if (is.vector(genomdat)) genomdat <- as.matrix(genomdat)
     if (!missing(sampleid)) {
       if (length(sampleid) != ncol(genomdat)) {
