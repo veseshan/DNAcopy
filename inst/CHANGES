@@ -1,3 +1,11 @@
+Changes in Version 1.31.1
+
+   o use function segments in plots instead of lines in a loop
+
+
+1.29.2 became 1.30.0 in Bioconductor 2.10 & =1.31.0 now
+------------------------------------------------------
+
 Changes in Version 1.29.2
 
    o Dropped startup message about data format.

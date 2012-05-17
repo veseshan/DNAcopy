@@ -21,7 +21,8 @@ zoomIntoRegion <- function(x, chrom, sampleid, maploc.start=NULL, maploc.end=NUL
   k <- nrow(segs)
   segs$loc.start[1] <- maploc.start
   segs$loc.end[k] <- maploc.end
-  for(i in 1:k) {
-    lines(c(segs$loc.start[i],segs$loc.end[i]), rep(segs$seg.mean[i],2), col=segcol, lwd=seglwd)
-  }
+  segments(segs$loc.start, segs$seg.mean, x1=segs$loc.end, y1=segs$seg.mean, col = segcol, lwd = seglwd)
+#  for(i in 1:k) {
+#    lines(c(segs$loc.start[i],segs$loc.end[i]), rep(segs$seg.mean[i],2), col=segcol, lwd=seglwd)
+#  }
 }

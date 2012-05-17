@@ -214,13 +214,18 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
           title(xlab="Index")
         }
         if (include.means) {
-          for (i in 1:(kk - 1)) {
-            if (xmaploc) { 
-              lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
-            } else {
-              lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=lwd)
-            }
+          if (xmaploc) {
+            segments(maploc[zz[,1]], mm, x1=maploc[zz[,2]], y1=mm, col = segcol, lwd=lwd)
+          } else {
+            segments(zz[,1], mm, x1=zz[,2], y1=mm, col = segcol, lwd=lwd)
           }
+#          for (i in 1:(kk - 1)) {
+#            if (xmaploc) { 
+#              lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
+#            } else {
+#              lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=lwd)
+#            }
+#          }
         }
       }
       mtext(paste("Chromosome",ichrom), side = 3, line = 1, at = atchrom, outer=TRUE, font=2)
@@ -251,14 +256,19 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
               if(zeroline) abline(h=0, col=zlcol, lwd=lwd)
             }
             if (include.means) {
-              for (i in 1:(kk - 1))
-                {
-                  if (xmaploc) { 
-                    lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
-                  } else {
-                    lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=lwd)
-                  }
-                }
+              if (xmaploc) {
+                segments(maploc[zz[,1]], mm, x1=maploc[zz[,2]], y1=mm, col = segcol, lwd=lwd)
+              } else {
+                segments(zz[,1], mm, x1=zz[,2], y1=mm, col = segcol, lwd=lwd)
+              }
+#              for (i in 1:(kk - 1))
+#                {
+#                  if (xmaploc) { 
+#                    lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
+#                  } else {
+#                    lines(zz[i, ], rep(mm[i], 2), col = segcol, lwd=lwd)
+#                  }
+#                }
             }
           }
         if (plot.type=="samplebychrom")
@@ -275,14 +285,19 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
                 if (include.means) {
                   jj <- which(cc==ichrom)
                   jj0 <- min(jj)
-                  for (i in jj)
-                    {
-                      if (xmaploc) {
-                        lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
-                      } else {
-                        lines(1+zz[i, ]-zz[jj0,1], rep(mm[i], 2), col = segcol, lwd=lwd)
-                      }
-                    }
+                  if (xmaploc) {
+                    segments(maploc[zz[jj,1]], mm[jj], x1=maploc[zz[jj,2]], y1=mm[jj], col = segcol, lwd=lwd)
+                  } else {
+                    segments(1+zz[jj,1]-zz[jj0,1], mm[jj], x1=1+zz[jj,2]-zz[jj0,1], y1=mm[jj], col = segcol, lwd=lwd)
+                  }
+#                  for (i in jj)
+#                    {
+#                      if (xmaploc) {
+#                        lines(maploc[zz[i, ]], rep(mm[i], 2), col = segcol, lwd=lwd)
+#                      } else {
+#                        lines(1+zz[i, ]-zz[jj0,1], rep(mm[i], 2), col = segcol, lwd=lwd)
+#                      }
+#                    }
                 }
               }
             mtext(sampleid[isamp], side = 3, line = 0, outer = TRUE, font=2)
@@ -298,7 +313,8 @@ plot.DNAcopy <- function (x, plot.type=c("whole", "plateau", "samplebychrom",
               ii <- cumsum(c(0, xres$num.mark[xres$ID == sampleid[isamp]][omm]))
               smm <- mm[omm]
               zz <- cbind(ii[-kk] + 1, ii[-1])
-              for (i in 1:(kk-1)) lines(zz[i, ], rep(smm[i], 2), col = segcol, lwd=lwd)
+              segments(zz[,1], smm, x1=zz[,2], y1=smm, col = segcol, lwd=lwd)
+#              for (i in 1:(kk-1)) lines(zz[i, ], rep(smm[i], 2), col = segcol, lwd=lwd)
             }
           }
       }

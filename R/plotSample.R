@@ -53,9 +53,10 @@ plotSample <- function(x, sampleid=NULL, chromlist=NULL, xmaploc=FALSE,
   ii <- cumsum(c(0, segres$num.mark))
   mm <- segres$seg.mean
   kk <- length(ii)
-  for (i in 1:(kk - 1)) {
-    lines(maploc[c(ii[i]+1,ii[i+1])], rep(mm[i], 2), col = segcol, lwd=lwd)
-  }
+  segments(maploc[ii[-kk]+1], segres$seg.mean, x1=maploc[ii[-1]], y1=segres$seg.mean, col = segcol, lwd=lwd)
+#  for (i in 1:(kk - 1)) {
+#    lines(maploc[c(ii[i]+1,ii[i+1])], rep(mm[i], 2), col = segcol, lwd=lwd)
+#  }
 # add the zeroline
   if (zeroline) abline(h=0, col=zlcol, lwd=lwd)
 }
