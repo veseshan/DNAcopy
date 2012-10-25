@@ -76,19 +76,20 @@ smooth.CNA <- function(x, smooth.region=10, outlier.SD.scale=4,
       outlier.SD <- outlier.SD.scale*trimmed.SD
       smooth.SD <- smooth.SD.scale*trimmed.SD
       k <- smooth.region
-      for (i in uchrom) {
-        ina <- which(is.finite(genomdat) & chrom==i)
-        n <- length(genomdat[ina])
-        smoothed.data <- .Fortran("smoothLR",
-                                  as.integer(n),
-                                  as.double(genomdat[ina]),
-                                  sgdat=double(n),
-                                  as.integer(k),
-                                  as.double(outlier.SD),
-                                  as.double(smooth.SD),
-                                  PACKAGE = "DNAcopy")$sgdat
-        x[,isamp+2][ina] <- smoothed.data
-      }
+      n <- length(genomdat[ina])
+      cfrq <- diff(c(which(!duplicated(chrom[ina])), n+1))
+      nchr <- length(cfrq) # to allow for some chrom with all missing
+      smoothed.data <- .Fortran("smoothLR",
+                                as.integer(n),
+                                as.double(genomdat[ina]),
+                                as.integer(nchr),
+                                as.integer(cfrq),
+                                sgdat=double(n),
+                                as.integer(k),
+                                as.double(outlier.SD),
+                                as.double(smooth.SD),
+                                PACKAGE = "DNAcopy")$sgdat
+      x[,isamp+2][ina] <- smoothed.data
     }
     x
   }
