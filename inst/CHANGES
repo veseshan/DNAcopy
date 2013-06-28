@@ -1,3 +1,11 @@
+Changes in Version 1.35.1
+
+   o update cytoBand data to match the goldenPath hg19 file
+
+
+1.33.1 became 1.34.0 in Bioconductor 2.12 & =1.35.0 now
+------------------------------------------------------
+
 Changes in Version 1.33.1
 
    o changes to smooth.CNA.  Looping over chromosomes done within fortran
