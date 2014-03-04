@@ -8,7 +8,7 @@
 } 
 \usage{
   plotSample(x, sampleid=NULL, chromlist=NULL, xmaploc=FALSE,
-             col=c("black","green"), pch=".", cex=1, altcol=TRUE,
+             col=c("black","green"), pch=".", cex=NULL, altcol=TRUE,
              segcol="red", lwd=3, zeroline=TRUE, zlcol="grey",
              xlab="", ylab="", main="", ...)
 }
@@ -24,7 +24,8 @@
   \item{col}{a vector of two colors that can be used for alternating
     colors for successive chromosomes.}
   \item{pch}{the plotting character.  Defaults to \code{.}.}
-  \item{cex}{the size of plotting character.  Default is 1 (3 of `.').}
+  \item{cex}{the size of plotting character.  If missing it is set to 3
+    if pch is `.' and 1 otherwise.}
   \item{altcol}{a logical indicating if colors of successive chromosomes
     should be alternated.  Defaults to \code{TRUE}.}
   \item{segcol}{color for segment means.}

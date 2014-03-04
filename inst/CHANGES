@@ -1,3 +1,15 @@
+Changes in Version 1.37.2 
+
+   o Version 1.37.1 appears to be a system change to add vignettes directory
+
+   o Changed cex option in plotSample and main, xlab, ylab options in 
+     zoomIntoRegions to be customizable.
+
+
+
+1.35.1 became 1.36.0 in Bioconductor 2.13 & =1.36.0 now
+------------------------------------------------------
+
 Changes in Version 1.35.1
 
    o update cytoBand data to match the goldenPath hg19 file

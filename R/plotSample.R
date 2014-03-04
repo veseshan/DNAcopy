@@ -1,5 +1,5 @@
 plotSample <- function(x, sampleid=NULL, chromlist=NULL, xmaploc=FALSE,
-                       col=c("black","green"), pch=".", cex=1, altcol=TRUE,
+                       col=c("black","green"), pch=".", cex=NULL, altcol=TRUE,
                        segcol="red", lwd=3, zeroline=TRUE, zlcol="grey",
                        xlab="", ylab="", main="", ...) {
   if (class(x) != "DNAcopy") stop("First arg must be a DNAcopy object")
@@ -40,7 +40,7 @@ plotSample <- function(x, sampleid=NULL, chromlist=NULL, xmaploc=FALSE,
     colvec <- 1
   }
 # set other graphical parameters
-  if (pch == ".") cex <- 3
+  if (missing(cex)) cex <- ifelse(pch == ".", 3, 1)
   if (main=="") main <- names(subx$data)[3]
   if (xlab=="") xlab <- xlabel
   if (ylab=="") {
