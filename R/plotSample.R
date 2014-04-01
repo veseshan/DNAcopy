@@ -1,7 +1,7 @@
 plotSample <- function(x, sampleid=NULL, chromlist=NULL, xmaploc=FALSE,
                        col=c("black","green"), pch=".", cex=NULL, altcol=TRUE,
                        segcol="red", lwd=3, zeroline=TRUE, zlcol="grey",
-                       xlab="", ylab="", main="", ...) {
+                       xlab=NULL, ylab=NULL, main=NULL, ...) {
   if (class(x) != "DNAcopy") stop("First arg must be a DNAcopy object")
   if (missing(sampleid)) {sampleid <- 1}
   subx <- subset(x, chromlist=chromlist, samplelist=sampleid[1])
