@@ -41,10 +41,10 @@ plotSample <- function(x, sampleid=NULL, chromlist=NULL, xmaploc=FALSE,
   }
 # set other graphical parameters
   if (missing(cex)) cex <- ifelse(pch == ".", 3, 1)
-  if (main=="") main <- names(subx$data)[3]
-  if (xlab=="") xlab <- xlabel
-  if (ylab=="") {
-    if (attr(subx$data, "data.type") == "logratio") {ylab <- "log(CN)"}
+  if (missing(main)) main <- names(subx$data)[3]
+  if (missing(xlab)) xlab <- xlabel
+  if (missing(ylab)) {
+    if (attr(subx$data, "data.type") == "logratio") {ylab <- "log(relative CN)"}
     else {ylab <- "LOH"}
   }
 # plot the data

@@ -1,10 +1,14 @@
+Changes in Version 1.37.3
+
+   o Changed default main, xlab, ylab options in plotSample to NULL to allow
+     for empty strings to produce blank labels.
+
 Changes in Version 1.37.2 
 
    o Version 1.37.1 appears to be a system change to add vignettes directory
 
    o Changed cex option in plotSample and main, xlab, ylab options in 
      zoomIntoRegions to be customizable.
-
 
 
 1.35.1 became 1.36.0 in Bioconductor 2.13 & =1.36.0 now

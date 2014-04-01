@@ -10,7 +10,7 @@
   plotSample(x, sampleid=NULL, chromlist=NULL, xmaploc=FALSE,
              col=c("black","green"), pch=".", cex=NULL, altcol=TRUE,
              segcol="red", lwd=3, zeroline=TRUE, zlcol="grey",
-             xlab="", ylab="", main="", ...)
+             xlab=NULL, ylab=NULL, main=NULL, ...)
 }
 \arguments{
   \item{x}{an object of class \code{DNAcopy} resulting from analyzing
@@ -33,9 +33,11 @@
     Defaults to \code{TRUE}.}
   \item{zlcol}{color for zero line.}
   \item{lwd}{thickness of the lines.}
-  \item{xlab}{the x-axis lavel.}
-  \item{ylab}{the y-axis label.}
-  \item{main}{the main title.  Default is the sample name.}
+  \item{xlab}{the x-axis lavel. If missing Index or Genomic Position
+    will be used depending on xmaploc.}
+  \item{ylab}{the y-axis label. If missing log(CN) or LOH will be used
+    depending on data type.}
+  \item{main}{the main title.  If missing sample name will be used.}
   \item{...}{other arguments to the \code{plot} function can be passed here.}
 }
 \details{
