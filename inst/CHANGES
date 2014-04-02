@@ -1,3 +1,7 @@
+Changes in Version 1.37.4
+
+   o segment function now returns the weights used if weights are given.
+
 Changes in Version 1.37.3
 
    o Changed default main, xlab, ylab options in plotSample to NULL to allow

@@ -84,7 +84,8 @@ segment <- function(x, weights=NULL, alpha=0.01, nperm=10000, p.method=
     allsegs$ID <- as.character(allsegs$ID)
     segres$output <- allsegs
     segres$segRows <- as.data.frame(segRows)
-    segres$call <- call    
+    segres$call <- call
+    if (weighted) segres$weights <- weights
     class(segres) <- "DNAcopy"
     segres
   }
