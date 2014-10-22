@@ -1,3 +1,11 @@
+Changes in Version 1.41.1
+
+   o add as.numeric to cumsum call in plotSample to address integer overflow
+
+
+1.37.4 became 1.38.0 in Bioconductor 2.14 & 1.40.0 in Bioconductor 3.0
+----------------------------------------------------------------------
+
 Changes in Version 1.37.4
 
    o segment function now returns the weights used if weights are given.

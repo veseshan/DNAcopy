@@ -18,7 +18,7 @@ plotSample <- function(x, sampleid=NULL, chromlist=NULL, xmaploc=FALSE,
     rmaploc <- sapply(uchrom, function(i, maploc, chrom) range(maploc[chrom==i]), maploc, chrom)
     nc <- length(uchrom)
     if ((nc>1) && any(rmaploc[1,-1] < rmaploc[2,-nc])) {
-      cmaploc <- cumsum(rmaploc[2,])
+      cmaploc <- cumsum(as.numeric(rmaploc[2,]))
       for (i in 2:nc) {
         maploc[chrom==uchrom[i]] <- cmaploc[i-1] + maploc[chrom==uchrom[i]] 
       }
