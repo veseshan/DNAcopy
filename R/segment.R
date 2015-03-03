@@ -11,7 +11,7 @@ segment <- function(x, weights=NULL, alpha=0.01, nperm=10000, p.method=
     if (missing(sbdry)) {
       if (nperm==10000 & alpha==0.01 & eta==0.05) {
         if (!exists("default.DNAcopy.bdry")) data(default.DNAcopy.bdry, package="DNAcopy",envir=environment())
-        sbdry <- default.DNAcopy.bdry
+        sbdry <- get("default.DNAcopy.bdry", envir=environment())
       } else {
         max.ones <- floor(nperm*alpha) + 1
         sbdry <- getbdry(eta, nperm, max.ones)

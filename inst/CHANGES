@@ -1,3 +1,8 @@
+Changes in Version 1.41.2
+
+   o change in segment to remove "no visible binding for global variable" 
+     NOTE during R CMD check
+
 Changes in Version 1.41.1
 
    o add as.numeric to cumsum call in plotSample to address integer overflow
