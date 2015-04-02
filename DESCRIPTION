@@ -1,9 +1,10 @@
 Package: DNAcopy
 Title: DNA copy number data analysis
-Version: 1.41.2
+Version: 1.41.3
 Author: Venkatraman E. Seshan, Adam Olshen
-Description: Segments DNA copy number data using circular binary
-        segmentation to detect regions with abnormal copy number
+Description: Implements the circular binary segmentation (CBS) 
+        algorithm to segment DNA copy number data and identify
+        genomic regions with abnormal copy number.
 Maintainer: Venkatraman E. Seshan <seshanv@mskcc.org>
 LazyData: yes
 License: GPL (>= 2)
