@@ -1,5 +1,7 @@
 useDynLib(DNAcopy)
 import(stats,graphics)
+importFrom("grDevices", "dev.cur", "dev.interactive", "dev.new")
+importFrom("utils", "data")
 export("CNA","exon.segment","getbdry","segment","segments.p","segments.summary","smooth.CNA","glFrequency","plotSample","zoomIntoRegion")
 S3method(print, CNA)
 S3method(plot, DNAcopy)
