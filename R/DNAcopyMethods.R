@@ -14,6 +14,12 @@ CNA <- function(genomdat, chrom, maploc, data.type=c("logratio","binary"),
       sortindex <- which(ina)
     }
     if (is.factor(chrom)) chrom <- as.character(chrom)
+    # added to allow arrays of single dimension - results from data.frame ops
+    if (is.array(genomdat)) {
+        if (length(dim(genomdat)) == 1) {
+            genomdat <- as.matrix(genomdat)
+        }
+    }
     if (is.vector(genomdat)) genomdat <- as.matrix(genomdat)
     if (!missing(sampleid)) {
       if (length(sampleid) != ncol(genomdat)) {
