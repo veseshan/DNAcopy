@@ -1,3 +1,11 @@
+Changes in Version 1.49.1
+
+   o Added length.out in seq call (partial name issue)
+
+
+1.47.2 became 1.48.0 in Bioconductor 3.4 & =1.49.0 now
+------------------------------------------------------
+
 Changes in Version 1.47.2
 
    o Added a check to see if genomdat is a one-dimensional array 
