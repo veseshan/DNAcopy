@@ -1,6 +1,6 @@
 Package: DNAcopy
 Title: DNA copy number data analysis
-Version: 1.71.0
+Version: 1.72.0
 Author: Venkatraman E. Seshan, Adam Olshen
 Description: Implements the circular binary segmentation (CBS) 
         algorithm to segment DNA copy number data and identify
