@@ -10,8 +10,8 @@ c     it1tsq is the integral of 1/(t*(1-t))**2
       double precision t, tl, dincr, bsqrtm, x, nux
       integer i
 
-      dincr = (0.5d0 - delta)/dfloat(ngrid)
-      bsqrtm = b/sqrt(dfloat(m))
+      dincr = (0.5d0 - delta)/dble(ngrid)
+      bsqrtm = b/sqrt(dble(m))
 
       tl = 0.5d0 - dincr
       t = 0.5d0 - 0.5d0*dincr
@@ -95,11 +95,11 @@ c     from page 387 of Siegmund (1986) paper
       double precision fpnorm, nu
       external fpnorm, nu
 
-      dm = dfloat(m)
+      dm = dble(m)
       k = 2
-      ll = b*sqrt(1.0/dfloat(m-k) - 1.0/dfloat(m))
-      ul = b*sqrt(1.0/dfloat(k) - 1.0/dfloat(m))
-      dincr = (ul - ll)/dfloat(ng)
+      ll = b*sqrt(1.0/dble(m-k) - 1.0/dble(m))
+      ul = b*sqrt(1.0/dble(k) - 1.0/dble(m))
+      dincr = (ul - ll)/dble(ng)
 
       btailp = 0.0
       x = ll

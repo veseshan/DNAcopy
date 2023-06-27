@@ -26,9 +26,9 @@ c     row, column and order vector for reordering bssbij
       integer, allocatable :: bloci(:), blocj(:), loc(:), alen(:)
 
 c     calculate number of blocks (nb) and block boundaries (vector bb)
-      rn = dfloat(n)
+      rn = dble(n)
       if (n .ge. 50) then
-         nb = nint(sqrt(dfloat(n)))
+         nb = nint(sqrt(dble(n)))
       else
          nb = 1
       endif
@@ -43,7 +43,7 @@ c     allocate memory
 
 c     block boundaries
       do 110 i = 1, nb
-         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+         bb(i) = nint(rn*(dble(i)/dble(nb)))
  110  continue
 
 c     find the max, min of partial sums and their locations within blocks
@@ -91,7 +91,7 @@ c     reset ilo to be the block boundary + 1
 
 c     calculate bss for max s_i - min s_i
       psdiff = psmax0 - psmin0
-      rj = dfloat(abs(ipsmax0 - ipsmin0))
+      rj = dble(abs(ipsmax0 - ipsmin0))
       rnjov1 = rn/(rj*(rn-rj))
       if (ibin) then
          bssmax = rnjov1*(psdiff-0.5)**2
@@ -134,7 +134,7 @@ c     calculate bsslim
             jhi = bb(j)
             alenhi = jhi - ilo
             if (alenhi .gt. nal0) alenhi = nal0
-            rjhi = dfloat(alenhi)
+            rjhi = dble(alenhi)
             if (i .eq. j) then
                alenlo = 1
             else
@@ -147,7 +147,7 @@ c     max S_k over block i - min S_k over block j
             sij2 = abs(bpsmax(i) - bpsmin(j))
 c     if i = j then sij1 and sij2 are the same
             sijmx0 = max(sij1, sij2)
-            rjlo = dfloat(alenlo)
+            rjlo = dble(alenlo)
             rnjov1 = rn/min(rjlo*(rn-rjlo), rjhi*(rn-rjhi))
             if (ibin) then
                bsslim = rnjov1*(sijmx0-0.5)**2
@@ -164,7 +164,7 @@ c     if its as large as bssmax add block
 c     max sij in the (i,j) block, t-statistic etc
                if (sij1 .gt. sij2) then
                   alen(l) = abs(ibmax(j) - ibmin(i))
-                  rj = dfloat(alen(l))
+                  rj = dble(alen(l))
                   rnjov1 = rn/(rj*(rn-rj))
                   if (ibin) then
                      bssbij(l) = rnjov1*(sij1-0.5)**2
@@ -173,7 +173,7 @@ c     max sij in the (i,j) block, t-statistic etc
                   endif
                else
                   alen(l) = abs(ibmin(j) - ibmax(i))
-                  rj = dfloat(alen(l))
+                  rj = dble(alen(l))
                   rnjov1 = rn/(rj*(rn-rj))
                   if (ibin) then
                      bssbij(l) = rnjov1*(sij2-0.5)**2
@@ -215,14 +215,14 @@ c     max arc length of interest in block
             jhi = bb(bj)
             alenhi = jhi - ilo
             if (alenhi .gt. nal0) alenhi = nal0
-            rjhi = dfloat(alenhi)
+            rjhi = dble(alenhi)
             if (bi .eq. bj) then
                alenlo = 1
             else
                alenlo = jlo - ihi
             endif
             if (alenlo .lt. al0) alenlo = al0
-            rjlo = dfloat(alenlo)
+            rjlo = dble(alenlo)
 c
 c     if arc length is larger than n/2 make is n - arc length
 c
@@ -245,7 +245,7 @@ c     excess calcultaions to set range of i
                         sxmxi = i
                      endif
  55               continue
-                  rj = dfloat(i2j)
+                  rj = dble(i2j)
                   rnjov1 = rn/(rj*(rn-rj))
                   if (ibin) then
                      bijbss = rnjov1*(sxmx-0.5)**2
@@ -277,7 +277,7 @@ c     excess calcultaions to set range of i
                         sxmxi = i
                      endif
  65               continue
-                  rj = dfloat(i2j)
+                  rj = dble(i2j)
                   rnjov1 = rn/(rj*(rn-rj))
                   if (ibin) then
                      bijbss = rnjov1*(sxmx-0.5)**2
@@ -341,9 +341,9 @@ c     row, column and order vector for reordering bssbij
       integer, allocatable :: bloci(:), blocj(:), loc(:), alen(:)
 
 c     calculate number of blocks (nb) and block boundaries (vector bb)
-      rn = dfloat(n)
+      rn = dble(n)
       if (n .ge. 50) then
-         nb = nint(sqrt(dfloat(n)))
+         nb = nint(sqrt(dble(n)))
       else
          nb = 1
       endif
@@ -358,7 +358,7 @@ c     allocate memory
 
 c     block boundaries
       do 110 i = 1, nb
-         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+         bb(i) = nint(rn*(dble(i)/dble(nb)))
  110  continue
 
 c     find the max, min of partial sums and their locations within blocks
@@ -406,7 +406,7 @@ c     reset ilo to be the block boundary + 1
 
 c     calculate bss for max s_i - min s_i
       psdiff = psmax0 - psmin0
-      rj = dfloat(abs(ipsmax0 - ipsmin0))
+      rj = dble(abs(ipsmax0 - ipsmin0))
       rnjov1 = rn/(rj*(rn-rj))
       if (ibin) then
          bssmax = rnjov1*(psdiff-0.5)**2
@@ -441,7 +441,7 @@ c     calculate bsslim
             jhi = bb(j)
             alenhi = jhi - ilo
             if (alenhi .gt. nal0) alenhi = nal0
-            rjhi = dfloat(alenhi)
+            rjhi = dble(alenhi)
             if (i .eq. j) then
                alenlo = 1
             else
@@ -454,7 +454,7 @@ c     max S_k over block i - min S_k over block j
             sij2 = abs(bpsmax(i) - bpsmin(j))
 c     if i = j then sij1 and sij2 are the same
             sijmx0 = max(sij1, sij2)
-            rjlo = dfloat(alenlo)
+            rjlo = dble(alenlo)
             rnjov1 = rn/min(rjlo*(rn-rjlo), rjhi*(rn-rjhi))
             if (ibin) then
                bsslim = rnjov1*(sijmx0-0.5)**2
@@ -471,7 +471,7 @@ c     if its as large as bssmax add block
 c     max sij in the (i,j) block, t-statistic etc
                if (sij1 .gt. sij2) then
                   alen(l) = abs(ibmax(j) - ibmin(i))
-                  rj = dfloat(alen(l))
+                  rj = dble(alen(l))
                   rnjov1 = rn/(rj*(rn-rj))
                   if (ibin) then
                      bssbij(l) = rnjov1*(sij1-0.5)**2
@@ -480,7 +480,7 @@ c     max sij in the (i,j) block, t-statistic etc
                   endif
                else
                   alen(l) = abs(ibmin(j) - ibmax(i))
-                  rj = dfloat(alen(l))
+                  rj = dble(alen(l))
                   rnjov1 = rn/(rj*(rn-rj))
                   if (ibin) then
                      bssbij(l) = rnjov1*(sij2-0.5)**2
@@ -522,14 +522,14 @@ c     max arc length of interest in block
             jhi = bb(bj)
             alenhi = jhi - ilo
             if (alenhi .gt. nal0) alenhi = nal0
-            rjhi = dfloat(alenhi)
+            rjhi = dble(alenhi)
             if (bi .eq. bj) then
                alenlo = 1
             else
                alenlo = jlo - ihi
             endif
             if (alenlo .lt. al0) alenlo = al0
-            rjlo = dfloat(alenlo)
+            rjlo = dble(alenlo)
 c
 c     if arc length is larger than n/2 make is n - arc length
 c
@@ -549,7 +549,7 @@ c     excess calcultaions to set range of i
                      absx = abs(sx(j) - sx(i))
                      if (sxmx .lt. absx) sxmx = absx
  55               continue
-                  rj = dfloat(i2j)
+                  rj = dble(i2j)
                   rnjov1 = rn/(rj*(rn-rj))
                   if (ibin) then
                      bijbss = rnjov1*(sxmx-0.5)**2
@@ -574,7 +574,7 @@ c     excess calcultaions to set range of i
                      absx = abs(sx(j) - sx(i))
                      if (sxmx .lt. absx) sxmx = absx
  65               continue
-                  rj = dfloat(i2j)
+                  rj = dble(i2j)
                   rnjov1 = rn/(rj*(rn-rj))
                   if (ibin) then
                      bijbss = rnjov1*(sxmx-0.5)**2
@@ -622,15 +622,15 @@ c     variables to work on block specific data
       integer nb, ilo, ihi, l
       double precision psum, psdiffsq
 
-      rn = dfloat(n)
+      rn = dble(n)
 c     number of blocks of size k (plus fraction since n/k may not be integer)
-      nb = int(rn/dfloat(k))
+      nb = int(rn/dble(k))
 c     allocate memory
       allocate(bpsmax(nb), bpsmin(nb))
       allocate(bb(nb))
 c     block boundaries
       do 110 i = 1, nb
-         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+         bb(i) = nint(rn*(dble(i)/dble(nb)))
  110  continue
 
 c     don't need global min and max
@@ -664,7 +664,7 @@ c     reset ilo to be the block boundary + 1
 c     calculate the bss at the block max & min pr
          i = abs(ipsmin - ipsmax)
          if ((i .le. k) .and. (i .ge. al0)) then
-            rj = dfloat(i)
+            rj = dble(i)
             rnjov1 = rn/(rj*(rn-rj))
             if (ibin) then
                bssmx = rnjov1*(bpsmax(j) - bpsmin(j) -0.5)**2
@@ -685,7 +685,7 @@ c     check the first block
          psdiffsq = psdiff**2
       endif
       do 40 j = al0,k
-         rj = dfloat(j)
+         rj = dble(j)
          rnjov1 = rn/(rj*(rn-rj))
          bsslim = rnjov1*psdiffsq
          if (bsslim .lt. htmaxp) go to 50
@@ -710,7 +710,7 @@ c     now the minor arcs spanning the end (n)
          psdiffsq = psdiff**2
       endif
       do 70 j = al0,k
-         rj = dfloat(j)
+         rj = dble(j)
          rnjov1 = rn/(rj*(rn-rj))
          bsslim = rnjov1*psdiffsq
          if (bsslim .lt. htmaxp) go to 100
@@ -739,7 +739,7 @@ c     now the other blocks
             psdiffsq = psdiff**2
          endif
          do 140 j = al0,k
-            rj = dfloat(j)
+            rj = dble(j)
             rnjov1 = rn/(rj*(rn-rj))
             bsslim = rnjov1*psdiffsq
             if (bsslim .lt. htmaxp) go to 150
@@ -763,7 +763,7 @@ c     now the other blocks
             psdiffsq = psdiff**2
          endif
          do 170 j = al0,k
-            rj = dfloat(j)
+            rj = dble(j)
             rnjov1 = rn/(rj*(rn-rj))
             bsslim = rnjov1*psdiffsq
             if (bsslim .lt. htmaxp) go to 200

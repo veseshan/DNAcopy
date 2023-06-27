@@ -1,5 +1,5 @@
 zoomIntoRegion <- function(x, chrom, sampleid, maploc.start=NULL, maploc.end=NULL, pt.pch=NULL, pt.cex=NULL, pt.col=NULL, segcol=NULL, seglwd=NULL, main=NULL, xlab=NULL, ylab=NULL, ...) {
-  if (class(x) != "DNAcopy") stop("First arg must be a DNAcopy object")
+  if (!inherits(x, 'DNAcopy')) stop("First arg must be a DNAcopy object")
   tmp <- subset(x, chrom=chrom[1], samplelist=sampleid[1])
   lrdata <- tmp$data
   if (missing(maploc.start)) maploc.start <- min(lrdata$maploc, na.rm=T) - 1

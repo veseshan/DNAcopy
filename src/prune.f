@@ -76,7 +76,7 @@
          segsx = segsx + sx(i)
          segnx = segnx + lseg(i)
  10   continue
-      errssq = errssq + segsx**2/dfloat(segnx)
+      errssq = errssq + segsx**2/dble(segnx)
       do 20 j = 2,k
          segsx = 0.0
          segnx = 0
@@ -84,7 +84,7 @@
             segsx = segsx + sx(i)
             segnx = segnx + lseg(i)
  15      continue
-         errssq = errssq + segsx**2/dfloat(segnx)
+         errssq = errssq + segsx**2/dble(segnx)
  20   continue
       segsx = 0.0
       segnx = 0
@@ -92,7 +92,7 @@
          segsx = segsx + sx(i)
          segnx = segnx + lseg(i)
  25   continue
-      errssq = errssq + segsx**2/dfloat(segnx)
+      errssq = errssq + segsx**2/dble(segnx)
 
       return
       end

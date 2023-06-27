@@ -38,7 +38,7 @@ c     delta is a function of arc lengths
          pval1 = tailp(ostat1, delta, n, ngrid, tol)
          if (pval1 .gt. cpval) go to 500
          pval2 = cpval - pval1
-         nrejc = int(pval2*dfloat(nperm))
+         nrejc = int(pval2*dble(nperm))
          k=nrejc*(nrejc+1)/2 + 1
          do 50 np = 1,nperm
 c     call permutation code for data with weights
@@ -53,7 +53,7 @@ c     call the small arc permutation statistic function
             if (np .ge. sbdry(k)) go to 200
  50      continue
       else
-         nrejc = int(cpval*dfloat(nperm))
+         nrejc = int(cpval*dble(nperm))
          k=nrejc*(nrejc+1)/2 + 1
          do 100 np = 1,nperm
 c     call permutation code for data with weights
@@ -121,7 +121,7 @@ c     multiply by square root, permute and then divide by square root
 
       do 20 i = n,1,-1
          cc = dunif()
-         j = int(cc*dfloat(i))+1
+         j = int(cc*dble(i))+1
          tmpx = px(i)
          px(i) = px(j)/rwts(i)
          px(j) = tmpx
@@ -178,7 +178,7 @@ c     function for the p-value of t-statistics for removing edge effects
          tstat = (ostat**2)*rn2*rn/rn1
       endif
       nrej = 0
-      tstat = tstat/((tss-tstat)/(dfloat(n)-2.0))
+      tstat = tstat/((tss-tstat)/(dble(n)-2.0))
 c     if observed t is large (> 5) don't bother with permutation p-value
 c     also make sure there are enough observations i.e. m1 >= 10
       if ((tstat .gt. 25) .and. (m1 .ge. 10)) go to 110
@@ -186,7 +186,7 @@ c     also make sure there are enough observations i.e. m1 >= 10
          xsum1 = 0
          do 30 i = n,n-m1+1,-1
             cc = dunif()
-            j = int(cc*dfloat(i))+1
+            j = int(cc*dble(i))+1
             tmpx = px(i)
             px(i) = px(j)
             px(j) = tmpx
@@ -197,7 +197,7 @@ c     probe variance.  But should be multiplied by wts(i) for statistic
          pstat = abs(xsum1/rm1 - xbar)
          if (ostat.le.pstat) nrej = nrej + 1
  100  continue
- 110  wtpermp = dfloat(nrej)/dfloat(nperm)
+ 110  wtpermp = dble(nrej)/dble(nperm)
 
       return
       end

@@ -22,7 +22,7 @@ c      call dblepr("Max Stat",8,ostat,1)
 
       sumxi = x(1)
       ostat = 0.0
-      dn = dfloat(n)
+      dn = dble(n)
       di = 1.0
       do 20 i = 2,n-2
          di = di + 1.0

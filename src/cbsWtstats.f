@@ -31,9 +31,9 @@ c     row, column and order vector for reordering bssbij
       integer, allocatable :: bloci(:), blocj(:), loc(:)
 
 c     calculate number of blocks (nb) and block boundaries (vector bb)
-      rn = dfloat(n)
+      rn = dble(n)
       if (n .ge. 50) then
-         nb = nint(sqrt(dfloat(n)))
+         nb = nint(sqrt(dble(n)))
       else
          nb = 1
       endif
@@ -48,7 +48,7 @@ c     allocate memory
 
 c     block boundaries
       do 110 i = 1, nb
-         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+         bb(i) = nint(rn*(dble(i)/dble(nb)))
  110  continue
 
 c     find the max, min of partial sums and their locations within blocks
@@ -311,9 +311,9 @@ c     row, column and order vector for reordering bssbij
       integer, allocatable :: bloci(:), blocj(:), loc(:)
 
 c     calculate number of blocks (nb) and block boundaries (vector bb)
-      rn = dfloat(n)
+      rn = dble(n)
       if (n .ge. 50) then
-         nb = nint(sqrt(dfloat(n)))
+         nb = nint(sqrt(dble(n)))
       else
          nb = 1
       endif
@@ -328,7 +328,7 @@ c     allocate memory
 
 c     block boundaries
       do 110 i = 1, nb
-         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+         bb(i) = nint(rn*(dble(i)/dble(nb)))
  110  continue
 
 c     find the max, min of partial sums and their locations within blocks
@@ -568,15 +568,15 @@ c     variables to work on block specific data
       integer nb, ilo, ihi, l
       double precision psum, psdiffsq
 
-      rn = dfloat(n)
+      rn = dble(n)
 c     number of blocks
-      nb = int(rn/dfloat(k))
+      nb = int(rn/dble(k))
 c     allocate memory
       allocate(bpsmax(nb), bpsmin(nb))
       allocate(bb(nb))
 c     block boundaries
       do 110 i = 1, nb
-         bb(i) = nint(rn*(dfloat(i)/dfloat(nb)))
+         bb(i) = nint(rn*(dble(i)/dble(nb)))
  110  continue
 
 c     don't need global min and max
@@ -693,7 +693,7 @@ c     now the other blocks
 c      call dblepr("bss max", 7, bssmax, 1)
 
       if (tss .le. bssmax+0.0001d0) tss = bssmax + 1.0d0
-      hwtmaxp = bssmax/((tss-bssmax)/(dfloat(n)-2.0d0))
+      hwtmaxp = bssmax/((tss-bssmax)/(dble(n)-2.0d0))
 
 c     deallocate memory
       deallocate(bpsmax, bpsmin, bb)

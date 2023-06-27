@@ -35,7 +35,7 @@ c     o.w calculate p-value and decide if & how data are segmented
          pval1 = tailp(ostat1, delta, n, ngrid, tol)
          if (pval1 .gt. cpval) go to 500
          pval2 = cpval - pval1
-         nrejc = int(pval2*dfloat(nperm))
+         nrejc = int(pval2*dble(nperm))
          k=nrejc*(nrejc+1)/2 + 1
          do 50 np = 1,nperm
             call xperm(n,x,px)
@@ -49,7 +49,7 @@ c            pstat = htmax(n,twon,hk,tss,px,sx,tx,ibin)
             if (np .ge. sbdry(k)) go to 200
  50      continue
       else
-         nrejc = int(cpval*dfloat(nperm))
+         nrejc = int(cpval*dble(nperm))
          k=nrejc*(nrejc+1)/2 + 1
          do 100 np = 1,nperm
             call xperm(n,x,px)
@@ -118,7 +118,7 @@ c     code to permute the data vector
 
       do 20 i = n,1,-1
          cc = dunif()
-         j = int(cc*dfloat(i))+1
+         j = int(cc*dble(i))+1
          tmpx = px(i)
          px(i) = px(j)
          px(j) = tmpx
@@ -138,8 +138,8 @@ c     function for the p-value of t-statistics for removing edge effects
       double precision dunif
       external dunif
 
-      rn1 = dfloat(n1)
-      rn2 = dfloat(n2)
+      rn1 = dble(n1)
+      rn2 = dble(n2)
       rn = rn1 + rn2
       if (n1.eq.1 .or. n2.eq.1) then
          nrej = nperm
@@ -194,7 +194,7 @@ c*******************************************
          xsum1 = 0
          do 30 i = n,n-m1+1,-1
             cc = dunif()
-            j = int(cc*dfloat(i))+1
+            j = int(cc*dble(i))+1
             tmpx = px(i)
             px(i) = px(j)
             px(j) = tmpx
@@ -204,7 +204,7 @@ c*******************************************
 c         call dblepr("P-Stat",6,pstat,1)
          if (ostat.le.pstat) nrej = nrej + 1
  100  continue
- 110  tpermp = dfloat(nrej)/dfloat(nperm)
+ 110  tpermp = dble(nrej)/dble(nperm)
 
       return
       end

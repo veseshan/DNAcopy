@@ -6,7 +6,7 @@
       integer j, l
 
       l = 1
-      ibdry(1) = nperm-int(dfloat(nperm)*eta)
+      ibdry(1) = nperm-int(dble(nperm)*eta)
       etastr(1) = eta
       eta0 = eta
       do 20 j = 2,m
@@ -45,13 +45,13 @@
       integer i, k
       double precision di, dn, dn1s, dk, tprob
 
-      dn1s = dfloat(n1s)
-      dn = dfloat(nperm-n1s)
+      dn1s = dble(n1s)
+      dn = dble(nperm-n1s)
       
       k = 0
       dk = 0.0d0
       do 10 i = 1, nperm
-         di = dfloat(i)
+         di = dble(i)
          tprob = fphypr(dk, dn1s, dn, di)
          if (tprob .le. eta0) then
             k = k+1
@@ -73,25 +73,25 @@
       double precision flchoose
       external flchoose
 
-      dn = dfloat(nperm)
-      dk = dfloat(n1s)
-      dn1 = dfloat(nperm-ibdry(1))
+      dn = dble(nperm)
+      dk = dble(n1s)
+      dn1 = dble(nperm-ibdry(1))
       dlcnk = flchoose(dn, dk)
 
       pexcd = exp(flchoose(dn1, dk) - dlcnk)
 
       if (n1s .ge. 2) then
-         dn1 = dfloat(ibdry(1))
-         dn = dfloat(nperm-ibdry(2))
-         dk = dfloat(n1s-1)
+         dn1 = dble(ibdry(1))
+         dn = dble(nperm-ibdry(2))
+         dk = dble(n1s-1)
          pexcd = pexcd + exp(log(dn1) + flchoose(dn, dk) - dlcnk)
       endif
 
       if (n1s .ge. 3) then
-         dn1 = dfloat(ibdry(1))
-         dn2 = dfloat(ibdry(2))
-         dn = dfloat(nperm-ibdry(3))
-         dk = dfloat(n1s-2)
+         dn1 = dble(ibdry(1))
+         dn2 = dble(ibdry(2))
+         dn = dble(nperm-ibdry(3))
+         dk = dble(n1s-2)
          pexcd = pexcd + 
      1        exp(log(dn1) + log(dn1-1.0) - log(2.0) + 
      2                        flchoose(dn, dk) - dlcnk) +
@@ -100,14 +100,14 @@
 
       if (n1s .gt. 3) then
          do 10 i = 4, n1s
-            dn1 = dfloat(ibdry(i-3))
-            dk1 = dfloat(i-1)
-            dk2 = dfloat(i-2)
-            dk3 = dfloat(i-3)
-            dn2 = dfloat(ibdry(i-2))
-            dn3 = dfloat(ibdry(i-1))
-            dn = dfloat(nperm-ibdry(i))
-            dk = dfloat(n1s-i+1)
+            dn1 = dble(ibdry(i-3))
+            dk1 = dble(i-1)
+            dk2 = dble(i-2)
+            dk3 = dble(i-3)
+            dn2 = dble(ibdry(i-2))
+            dn3 = dble(ibdry(i-1))
+            dn = dble(nperm-ibdry(i))
+            dk = dble(n1s-i+1)
             pexcd = pexcd + 
      1           exp(flchoose(dn1, dk1) + flchoose(dn, dk) - dlcnk) +
      2           exp(flchoose(dn1, dk2) + log(dn3-dn1) + 
