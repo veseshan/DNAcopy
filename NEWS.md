@@ -1,3 +1,7 @@
+# DNAcopy 1.75.4 (07/05/2023)
+
+* Updated the reference and source for Coriell data
+
 # DNAcopy 1.75.3 (06/29/2023)
 
 * Added init.c to register native (Fortran) routines and to disable symbol search

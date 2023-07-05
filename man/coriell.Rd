@@ -7,10 +7,11 @@
 }
 \usage{data(coriell)}
 \format{A data frame containing five variables: first is clone name,
-  second is clone chromosome, third is clone position, fourth and fifth
+  second is clone chromosome, third is clone position, fourth (sample
+  GM05296 from Web Table G) and fifth (sample GM13330 from Web Table H)
   are log2ratio for two cell lines.}
 \source{
-http://www.nature.com/ng/journal/v29/n3/suppinfo/ng754\_S1.html
+  Supplementary Information from https://www.nature.com/articles/ng754
 }
 \references{Snijders et al., Assembly of microarrays for genome-wide
   measurement of DNA copy number, \emph{Nature Genetics}, 2001}
