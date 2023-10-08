@@ -1,3 +1,7 @@
+# DNAcopy 1.75.5 (10/08/2023)
+
+* Fixed the bug in passing weights for weighted segmentation
+
 # DNAcopy 1.75.4 (07/05/2023)
 
 * Updated the reference and source for Coriell data

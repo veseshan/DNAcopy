@@ -59,10 +59,10 @@ segment <- function(x, weights=NULL, alpha=0.01, nperm=10000, p.method=
       sample.segmeans <- NULL
       for (ic in uchrom) {
         if (verbose>=2) cat(paste("  current chromosome:", ic, "\n"))
-        segci <- changepoints(genomdati[chromi==ic], data.type, alpha, wghts,
-                              sbdry, sbn, nperm, p.method, min.width, kmax,
-                              nmin, trimmed.SD, undo.splits, undo.prune,
-                              undo.SD, verbose)
+        segci <- changepoints(genomdati[chromi==ic], data.type, alpha,
+                              wghts[chromi==ic], sbdry, sbn, nperm, p.method,
+                              min.width, kmax, nmin, trimmed.SD, undo.splits,
+                              undo.prune, undo.SD, verbose)
         sample.lsegs <- c(sample.lsegs, segci$lseg)
         sample.segmeans <- c(sample.segmeans, segci$segmeans)
       }
